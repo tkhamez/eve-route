@@ -7,6 +7,8 @@ import io.ktor.routing.*
 import io.ktor.http.*
 //import io.ktor.content.*
 import io.ktor.http.content.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.sessions.*
 import io.ktor.auth.*
 import io.ktor.client.*
@@ -18,11 +20,20 @@ import io.ktor.client.features.logging.*
 //import io.ktor.client.features.UserAgent
 import io.ktor.client.features.BrowserUserAgent
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+//fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main() {
+    embeddedServer(
+        Netty,
+        watchPaths = listOf("classes"),
+        port = 8080,
+        module = Application::module
+    ).start(true)
+}
 
 //@Suppress("unused") // Referenced in application.conf
-@kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
+//@kotlin.jvm.JvmOverloads
+//fun Application.module(testing: Boolean = false) {
+fun Application.module() {
     install(Sessions) {
         cookie<MySession>("MY_SESSION") {
             cookie.extensions["SameSite"] = "lax"
@@ -55,7 +66,7 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         get("/") {
-            println(testing)
+            //println(testing)
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
 
