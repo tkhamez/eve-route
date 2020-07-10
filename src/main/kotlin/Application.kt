@@ -14,6 +14,9 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
+import io.ktor.client.features.logging.*
+import io.ktor.client.features.UserAgent
+import io.ktor.client.features.BrowserUserAgent
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -33,6 +36,10 @@ fun Application.module(testing: Boolean = false) {
         install(JsonFeature) {
             serializer = GsonSerializer()
         }
+        install(Logging) {
+            level = LogLevel.HEADERS
+        }
+        BrowserUserAgent() // install default browser-like user-agent
     }
     runBlocking {
         // Sample for making a HTTP Client request
