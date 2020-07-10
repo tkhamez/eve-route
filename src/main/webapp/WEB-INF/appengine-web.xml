@@ -5,4 +5,5 @@
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     </system-properties>
+    <version>version-ignored-at-deploy-time-and-only-as-a-temporary-workaround</version>
 </appengine-web-app>
