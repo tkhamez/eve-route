@@ -35,10 +35,13 @@ fun main() {
 //fun Application.module(testing: Boolean = false) {
 fun Application.module() {
     install(Sessions) {
-        cookie<Session>(
-                "SESSION",
-                directorySessionStorage(File(".sessions"), cached = true)
-        ) {
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        val storage = if (environment.config.property("eve.callback").getString().contains("localhost:8080")) {
+            directorySessionStorage(File(".sessions"), cached = true)
+        } else {
+            SessionStorageMemory()
+        }
+        cookie<Session>("SESSION", storage) {
             cookie.path = "/"
         }
     }
