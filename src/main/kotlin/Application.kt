@@ -1,5 +1,6 @@
 package net.tkhamez.everoute
 
+import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.response.*
 //import io.ktor.request.*
@@ -37,7 +38,7 @@ fun Application.module() {
     install(Sessions) {
         @Suppress("EXPERIMENTAL_API_USAGE")
         val storage = if (environment.config.property("eve.callback").getString().contains("localhost:8080")) {
-            directorySessionStorage(File(".sessions"), cached = true)
+            directorySessionStorage(File(System.getProperty("java.io.tmpdir") + "/.eve-route-sessions"), cached = true)
         } else {
             SessionStorageMemory()
         }
@@ -82,16 +83,24 @@ fun Application.module() {
 
     routing {
         get("/") {
-            val session = call.sessions.get<Session>()
-            if (session?.eveAuth != null && session.eveAuth.containsKey("id")) {
-                //println(session.eveAuth)
-                call.respondText(
-                        "HI ${session.eveAuth["name"]}, <a href='/logout'>logout</a>",
-                        contentType = ContentType.Text.Html
-                )
+            val resource = Thread.currentThread().contextClassLoader.getResource("public/index.html")
+            if (resource != null) {
+                call.respondText(File(resource.file).readText(), contentType = ContentType.Text.Html)
             } else {
-                call.respondText("<a href='/login'>login</a>", contentType = ContentType.Text.Html)
+                call.respondText("File not found.")
             }
+        }
+
+        get("/api/user") {
+            val session = call.sessions.get<Session>()
+            var data = emptyMap<String, Any?>()
+            if (session?.eveAuth != null && session.eveAuth.containsKey("id")) {
+                data = mapOf(
+                    "id" to session.eveAuth["id"],
+                    "name" to session.eveAuth["name"]
+                )
+            }
+            call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
         }
 
         get("/logout") {
@@ -125,9 +134,8 @@ fun Application.module() {
             }
         }
 
-        // Static feature. Try to access `/static/ktor_logo.svg`
-        static("/static") {
-            resources("static")
+        static("/") {
+            resources("public")
         }
     }
 }

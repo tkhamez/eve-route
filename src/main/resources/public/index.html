@@ -1,0 +1,48 @@
+<!doctype html>
+<!--suppress HtmlUnknownTarget -->
+<html lang="en">
+<head>
+    <title>EVE Route</title>
+    <style>
+        body {
+            background-color: #333;
+            color: white;
+            font-family: sans-serif;
+        }
+        a {
+            color: lightskyblue;
+        }
+        .cloak {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>EVE Route</h1>
+
+    <div id="login" class="cloak">
+        <a href="/login"><img
+                src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-small.png"
+                alt="login"></a>
+    </div>
+
+    <div id="home" class="cloak">
+        Hello <span id="homeUserName"></span><br>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $.get('/api/user', function(data) {
+                if (data && data.id) {
+                    $('#home').show();
+                    $('#homeUserName').text(data.name);
+                } else {
+                    $('#login').show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
