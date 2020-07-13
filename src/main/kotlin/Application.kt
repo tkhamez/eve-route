@@ -42,7 +42,8 @@ fun Application.module() {
         } else {
             SessionStorageMemory()
         }
-        cookie<Session>("SESSION", storage) {
+        cookie<Session>("EVE_ROUTE_SESSION", storage) {
+            cookie.extensions["SameSite"] = "lax"
             cookie.path = "/"
         }
     }
