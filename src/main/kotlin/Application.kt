@@ -19,6 +19,7 @@ import io.ktor.client.request.*
 //import kotlinx.coroutines.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.features.UserAgent
+import io.ktor.features.StatusPages
 import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -35,6 +36,19 @@ fun main() {
 //@kotlin.jvm.JvmOverloads
 //fun Application.module(testing: Boolean = false) {
 fun Application.module() {
+    install(StatusPages) {
+        exception<Throwable> {
+            call.respondText("Error.", status = HttpStatusCode.InternalServerError)
+        }
+        status(HttpStatusCode.NotFound, HttpStatusCode.Unauthorized) {
+            call.respond(TextContent(
+                    "${it.value} ${it.description}",
+                    ContentType.Text.Plain.withCharset(Charsets.UTF_8),
+                    it
+            ))
+        }
+    }
+
     install(Sessions) {
         @Suppress("EXPERIMENTAL_API_USAGE")
         val storage = if (environment.config.property("eve.callback").getString().contains("localhost:8080")) {
