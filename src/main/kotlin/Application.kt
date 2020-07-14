@@ -86,7 +86,12 @@ fun Application.module() {
                         requestMethod = HttpMethod.Post,
                         clientId = environment.config.property("eve.clientId").getString(),
                         clientSecret = environment.config.property("eve.clientSecret").getString(),
-                        defaultScopes = listOf("esi-location.read_location.v1", "esi-ui.write_waypoint.v1")
+                        defaultScopes = listOf(
+                                "esi-search.search_structures.v1",
+                                "esi-universe.read_structures.v1",
+                                "esi-location.read_location.v1",
+                                "esi-ui.write_waypoint.v1"
+                        )
                 )
             }
             urlProvider = {
@@ -94,6 +99,10 @@ fun Application.module() {
                 environment.config.property("eve.callback").getString()
             }
         }
+    }
+
+    install(Routing) {
+        findGates()
     }
 
     routing {
