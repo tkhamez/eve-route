@@ -1,6 +1,5 @@
 package net.tkhamez.everoute
 
-import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.response.*
 //import io.ktor.request.*
@@ -12,13 +11,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
 import io.ktor.auth.*
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
-import io.ktor.client.request.*
 //import kotlinx.coroutines.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.features.UserAgent
 import io.ktor.features.StatusPages
 import java.io.File
 
@@ -62,18 +55,6 @@ fun Application.module() {
         }
     }
 
-    val httpClient = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = GsonSerializer()
-        }
-        install(Logging) {
-            level = LogLevel.HEADERS
-        }
-        install(UserAgent) {
-            agent = "eve-route/0.0.1 Ktor http-client"
-        }
-    }
-
     install(Authentication) {
         oauth("eve-oauth") {
             client = httpClient
@@ -102,73 +83,8 @@ fun Application.module() {
     }
 
     install(Routing) {
+        frontend()
+        authentication()
         findGates()
     }
-
-    routing {
-        get("/") {
-            val resource = Thread.currentThread().contextClassLoader.getResource("public/index.html")
-            if (resource != null) {
-                call.respondText(File(resource.file).readText(), contentType = ContentType.Text.Html)
-            } else {
-                call.respondText("File not found.")
-            }
-        }
-
-        get("/api/user") {
-            val session = call.sessions.get<Session>()
-            var data = emptyMap<String, Any?>()
-            if (session?.eveAuth != null && session.eveAuth.containsKey("id")) {
-                data = mapOf(
-                    "id" to session.eveAuth["id"],
-                    "name" to session.eveAuth["name"]
-                )
-            }
-            call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
-        }
-
-        get("/logout") {
-            val session = call.sessions.get<Session>() ?: Session()
-            call.sessions.set(session.copy(eveAuth = emptyMap()))
-            call.respondRedirect("/")
-        }
-
-        authenticate("eve-oauth") {
-            route("/login") {
-                handle {
-                    val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
-                    if (principal != null) {
-                        val eveAuth = httpClient.get<EveAuth>("https://login.eveonline.com/oauth/verify") {
-                            header("Authorization", "Bearer ${principal.accessToken}")
-                        }
-                        if (eveAuth.CharacterID != null) {
-                            val session = call.sessions.get<Session>() ?: Session()
-                            call.sessions.set(session.copy(eveAuth = mapOf(
-                                    "id" to eveAuth.CharacterID,
-                                    "name" to eveAuth.CharacterName,
-                                    "accessToken" to principal.accessToken,
-                                    "scopes" to eveAuth.Scopes,
-                                    "expiresOn" to eveAuth.ExpiresOn,
-                                    "refreshToken" to principal.refreshToken
-                            )))
-                        }
-                    }
-                    call.respondRedirect("/")
-                }
-            }
-        }
-
-        static("/") {
-            resources("public")
-        }
-    }
 }
-
-data class Session(val eveAuth: Map<String, Any?> = emptyMap())
-
-data class EveAuth(
-        val CharacterID: Long? = null,
-        val CharacterName: String? = null,
-        val ExpiresOn: String? = null,
-        val Scopes: String? = null
-)

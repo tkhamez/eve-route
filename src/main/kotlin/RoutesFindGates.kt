@@ -1,13 +1,13 @@
 package net.tkhamez.everoute
 
 import com.google.gson.Gson
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.application.call
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
+import io.ktor.routing.Route
+import io.ktor.routing.get
 
 fun Route.findGates() {
-
     get("/find-gates") {
         // finds Ansiblexes with docking (deposit fuel) permission
         // scope: esi-search.search_structures.v1
@@ -21,5 +21,4 @@ fun Route.findGates() {
         var data = emptyMap<String, Any?>()
         call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
     }
-
 }
