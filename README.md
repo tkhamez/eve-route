@@ -7,6 +7,8 @@ and `and esi-ui.write_waypoint.v1`.
 
 ## Run
 
+### Dev
+
 First set the values for the environment variables in `src/main/webapp/WEB-INF/appengine-web.xml`, 
 (do *not* commit the changes) then run with:
 ```
@@ -18,9 +20,9 @@ To continuously rebuild on change, execute in a second console:
 ./gradlew build -t -x test
 ```
 
-## Deploy to App Engine
+### Deploy to App Engine
 
-See also https://ktor.io/servers/deploy/hosting/google-app-engine.html
+See also https://ktor.io/servers/deploy/hosting/google-app-engine.html for prerequisite.
 
 First, create project and app (change the name):
 ```
@@ -34,9 +36,25 @@ To deploy, set the values for the environment variables in `src/main/webapp/WEB-
 ./gradlew appengineDeploy
 ```
 
-## Fat JAR
+### Fat JAR
 
 ```
 ./gradlew shadow
+
+export EVE_ROUTE_CLIENT_ID=123...
+export EVE_ROUTE_CLIENT_SECRET=abc...
+export EVE_ROUTE_CALLBACK=http://localhost:8080/login
 java -jar build/libs/eve-route-0.0.1.jar
+```
+
+### WAR (Servlet Container)
+
+```
+./gradlew war
+
+export EVE_ROUTE_CLIENT_ID=123...
+export EVE_ROUTE_CLIENT_SECRET=abc...
+export EVE_ROUTE_CALLBACK=http://localhost:8080/login
+cd build/libs/ && jar -xvf eve-route-0.0.1.war
+cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
