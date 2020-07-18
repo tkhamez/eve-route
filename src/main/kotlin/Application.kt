@@ -30,8 +30,9 @@ fun main() {
 //fun Application.module(testing: Boolean = false) {
 fun Application.module() {
     install(StatusPages) {
-        exception<Throwable> {
+        exception<Throwable> { cause ->
             call.respondText("Error.", status = HttpStatusCode.InternalServerError)
+            throw cause
         }
         status(HttpStatusCode.NotFound, HttpStatusCode.Unauthorized) {
             call.respond(TextContent(
