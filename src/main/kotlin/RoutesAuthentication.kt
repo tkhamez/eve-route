@@ -23,7 +23,7 @@ fun Route.authentication() {
             handle {
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
                 if (principal != null) {
-                    val eveAuth = httpClient.get<EveAuth>("https://login.eveonline.com/oauth/verify") {
+                    val eveAuth = httpClient.get<EsiEveAuth>("https://login.eveonline.com/oauth/verify") {
                         header("Authorization", "Bearer ${principal.accessToken}")
                     }
                     if (eveAuth.CharacterID != null) {

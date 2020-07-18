@@ -2,23 +2,60 @@ package net.tkhamez.everoute
 
 import com.google.gson.Gson
 import io.ktor.application.call
+import io.ktor.client.features.ResponseException
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
 
 fun Route.findGates() {
     get("/find-gates") {
-        // finds Ansiblexes with docking (deposit fuel) permission
-        // scope: esi-search.search_structures.v1
-        // /latest/characters/{character_id}/search/?categories=structure&search= »
-        // result: [12314423323,234243234234]
+        val response = ResponseFindGates()
+        val session = call.sessions.get<Session>()
+        val esiDomain = "https://esi.evetech.net"
 
-        // /latest/universe/structures/{structure_id}/
-        // esi-universe.read_structures.v1
-        // result: "name": "a", "owner_id": 1, "position": {"x": 4, "y": 2, "z": 3}, "solar_system_id": 1, "type_id": 3
+        if (session == null || ! session.eveAuth.containsKey("id")) {
+            response.message = "Not logged in."
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
 
-        var data = emptyMap<String, Any?>()
-        call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
+        val token = Token().getAccessToken(session.eveAuth)
+
+        // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
+        val searchPath = "/latest/characters/${session.eveAuth["id"]}/search/"
+        val searchParams = "?categories=structure&search=%20%C2%BB%20" // " » "
+        val gates: EsiSearchStructure
+        try {
+            gates = httpClient.get(esiDomain + searchPath + searchParams) {
+                header("Authorization", "Bearer $token")
+            }
+        } catch(e: ResponseException) {
+            response.message = e.message.toString()
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
+        // Fetch structure info, needs scope esi-universe.read_structures.v1
+        for (id in gates.structure) {
+            var gate = EsiStructure()
+            try {
+                gate = httpClient.get("$esiDomain/latest/universe/structures/$id/") {
+                    header("Authorization", "Bearer $token")
+                }
+            } catch(e: ResponseException) {
+                println(e.message)
+            }
+            if (gate.type_id == 35841) {
+                response.gates.add(gate)
+            }
+        }
+
+        response.success = true
+        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 }

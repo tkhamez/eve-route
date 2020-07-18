@@ -32,7 +32,9 @@
             <a href="/logout">Logout</a>
         </p>
         <p>
-            <button onclick="findGates()">find gates</button>
+            <button onclick="findGates(this)">find gates</button><br>
+            <span id="findGatesMessage"></span><br>
+            <span id="findGatesGates"></span><br>
         </p>
     </div>
 
@@ -49,10 +51,28 @@
             });
         });
 
-        function findGates() {
-            $.get('/find-gates', function(data) {
-                console.log(data);
-            });
+        function findGates(button) {
+            button.disabled = true;
+            $('#findGatesGates').html('');
+            $('#findGatesMessage').text('');
+            $.get('/find-gates')
+                .done(function(data) {
+                    if (! data.success) {
+                        $('#findGatesMessage').text(data.message);
+                        return;
+                    }
+                    var gates = '';
+                    for (var i = 0; i < data.gates.length; i++) {
+                        gates += data.gates[i].name + '<br>';
+                    }
+                    $('#findGatesGates').html(gates);
+                })
+                .fail(function() {
+                    $('#findGatesMessage').text('Error.');
+                })
+                .always(function() {
+                    button.disabled = false;
+                });
         }
     </script>
 </body>
