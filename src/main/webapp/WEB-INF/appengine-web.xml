@@ -9,6 +9,6 @@
     <env-variables>
         <env-var name="EVE_ROUTE_CLIENT_ID" value="" />
         <env-var name="EVE_ROUTE_CLIENT_SECRET" value="" />
-        <env-var name="EVE_ROUTE_CALLBACK" value="" />
+        <env-var name="EVE_ROUTE_CALLBACK" value="http://localhost:8080/login" />
     </env-variables>
 </appengine-web-app>
