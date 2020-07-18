@@ -20,6 +20,14 @@ To continuously rebuild on change, execute in a second console:
 ./gradlew build -t -x test
 ```
 
+#### Debug
+
+IntelliJ Configuration:
+- Main class: io.ktor.server.netty.EngineMain
+- Environment Variables: EVE_ROUTE_CLIENT_ID, EVE_ROUTE_CLIENT_SECRET and EVE_ROUTE_CALLBACK
+- Use classpath of module: eve-route.main
+
+
 ### Deploy to App Engine
 
 See also https://ktor.io/servers/deploy/hosting/google-app-engine.html for prerequisite.
