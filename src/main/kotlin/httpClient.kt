@@ -13,7 +13,7 @@ val httpClient = HttpClient(Apache) {
         serializer = GsonSerializer()
     }
     install(Logging) {
-        level = LogLevel.HEADERS
+        level = LogLevel.INFO
     }
     install(UserAgent) {
         agent = "eve-route/0.0.1 Ktor http-client"

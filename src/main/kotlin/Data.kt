@@ -9,9 +9,13 @@ data class EsiEveAuth(
         val Scopes: String? = null
 )
 
-data class EsiSearchStructure(
-        val structure: List<Long> = emptyList()
+data class EsiRefreshToken(
+        val access_token: String,
+        val expires_in: Int,
+        var expiresOn: String? = null
 )
+
+data class EsiSearchStructure(val structure: List<Long> = emptyList())
 
 data class EsiStructure(
         val name: String = "",

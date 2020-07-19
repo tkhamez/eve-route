@@ -64,7 +64,7 @@ fun Application.module() {
                 OAuthServerSettings.OAuth2ServerSettings(
                         name = "eve",
                         authorizeUrl = "https://login.eveonline.com/v2/oauth/authorize",
-                        accessTokenUrl = "https://login.eveonline.com/v2/oauth/token",
+                        accessTokenUrl = environment.config.property("eve.accessTokenUrl").getString(),
                         requestMethod = HttpMethod.Post,
                         clientId = environment.config.property("eve.clientId").getString(),
                         clientSecret = environment.config.property("eve.clientSecret").getString(),
@@ -86,6 +86,6 @@ fun Application.module() {
     install(Routing) {
         frontend()
         authentication()
-        findGates()
+        findGates(environment)
     }
 }
