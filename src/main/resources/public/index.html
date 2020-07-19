@@ -1,5 +1,5 @@
 <!doctype html>
-<!--suppress HtmlUnknownTarget -->
+<!--suppress HtmlUnknownTarget, JSUnresolvedVariable -->
 <html lang="en">
 <head>
     <title>EVE Route</title>
@@ -61,8 +61,8 @@
                         $('#findGatesMessage').text(data.message);
                         return;
                     }
-                    var gates = '';
-                    for (var i = 0; i < data.gates.length; i++) {
+                    let gates = '';
+                    for (let i = 0; i < data.gates.length; i++) {
                         gates += data.gates[i].name + '<br>';
                     }
                     $('#findGatesGates').html(gates);
