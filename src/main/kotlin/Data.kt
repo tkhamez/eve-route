@@ -1,6 +1,6 @@
 package net.tkhamez.everoute
 
-data class Session(val eveAuth: Map<String, Any?> = emptyMap())
+data class Session(val eveAuth: MutableMap<String, Any?> = mutableMapOf())
 
 data class EsiEveAuth(
         val CharacterID: Long? = null,

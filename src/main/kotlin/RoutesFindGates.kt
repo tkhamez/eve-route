@@ -26,22 +26,16 @@ fun Route.findGates(environment: ApplicationEnvironment) {
             return@get
         }
 
+        // get/update access token
         @Suppress("EXPERIMENTAL_API_USAGE")
         val token = Token(
                 environment.config.property("eve.accessTokenUrl").getString(),
                 environment.config.property("eve.clientId").getString(),
                 environment.config.property("eve.clientSecret").getString()
         ).getAccessToken(session.eveAuth)
-
-        // TODO find a better way
-        call.sessions.set(session.copy(eveAuth = mapOf(
-                "id" to session.eveAuth["id"],
-                "name" to session.eveAuth["name"],
-                "accessToken" to token.access_token,
-                "scopes" to session.eveAuth["scopes"],
-                "expiresOn" to token.expiresOn,
-                "refreshToken" to session.eveAuth["refreshToken"]
-        )))
+        session.eveAuth["accessToken"] = token.access_token
+        session.eveAuth["expiresOn"] = token.expiresOn
+        call.sessions.set(session.copy(eveAuth = session.eveAuth))
 
         // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
         val searchPath = "/latest/characters/${session.eveAuth["id"]}/search/"

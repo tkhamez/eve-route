@@ -28,7 +28,7 @@ fun Route.authentication() {
                     }
                     if (eveAuth.CharacterID != null) {
                         val session = call.sessions.get<Session>() ?: Session()
-                        call.sessions.set(session.copy(eveAuth = mapOf(
+                        call.sessions.set(session.copy(eveAuth = mutableMapOf(
                                 "id" to eveAuth.CharacterID,
                                 "name" to eveAuth.CharacterName,
                                 "accessToken" to principal.accessToken,
@@ -57,7 +57,7 @@ fun Route.authentication() {
 
     get("/logout") {
         val session = call.sessions.get<Session>() ?: Session()
-        call.sessions.set(session.copy(eveAuth = emptyMap()))
+        call.sessions.set(session.copy(eveAuth = mutableMapOf()))
         call.respondRedirect("/")
     }
 }
