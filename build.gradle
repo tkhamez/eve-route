@@ -74,6 +74,7 @@ dependencies {
 
     compile "io.ktor:ktor-server-servlet:$ktor_version"
     //compile "org.slf4j:slf4j-jdk14:$slf4j_version"
+    compile "com.google.cloud:google-cloud-firestore:0.60.0-beta"
 
     providedCompile "com.google.appengine:appengine:$appengine_version"
 }

@@ -9,7 +9,7 @@ and `and esi-ui.write_waypoint.v1`.
 
 ### Dev
 
-First set the values for the environment variables in `src/main/webapp/WEB-INF/appengine-web.xml`, 
+First set the values for the environment variables and `<application>` in `src/main/webapp/WEB-INF/appengine-web.xml`, 
 (do *not* commit the changes) then run with:
 ```
 ./gradlew appengineRun
@@ -27,19 +27,26 @@ IntelliJ Configuration:
 - Environment Variables: EVE_ROUTE_CLIENT_ID, EVE_ROUTE_CLIENT_SECRET and EVE_ROUTE_CALLBACK
 - Use classpath of module: eve-route.main
 
-
 ### Deploy to App Engine
 
 See also https://ktor.io/servers/deploy/hosting/google-app-engine.html for prerequisite.
 
 First, create project and app (change the name):
 ```
-gcloud projects create eve-routes --set-as-default
+gcloud projects create eve-route --set-as-default
+(change: gcloud config set project [project-id])
 gcloud app create
 ```
 
-To deploy, set the values for the environment variables in `src/main/webapp/WEB-INF/appengine-web.xml` 
-(do *not* commit the changes), then execute:
+Then setup Firestore
+- Configure your project to use Cloud Firestore in Native mode. https://console.cloud.google.com/firestore
+- Enable Cloud Firestore API inside your Google Cloud project. https://console.cloud.google.com/flows/enableapi?apiid=firestore.googleapis.com
+- Set up authentication. https://cloud.google.com/docs/authentication/getting-started
+
+Set the values for the environment variables and `<application>` in `src/main/webapp/WEB-INF/appengine-web.xml`
+(do *not* commit the changes)
+
+Deploy with:
 ```
 ./gradlew appengineDeploy
 ```
