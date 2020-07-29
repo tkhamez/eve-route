@@ -31,9 +31,9 @@ shadowJar {
 }
 
 sourceSets {
-    main.kotlin.srcDirs = main.java.srcDirs = ['src/main/kotlin']
+    main.kotlin.srcDirs = main.java.srcDirs = ['src']
     test.kotlin.srcDirs = test.java.srcDirs = ['test']
-    main.resources.srcDirs = ['src/main/resources']
+    main.resources.srcDirs = ['resources']
     test.resources.srcDirs = ['testresources']
 }
 
