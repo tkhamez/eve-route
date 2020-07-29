@@ -2,8 +2,11 @@
 
 ## EVE App
 
-Create an EVE app at https://developers.eveonline.com with the scopes `esi-location.read_location.v1` 
-and `and esi-ui.write_waypoint.v1`.
+Create an EVE app at https://developers.eveonline.com with the following scopes
+- esi-location.read_location.v1
+- esi-search.search_structures.v1
+- esi-universe.read_structures.v1
+- esi-ui.write_waypoint.v1
 
 ## Run
 

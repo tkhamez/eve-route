@@ -63,15 +63,15 @@ fun Application.module() {
                 @Suppress("EXPERIMENTAL_API_USAGE")
                 OAuthServerSettings.OAuth2ServerSettings(
                         name = "eve",
-                        authorizeUrl = "https://login.eveonline.com/v2/oauth/authorize",
+                        authorizeUrl = environment.config.property("eve.authorizeUrl").getString(),
                         accessTokenUrl = environment.config.property("eve.accessTokenUrl").getString(),
                         requestMethod = HttpMethod.Post,
                         clientId = environment.config.property("eve.clientId").getString(),
                         clientSecret = environment.config.property("eve.clientSecret").getString(),
                         defaultScopes = listOf(
+                                "esi-location.read_location.v1",
                                 "esi-search.search_structures.v1",
                                 "esi-universe.read_structures.v1",
-                                "esi-location.read_location.v1",
                                 "esi-ui.write_waypoint.v1"
                         )
                 )
