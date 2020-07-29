@@ -87,6 +87,5 @@ fun Application.module() {
         frontend()
         authentication()
         findGates(environment)
-        bucketTest()
     }
 }
