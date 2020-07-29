@@ -20,7 +20,7 @@ export EVE_ROUTE_CALLBACK=http://localhost:8080/login
 
 To continuously rebuild on change, execute in a second console: 
 ```
-./gradlew build -t -x test -x shadowJar
+./gradlew build -t -x test -x shadowJar -x war
 ```
 
 #### Debug
@@ -35,8 +35,20 @@ IntelliJ Configuration:
 ```
 ./gradlew shadowJar
 
-export EVE_ROUTE_CLIENT_ID=123...
-export EVE_ROUTE_CLIENT_SECRET=abc...
+export EVE_ROUTE_CLIENT_ID=ab12
+export EVE_ROUTE_CLIENT_SECRET=12ab
 export EVE_ROUTE_CALLBACK=http://localhost:8080/login
 java -jar build/libs/eve-route-0.0.1.jar
+```
+
+### WAR (Servlet Container)
+
+```
+./gradlew war
+
+export EVE_ROUTE_CLIENT_ID=ab12
+export EVE_ROUTE_CLIENT_SECRET=12ab
+export EVE_ROUTE_CALLBACK=http://localhost:8080/login
+cd build/libs/ && jar -xvf eve-route-0.0.1.war
+cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
