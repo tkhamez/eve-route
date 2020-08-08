@@ -13,9 +13,11 @@ import io.ktor.sessions.*
 import io.ktor.auth.*
 //import kotlinx.coroutines.*
 import io.ktor.features.StatusPages
+import io.ktor.util.KtorExperimentalAPI
 import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+@KtorExperimentalAPI
 fun main() {
     embeddedServer(
         Netty,
@@ -28,7 +30,18 @@ fun main() {
 //@Suppress("unused") // Referenced in application.conf
 //@kotlin.jvm.JvmOverloads
 //fun Application.module(testing: Boolean = false) {
+@KtorExperimentalAPI
 fun Application.module() {
+
+    val config = Config(
+        environment.config.property("app.db").getString(),
+        environment.config.property("app.clientId").getString(),
+        environment.config.property("app.clientSecret").getString(),
+        environment.config.property("app.callback").getString(),
+        environment.config.property("app.authorizeUrl").getString(),
+        environment.config.property("app.accessTokenUrl").getString()
+    )
+
     install(StatusPages) {
         exception<Throwable> { cause ->
             call.respondText("Error.", status = HttpStatusCode.InternalServerError)
@@ -44,8 +57,7 @@ fun Application.module() {
     }
 
     install(Sessions) {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        val storage = if (environment.config.property("eve.callback").getString().contains("localhost:8080")) {
+        val storage = if (config.callback.contains("localhost:8080")) {
             directorySessionStorage(File(System.getProperty("java.io.tmpdir") + "/.eve-route-sessions"), cached = true)
         } else {
             SessionStorageMemory()
@@ -60,14 +72,13 @@ fun Application.module() {
         oauth("eve-oauth") {
             client = httpClient
             providerLookup = {
-                @Suppress("EXPERIMENTAL_API_USAGE")
                 OAuthServerSettings.OAuth2ServerSettings(
                         name = "eve",
-                        authorizeUrl = environment.config.property("eve.authorizeUrl").getString(),
-                        accessTokenUrl = environment.config.property("eve.accessTokenUrl").getString(),
+                        authorizeUrl = config.authorizeUrl,
+                        accessTokenUrl = config.accessTokenUrl,
                         requestMethod = HttpMethod.Post,
-                        clientId = environment.config.property("eve.clientId").getString(),
-                        clientSecret = environment.config.property("eve.clientSecret").getString(),
+                        clientId = config.clientId,
+                        clientSecret = config.clientSecret,
                         defaultScopes = listOf(
                                 "esi-location.read_location.v1",
                                 "esi-search.search_structures.v1",
@@ -77,8 +88,7 @@ fun Application.module() {
                 )
             }
             urlProvider = {
-                @Suppress("EXPERIMENTAL_API_USAGE")
-                environment.config.property("eve.callback").getString()
+                config.callback
             }
         }
     }
@@ -86,6 +96,7 @@ fun Application.module() {
     install(Routing) {
         frontend()
         authentication()
-        findGates(environment)
+        findGates(config)
+        mongo(config.db)
     }
 }

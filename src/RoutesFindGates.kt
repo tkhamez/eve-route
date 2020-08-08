@@ -1,7 +1,6 @@
 package net.tkhamez.everoute
 
 import com.google.gson.Gson
-import io.ktor.application.ApplicationEnvironment
 import io.ktor.application.call
 import io.ktor.client.features.ResponseException
 import io.ktor.client.request.get
@@ -14,7 +13,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
 
-fun Route.findGates(environment: ApplicationEnvironment) {
+fun Route.findGates(config: Config) {
     get("/find-gates") {
         val response = ResponseFindGates()
         val session = call.sessions.get<Session>()
@@ -27,11 +26,10 @@ fun Route.findGates(environment: ApplicationEnvironment) {
         }
 
         // get/update access token
-        @Suppress("EXPERIMENTAL_API_USAGE")
         val token = Token(
-                environment.config.property("eve.accessTokenUrl").getString(),
-                environment.config.property("eve.clientId").getString(),
-                environment.config.property("eve.clientSecret").getString()
+                config.accessTokenUrl,
+                config.clientId,
+                config.clientSecret
         ).getAccessToken(session.eveAuth)
         session.eveAuth["accessToken"] = token.access_token
         session.eveAuth["expiresOn"] = token.expiresOn

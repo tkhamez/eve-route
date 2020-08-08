@@ -1,5 +1,14 @@
 package net.tkhamez.everoute
 
+data class Config(
+        val db: String,
+        val clientId: String,
+        val clientSecret: String,
+        val callback: String,
+        val authorizeUrl: String,
+        val accessTokenUrl: String
+)
+
 data class Session(val eveAuth: MutableMap<String, Any?> = mutableMapOf())
 
 data class EsiEveAuth(

@@ -66,9 +66,23 @@ dependencies {
     implementation "io.ktor:ktor-client-json-jvm:$ktor_version"
     implementation "io.ktor:ktor-client-gson:$ktor_version"
     implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
+
+    compile 'org.litote.kmongo:kmongo:4.0.3'
+    //compile 'org.litote.kmongo:kmongo-async:4.0.3'
+    //compile 'org.litote.kmongo:kmongo-coroutine:4.0.3'
+    //compile 'org.litote.kmongo:kmongo-rxjava2:4.0.3'
+
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
 }
 
 task stage {
     dependsOn installDist
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
 }

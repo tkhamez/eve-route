@@ -8,16 +8,31 @@ Create an EVE app at https://developers.eveonline.com with the following scopes
 - esi-universe.read_structures.v1
 - esi-ui.write_waypoint.v1
 
+## Database
+
+The app needs a MongoDB database.
+
+You can use the included docker-compose file to create a server and provide a web-based GUI:
+```shell script
+docker-compose up
+```
+
+GUI: http://localhost:8081
+
 ## Run
 
-### Dev
-
-Set the environment variables and run the app:
+Make sure the necessary environment variables are set, e.g.:
 ```
+export EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route
 export EVE_ROUTE_CLIENT_ID=ab12
 export EVE_ROUTE_CLIENT_SECRET=12ab
 export EVE_ROUTE_CALLBACK=http://localhost:8080/login
+```
 
+### Dev
+
+Run the app:
+```
 ./gradlew run
 ```
 
@@ -38,9 +53,6 @@ IntelliJ Configuration:
 ```
 ./gradlew shadowJar
 
-export EVE_ROUTE_CLIENT_ID=ab12
-export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/login
 java -jar build/libs/eve-route-0.0.1.jar
 ```
 
@@ -49,9 +61,6 @@ java -jar build/libs/eve-route-0.0.1.jar
 ```
 ./gradlew war
 
-export EVE_ROUTE_CLIENT_ID=ab12
-export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/login
 cd build/libs/ && jar -xvf eve-route-0.0.1.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```

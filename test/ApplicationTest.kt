@@ -5,11 +5,12 @@ import io.ktor.http.*
 import io.ktor.config.HoconApplicationConfig
 import kotlin.test.*
 import io.ktor.server.testing.*
+import io.ktor.util.KtorExperimentalAPI
 import org.junit.BeforeClass
 
+@KtorExperimentalAPI
 class ApplicationTest {
     companion object {
-        @Suppress("EXPERIMENTAL_API_USAGE")
         val engine = TestApplicationEngine(createTestEnvironment {
             config = HoconApplicationConfig(ConfigFactory.load("application.conf"))
         })
