@@ -65,6 +65,7 @@ fun Application.module() {
         cookie<Session>("EVE_ROUTE_SESSION", storage) {
             cookie.extensions["SameSite"] = "lax"
             cookie.path = "/"
+            serializer = GsonSessionSerializer(Session::class.java)
         }
     }
 

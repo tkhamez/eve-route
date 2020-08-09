@@ -16,6 +16,7 @@ import io.ktor.routing.route
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
+import java.lang.Exception
 
 fun Route.authentication() {
     authenticate("eve-oauth") {
@@ -23,19 +24,24 @@ fun Route.authentication() {
             handle {
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
                 if (principal != null) {
-                    val eveAuth = httpClient.get<EsiEveAuth>("https://login.eveonline.com/oauth/verify") {
-                        header("Authorization", "Bearer ${principal.accessToken}")
+                    var esiVerify: EsiVerify? = null
+                    try {
+                        esiVerify = httpClient.get("https://login.eveonline.com/oauth/verify") {
+                            header("Authorization", "Bearer ${principal.accessToken}")
+                        }
+                    } catch(e: Exception) {
+                        println(e.message)
                     }
-                    if (eveAuth.CharacterID != null) {
+                    if (esiVerify != null) {
                         val session = call.sessions.get<Session>() ?: Session()
-                        call.sessions.set(session.copy(eveAuth = mutableMapOf(
-                                "id" to eveAuth.CharacterID,
-                                "name" to eveAuth.CharacterName,
-                                "accessToken" to principal.accessToken,
-                                "scopes" to eveAuth.Scopes,
-                                "expiresOn" to eveAuth.ExpiresOn,
-                                "refreshToken" to principal.refreshToken
-                        )))
+                        call.sessions.set(session.copy(
+                            authToken = AuthToken(
+                                accessToken = principal.accessToken,
+                                refreshToken = principal.refreshToken.toString(),
+                                expiresOn = esiVerify.ExpiresOn
+                            ),
+                            esiVerify = esiVerify
+                        ))
                     }
                 }
                 call.respondRedirect("/")
@@ -45,19 +51,16 @@ fun Route.authentication() {
 
     get("/api/user") {
         val session = call.sessions.get<Session>()
-        var data = emptyMap<String, Any?>()
-        if (session?.eveAuth != null && session.eveAuth.containsKey("id")) {
-            data = mapOf(
-                    "id" to session.eveAuth["id"],
-                    "name" to session.eveAuth["name"]
-            )
+        var data: ResponseUser? = null
+        if (session?.esiVerify?.CharacterID != null) {
+            data = ResponseUser(session.esiVerify.CharacterID, session.esiVerify.CharacterName)
         }
         call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
     }
 
     get("/logout") {
         val session = call.sessions.get<Session>() ?: Session()
-        call.sessions.set(session.copy(eveAuth = mutableMapOf()))
+        call.sessions.set(session.copy(authToken = null, esiVerify = null))
         call.respondRedirect("/")
     }
 }
