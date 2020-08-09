@@ -1,5 +1,7 @@
 package net.tkhamez.everoute
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.LoggerContext
 import io.ktor.application.*
 import io.ktor.response.*
 //import io.ktor.request.*
@@ -17,6 +19,7 @@ import io.ktor.util.KtorExperimentalAPI
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.Session
 import net.tkhamez.everoute.routes.*
+import org.slf4j.LoggerFactory
 import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -45,6 +48,9 @@ fun Application.module() {
         environment.config.property("app.accessTokenUrl").getString(),
         environment.config.property("app.esiDomain").getString()
     )
+
+    // Remove all those DEBUG messages from the console
+    (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
 
     install(StatusPages) {
         exception<Throwable> { cause ->

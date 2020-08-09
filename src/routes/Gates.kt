@@ -40,10 +40,10 @@ fun Route.updateGates(config: Config) {
         }
 
         // get/update access token
-        val authToken = EsiToken(config).getAccessToken(session.esiToken)
-        call.sessions.set(session.copy(esiToken = authToken))
+        val esiToken = EsiToken(config).getAccessToken(session.esiToken)
+        call.sessions.set(session.copy(esiToken = esiToken))
 
-        val gates = fetchGates(config.esiDomain, session.esiVerify, authToken)
+        val gates = fetchGates(config.esiDomain, session.esiVerify, esiToken)
         if (gates == null) {
             response.message = "ESI error."
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
