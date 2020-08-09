@@ -103,6 +103,5 @@ fun Application.module() {
         authentication()
         getGates(config)
         updateGates(config)
-        mongo(config.db)
     }
 }
