@@ -34,15 +34,14 @@
         <p>
             <button onclick="getGates(this)">show gates</button>
             <button onclick="updateGates(this)">update gates</button><br>
-
             <span id="fetchMessage"></span><br>
             <span id="fetchResult"></span><br>
         </p>
     </div>
 
+    <!--suppress JSUnresolvedLibraryURL -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
-        const $ = window.$;
         $(function() {
             $.get('/api/user', function(data) {
                 if (data && data.id) {
