@@ -4,34 +4,42 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
+import net.tkhamez.everoute.data.Config
+import net.tkhamez.everoute.data.EsiRefreshToken
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Token(private val config: Config) {
+class EsiToken(private val config: Config) {
 
-    suspend fun getAccessToken(authToken: AuthToken): AuthToken {
+    data class Data(
+        val refreshToken: String,
+        var accessToken: String,
+        var expiresOn: String
+    )
+
+    suspend fun getAccessToken(esiToken: Data): Data {
         val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
 
         val df: DateFormat = SimpleDateFormat(dateFormat)
         df.timeZone = TimeZone.getTimeZone("UTC")
-        val expiresOn = df.parse(authToken.expiresOn)
+        val expiresOn = df.parse(esiToken.expiresOn)
         val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
         var token: EsiRefreshToken? = null
         if (expiresOn.time - now.timeInMillis <= 60 * 1000) {
-            token = refreshToken(authToken.refreshToken)
+            token = refreshToken(esiToken.refreshToken)
         }
 
         if (token != null) {
             val newExpiresOn = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             newExpiresOn.add(Calendar.SECOND, token.expires_in)
-            authToken.expiresOn = SimpleDateFormat(dateFormat).format(newExpiresOn.time)
-            authToken.accessToken = token.access_token
+            esiToken.expiresOn = SimpleDateFormat(dateFormat).format(newExpiresOn.time)
+            esiToken.accessToken = token.access_token
         }
 
-        return authToken
+        return esiToken
     }
 
     private suspend fun refreshToken(refreshToken: String): EsiRefreshToken? {

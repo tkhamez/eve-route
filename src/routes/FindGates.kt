@@ -1,4 +1,4 @@
-package net.tkhamez.everoute
+package net.tkhamez.everoute.routes
 
 import com.google.gson.Gson
 import io.ktor.application.call
@@ -11,6 +11,9 @@ import io.ktor.routing.get
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
+import net.tkhamez.everoute.EsiToken
+import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.httpClient
 import java.lang.Exception
 
 fun Route.findGates(config: Config) {
@@ -20,15 +23,15 @@ fun Route.findGates(config: Config) {
         val esiDomain = "https://esi.evetech.net"
 
         // logged in?
-        if (session?.esiVerify == null || session.authToken == null) {
+        if (session?.esiVerify == null || session.esiToken == null) {
             response.message = "Not logged in."
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
         // get/update access token
-        val authToken = Token(config).getAccessToken(session.authToken)
-        call.sessions.set(session.copy(authToken = authToken))
+        val authToken = EsiToken(config).getAccessToken(session.esiToken)
+        call.sessions.set(session.copy(esiToken = authToken))
 
         // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
         val searchPath = "/latest/characters/${session.esiVerify.CharacterID}/search/"
@@ -52,6 +55,7 @@ fun Route.findGates(config: Config) {
                     header("Authorization", "Bearer ${authToken.accessToken}")
                 }
             } catch(e: Exception) {
+                // TODO try again
                 println(e.message)
             }
             if (gate?.type_id == 35841) {

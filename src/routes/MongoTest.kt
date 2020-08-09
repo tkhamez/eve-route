@@ -1,4 +1,4 @@
-package net.tkhamez.everoute
+package net.tkhamez.everoute.routes
 
 import io.ktor.application.call
 import io.ktor.response.respondText

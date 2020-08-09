@@ -14,6 +14,12 @@ import io.ktor.auth.*
 //import kotlinx.coroutines.*
 import io.ktor.features.StatusPages
 import io.ktor.util.KtorExperimentalAPI
+import net.tkhamez.everoute.data.Config
+import net.tkhamez.everoute.data.Session
+import net.tkhamez.everoute.routes.authentication
+import net.tkhamez.everoute.routes.findGates
+import net.tkhamez.everoute.routes.frontend
+import net.tkhamez.everoute.routes.mongo
 import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)

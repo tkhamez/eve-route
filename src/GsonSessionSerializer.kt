@@ -2,6 +2,7 @@ package net.tkhamez.everoute
 
 import com.google.gson.Gson
 import io.ktor.sessions.SessionSerializer
+import net.tkhamez.everoute.data.Session
 
 class GsonSessionSerializer(
     private val type: java.lang.reflect.Type,

@@ -1,4 +1,4 @@
-package net.tkhamez.everoute
+package net.tkhamez.everoute.routes
 
 import com.google.gson.Gson
 import io.ktor.application.call
@@ -16,6 +16,11 @@ import io.ktor.routing.route
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
+import net.tkhamez.everoute.EsiToken
+import net.tkhamez.everoute.data.EsiVerify
+import net.tkhamez.everoute.data.ResponseUser
+import net.tkhamez.everoute.data.Session
+import net.tkhamez.everoute.httpClient
 import java.lang.Exception
 
 fun Route.authentication() {
@@ -35,7 +40,7 @@ fun Route.authentication() {
                     if (esiVerify != null) {
                         val session = call.sessions.get<Session>() ?: Session()
                         call.sessions.set(session.copy(
-                            authToken = AuthToken(
+                            esiToken = EsiToken.Data(
                                 accessToken = principal.accessToken,
                                 refreshToken = principal.refreshToken.toString(),
                                 expiresOn = esiVerify.ExpiresOn
@@ -53,14 +58,17 @@ fun Route.authentication() {
         val session = call.sessions.get<Session>()
         var data: ResponseUser? = null
         if (session?.esiVerify?.CharacterID != null) {
-            data = ResponseUser(session.esiVerify.CharacterID, session.esiVerify.CharacterName)
+            data = ResponseUser(
+                session.esiVerify.CharacterID,
+                session.esiVerify.CharacterName
+            )
         }
         call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
     }
 
     get("/logout") {
         val session = call.sessions.get<Session>() ?: Session()
-        call.sessions.set(session.copy(authToken = null, esiVerify = null))
+        call.sessions.set(session.copy(esiToken = null, esiVerify = null))
         call.respondRedirect("/")
     }
 }
