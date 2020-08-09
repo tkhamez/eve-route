@@ -12,7 +12,8 @@ data class Config(
         val clientSecret: String,
         val callback: String,
         val authorizeUrl: String,
-        val accessTokenUrl: String
+        val accessTokenUrl: String,
+        val esiDomain: String
 )
 
 data class Session(

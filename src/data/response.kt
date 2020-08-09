@@ -9,8 +9,8 @@ data class ResponseUser(
     val name: String
 )
 
-data class ResponseFindGates(
+data class ResponseGates(
     var success: Boolean = false,
     var message: String = "",
-    var gates: MutableList<EsiStructure> = mutableListOf()
+    var gates: MutableList<Gate> = mutableListOf()
 )

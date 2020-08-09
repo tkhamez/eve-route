@@ -32,14 +32,17 @@
             <a href="/logout">Logout</a>
         </p>
         <p>
-            <button onclick="findGates(this)">find gates</button><br>
-            <span id="findGatesMessage"></span><br>
-            <span id="findGatesGates"></span><br>
+            <button onclick="getGates(this)">show gates</button>
+            <button onclick="updateGates(this)">update gates</button><br>
+
+            <span id="fetchMessage"></span><br>
+            <span id="fetchResult"></span><br>
         </p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
+        const $ = window.$;
         $(function() {
             $.get('/api/user', function(data) {
                 if (data && data.id) {
@@ -51,24 +54,44 @@
             });
         });
 
-        function findGates(button) {
+        function getGates(button) {
             button.disabled = true;
-            $('#findGatesGates').html('');
-            $('#findGatesMessage').text('');
-            $.get('/find-gates')
+            $('#fetchResult').html('');
+            $('#fetchMessage').text('');
+            $.get('/get-gates')
+                .done(function(data) {
+                    let gates = '';
+                    for (let i = 0; i < data.gates.length; i++) {
+                        gates += data.gates[i].name + '<br>';
+                    }
+                    $('#fetchResult').html(gates);
+                })
+                .fail(function() {
+                    $('#fetchMessage').text('Error.');
+                })
+                .always(function() {
+                    button.disabled = false;
+                });
+        }
+
+        function updateGates(button) {
+            button.disabled = true;
+            $('#fetchResult').html('');
+            $('#fetchMessage').text('');
+            $.get('/update-gates')
                 .done(function(data) {
                     if (! data.success) {
-                        $('#findGatesMessage').text(data.message);
+                        $('#fetchMessage').text(data.message);
                         return;
                     }
                     let gates = '';
                     for (let i = 0; i < data.gates.length; i++) {
                         gates += data.gates[i].name + '<br>';
                     }
-                    $('#findGatesGates').html(gates);
+                    $('#fetchResult').html(gates);
                 })
                 .fail(function() {
-                    $('#findGatesMessage').text('Error.');
+                    $('#fetchMessage').text('Error.');
                 })
                 .always(function() {
                     button.disabled = false;

@@ -16,10 +16,7 @@ import io.ktor.features.StatusPages
 import io.ktor.util.KtorExperimentalAPI
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.Session
-import net.tkhamez.everoute.routes.authentication
-import net.tkhamez.everoute.routes.findGates
-import net.tkhamez.everoute.routes.frontend
-import net.tkhamez.everoute.routes.mongo
+import net.tkhamez.everoute.routes.*
 import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -45,7 +42,8 @@ fun Application.module() {
         environment.config.property("app.clientSecret").getString(),
         environment.config.property("app.callback").getString(),
         environment.config.property("app.authorizeUrl").getString(),
-        environment.config.property("app.accessTokenUrl").getString()
+        environment.config.property("app.accessTokenUrl").getString(),
+        environment.config.property("app.esiDomain").getString()
     )
 
     install(StatusPages) {
@@ -103,7 +101,8 @@ fun Application.module() {
     install(Routing) {
         frontend()
         authentication()
-        findGates(config)
+        getGates(config)
+        updateGates(config)
         mongo(config.db)
     }
 }
