@@ -45,7 +45,7 @@ To continuously rebuild on change, execute in a second console:
 
 IntelliJ Configuration:
 - Main class: io.ktor.server.netty.EngineMain
-- Environment Variables: EVE_ROUTE_CLIENT_ID, EVE_ROUTE_CLIENT_SECRET and EVE_ROUTE_CALLBACK
+- Add environment variables
 - Use classpath of module: eve-route.main
 
 ### Fat JAR
