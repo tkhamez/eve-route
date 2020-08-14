@@ -59,9 +59,9 @@ fun Application.module() {
         }
         status(HttpStatusCode.NotFound, HttpStatusCode.Unauthorized) {
             call.respond(TextContent(
-                    "${it.value} ${it.description}",
-                    ContentType.Text.Plain.withCharset(Charsets.UTF_8),
-                    it
+                "${it.value} ${it.description}",
+                ContentType.Text.Plain.withCharset(Charsets.UTF_8),
+                it
             ))
         }
     }
@@ -84,18 +84,18 @@ fun Application.module() {
             client = httpClient
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
-                        name = "eve",
-                        authorizeUrl = config.authorizeUrl,
-                        accessTokenUrl = config.accessTokenUrl,
-                        requestMethod = HttpMethod.Post,
-                        clientId = config.clientId,
-                        clientSecret = config.clientSecret,
-                        defaultScopes = listOf(
-                                "esi-location.read_location.v1",
-                                "esi-search.search_structures.v1",
-                                "esi-universe.read_structures.v1",
-                                "esi-ui.write_waypoint.v1"
-                        )
+                    name = "eve",
+                    authorizeUrl = config.authorizeUrl,
+                    accessTokenUrl = config.accessTokenUrl,
+                    requestMethod = HttpMethod.Post,
+                    clientId = config.clientId,
+                    clientSecret = config.clientSecret,
+                    defaultScopes = listOf(
+                        "esi-location.read_location.v1",
+                        "esi-search.search_structures.v1",
+                        "esi-universe.read_structures.v1",
+                        "esi-ui.write_waypoint.v1"
+                    )
                 )
             }
             urlProvider = {

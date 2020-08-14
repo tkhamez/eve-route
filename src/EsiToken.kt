@@ -49,8 +49,8 @@ class EsiToken(private val config: Config) {
             response = httpClient.post(config.accessTokenUrl) {
                 header("Authorization", "Basic $auth")
                 body = TextContent(
-                        "grant_type=refresh_token&refresh_token=$refreshToken",
-                        ContentType.Application.FormUrlEncoded
+                    "grant_type=refresh_token&refresh_token=$refreshToken",
+                    ContentType.Application.FormUrlEncoded
                 )
             }
         } catch (e: Exception) {
