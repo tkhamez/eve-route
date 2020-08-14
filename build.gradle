@@ -4,7 +4,7 @@ buildscript {
     repositories {
         jcenter()
     }
-    
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
@@ -51,6 +51,11 @@ repositories {
     maven { url 'https://kotlin.bintray.com/kotlinx' }
 }
 
+configurations {
+    kotlinc
+    //scripts
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-servlet:$ktor_version"
@@ -73,9 +78,44 @@ dependencies {
     //compile 'org.litote.kmongo:kmongo-rxjava2:4.0.3'
 
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+
+    implementation "org.jetbrains.kotlin:kotlin-script-runtime:$kotlin_version"
+    //kotlinc "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    //kotlinc "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    kotlinc "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
+    kotlinc "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlin_version"
+    kotlinc "io.ktor:ktor-client-gson:$ktor_version"
+    //scripts "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+def kotlinHome = file("$buildDir/kotlin")
+
+task prepareKotlinHome(type: Copy) {
+    from(configurations.kotlinc)
+    into("$kotlinHome/lib")
+    rename {
+        if (it.indexOf("kotlin-") != -1) {
+            // strip the version suffix to satisfy the compiler
+            (it - "-${kotlin_version}.jar") + ".jar"
+        }
+    }
+}
+
+task buildGraph(type: JavaExec) {
+    dependsOn prepareKotlinHome
+    dependsOn classes
+    main = "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
+    classpath = configurations.kotlinc
+    args(
+        "-kotlin-home", kotlinHome,
+        //"-classpath", configurations.scripts.asPath,
+        "-classpath", "$buildDir/kotlin/lib/gson-2.8.6.jar:$buildDir/classes/kotlin/main",
+        "-script", "src/scripts/buildGraph.kts"
+    )
 }
 
 task stage {
+    dependsOn buildGraph
     dependsOn installDist
 }
 

@@ -19,6 +19,13 @@ docker-compose up
 
 GUI: http://localhost:8081
 
+## Generate Graph from ESI Data
+
+Generate `resources/graph.json`:
+```
+./gradlew buildGraph
+```
+
 ## Run
 
 Make sure the necessary environment variables are set, e.g.:
