@@ -1,0 +1,3 @@
+[submodule "esi-data"]
+	path = esi-data
+	url = https://github.com/tkhamez/esi-data.git
