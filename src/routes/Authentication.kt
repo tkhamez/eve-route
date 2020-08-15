@@ -54,7 +54,7 @@ fun Route.authentication() {
         }
     }
 
-    get("/api/user") {
+    get("/user") {
         val session = call.sessions.get<Session>()
         var data: ResponseUser? = null
         if (session?.esiVerify?.CharacterID != null) {
