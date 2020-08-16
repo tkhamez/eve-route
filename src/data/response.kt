@@ -14,3 +14,7 @@ data class ResponseGates(
     var message: String = "",
     var gates: MutableList<Gate> = mutableListOf()
 )
+
+data class ResponseCalculate(
+    var route: List<System> = listOf()
+)

@@ -3,8 +3,8 @@ package net.tkhamez.everoute.scripts
 import com.google.gson.Gson
 import net.tkhamez.everoute.data.Edge
 import net.tkhamez.everoute.data.Graph
-import net.tkhamez.everoute.data.Node
 import net.tkhamez.everoute.data.Position
+import net.tkhamez.everoute.data.System as DataSystem
 import java.io.File
 import kotlin.math.round
 
@@ -12,12 +12,12 @@ val esiData = readData()
 val graph = buildGraph(esiData)
 writeJsonFile(graph)
 
-fun readData(): EsiData {
+fun readData(): Data {
     val regionBlackList = listOf("ADR01", "ADR02", "ADR03", "ADR04", "ADR05", "PR-01")
     val regionBlackListSubString = "-R00"
     val dataPath = "esi-data/json/universe/"
 
-    val esiData = EsiData()
+    val esiData = Data()
 
     val regionsJson = File(dataPath + "regions/regions.json").readText()
     val regions = Gson().fromJson(regionsJson, Array<Region>::class.java)
@@ -46,10 +46,10 @@ fun readData(): EsiData {
     return esiData
 }
 
-fun buildGraph(esiData: EsiData): Graph {
+fun buildGraph(data: Data): Graph {
     val graph = Graph()
 
-    for (system in esiData.systems) {
+    for (system in data.systems) {
         val security = if (system.securityStatus > 0 && system.securityStatus < 0.05) {
             0.1
         } else if (system.securityStatus <= 0.0) {
@@ -57,11 +57,11 @@ fun buildGraph(esiData: EsiData): Graph {
         } else {
             round(system.securityStatus * 10) / 10
         }
-        graph.nodes.add(Node(system.id, system.name, security, system.position))
+        graph.systems.add(DataSystem(system.id, system.name, security, system.position))
     }
 
     val uniqueEdges = mutableListOf<String>()
-    for (stargate in esiData.stargates) {
+    for (stargate in data.stargates) {
         val uniqueEdge = if (stargate.systemId < stargate.destination.systemId) {
             "${stargate.systemId}-${stargate.destination.systemId}"
         } else {
@@ -87,7 +87,7 @@ data class Stargate(val systemId: Int, val destination: Destination)
 data class System(val id: Int, val name: String, val securityStatus: Double, val position: Position)
 data class Region(val name: String)
 
-data class EsiData(
+data class Data(
     val regions: MutableList<Region> = mutableListOf(),
     val systems: MutableList<System> = mutableListOf(),
     val stargates: MutableList<Stargate> = mutableListOf()
