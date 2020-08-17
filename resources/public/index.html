@@ -109,14 +109,18 @@
             const to = $('#calculate input[name="to"]').val();
             $.get('/calculate/' + from + '/' + to)
                 .done(function(data) {
-                    let route = '';
-                    let dotlanHref = 'https://evemaps.dotlan.net/route/';
-                    for (let i = 0; i < data.route.length; i++) {
-                        route += data.route[i].name + ' ('+data.route[i].security+')' + ' - ';
-                        dotlanHref += data.route[i].name.replace(' ', '_') + ':'
+                    if (data.route.length === 0) {
+                        $('#calculateResult').text('No route found.');
+                    } else {
+                        let route = '';
+                        let dotlanHref = 'https://evemaps.dotlan.net/route/';
+                        for (let i = 0; i < data.route.length; i++) {
+                            route += data.route[i].name + ' ('+data.route[i].security+')' + ' - ';
+                            dotlanHref += data.route[i].name.replace(' ', '_') + ':'
+                        }
+                        $('#calculateResult').html(route);
+                        $('#calculate a').attr('href', dotlanHref);
                     }
-                    $('#calculateResult').html(route);
-                    $('#calculate a').attr('href', dotlanHref);
                 })
                 .fail(function() {
                     $('#calculateResult').text('Error.');
