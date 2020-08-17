@@ -56,6 +56,7 @@ fun Route.updateGates(config: Config) {
             mongo.storeGate(it)
             response.gates.add(it)
         }
+        mongo.removeOtherGates(gates)
 
         response.success = true
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
