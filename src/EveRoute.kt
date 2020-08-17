@@ -39,19 +39,8 @@ class EveRoute(ansiblexes: List<Gate>) {
         }
 
         // find start and end system
-        var startSystem: System? = null
-        var endSystem: System? = null
-        for (system in graph.systems) {
-            if (system.name.toLowerCase() == from.toLowerCase()) {
-                startSystem = system
-            }
-            if (system.name.toLowerCase() == to.toLowerCase()) {
-                endSystem = system
-            }
-            if (startSystem != null && endSystem != null) {
-                break
-            }
-        }
+        val startSystem: System? = findSystem(from)
+        val endSystem: System? = findSystem(to)
         if (startSystem == null || endSystem == null) {
             return listOf()
         }
@@ -80,27 +69,21 @@ class EveRoute(ansiblexes: List<Gate>) {
             allSystems[it.id] = it
         }
 
+        fun getNode(systemId: Int): Node<System>? {
+            if (allNodes[systemId] == null) {
+                val sourceSystem = allSystems[systemId]
+                if (sourceSystem != null) {
+                    allNodes[systemId] = Node(sourceSystem)
+                }
+            }
+            return allNodes[systemId]
+        }
+
         var center: Node<System>? = null
 
         graph.edges.forEach {
-            var sourceNode = allNodes[it.source]
-            if (sourceNode == null) {
-                val sourceSystem = allSystems[it.source]
-                if (sourceSystem != null) {
-                    sourceNode = Node(sourceSystem)
-                    allNodes[it.source] = sourceNode
-                }
-            }
-
-            var targetNode = allNodes[it.target]
-            if (targetNode == null) {
-                val targetSystem = allSystems[it.target]
-                if (targetSystem != null) {
-                    targetNode = Node(targetSystem)
-                    allNodes[it.target] = targetNode
-                }
-            }
-
+            val sourceNode = getNode(it.source)
+            val targetNode = getNode(it.target)
             if (sourceNode != null && targetNode != null) { // should always be true
                 sourceNode.connect(targetNode, Waypoint.Type.Stargate)
 
@@ -118,13 +101,7 @@ class EveRoute(ansiblexes: List<Gate>) {
             // find end system ID (full gate name e.g.: "5ELE-A » AZN-D2 - Easy Route")
             val systemNames = gate.name.substring(0, gate.name.indexOf(" - ")) // e.g. "5ELE-A » AZN-D2"
             val endSystemName = systemNames.substring(systemNames.indexOf(" » ") + 3)
-            var endSystemId: Int? = null
-            for (system in graph.systems) {
-                if (system.name == endSystemName) {
-                    endSystemId = system.id
-                    break
-                }
-            }
+            val endSystemId = findSystem(endSystemName)?.id
 
             // connect nodes
             val startSystemNode = allNodes[gate.solarSystemId]
@@ -133,6 +110,15 @@ class EveRoute(ansiblexes: List<Gate>) {
                 startSystemNode.connect(endSystemNode, Waypoint.Type.Ansiblex)
             }
         }
+    }
+
+    private fun findSystem(systemName: String): System? {
+        for (system in graph.systems) {
+            if (system.name.toLowerCase() == systemName.toLowerCase()) {
+                return system
+            }
+        }
+        return null
     }
 
     /**
