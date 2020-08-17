@@ -25,13 +25,6 @@ webAppDirName = 'webapp'
 // needs to be after "mainClassName = ..."
 apply plugin: 'com.github.johnrengelman.shadow'
 
-// This task will generate your fat JAR and put it in the ./build/libs/ directory
-shadowJar {
-    manifest {
-        attributes 'Main-Class': "io.ktor.server.netty.EngineMain"
-    }
-}
-
 gretty {
     contextPath = '/'
     logbackConfigFile = 'resources/logback.xml'
@@ -113,6 +106,16 @@ task buildGraph(type: JavaExec) {
         "-script", "src/scripts/buildGraph.kts"
     )
 }
+
+// This task will generate your fat JAR and put it in the ./build/libs/ directory
+shadowJar {
+    //dependsOn buildGraph -> executes task, but too late? -> graph.json is not included in jar file
+    manifest {
+        attributes 'Main-Class': "io.ktor.server.netty.EngineMain"
+    }
+}
+
+war.dependsOn buildGraph
 
 task stage {
     dependsOn buildGraph

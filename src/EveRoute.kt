@@ -21,7 +21,10 @@ class EveRoute {
     val centralNode: Node<System>?
 
     init {
-        val graphJson = File("resources/graph.json").readText()
+        // null for DEV mode (run task), not sure why, it works for Route.frontend()
+        val resource = javaClass.getResource("/graph.json")
+
+        val graphJson = resource?.readText() ?: File("resources/graph.json").readText()
         graph = Gson().fromJson(graphJson, Graph::class.java)
 
         // build node connections
@@ -37,10 +40,10 @@ class EveRoute {
         var startSystem: System? = null
         var endSystem: System? = null
         for (system in graph.systems) {
-            if (system.name == from) {
+            if (system.name.toLowerCase() == from.toLowerCase()) {
                 startSystem = system
             }
-            if (system.name == to) {
+            if (system.name.toLowerCase() == to.toLowerCase()) {
                 endSystem = system
             }
             if (startSystem != null && endSystem != null) {
@@ -62,7 +65,7 @@ class EveRoute {
             path.add(currentNode.getValue())
             currentNode = currentNode.predecessor!! // should never be null here
         }
-        path.add(startNode.getValue()) // startNode === currentNode here
+        path.add(currentNode.getValue()) // startNode === currentNode here
 
         return path.reversed()
     }

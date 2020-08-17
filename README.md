@@ -50,7 +50,7 @@ To continuously rebuild on change, execute in a second console:
 
 #### Debug
 
-IntelliJ Configuration:
+IntelliJ Configuration (from Kotlin template):
 - Main class: io.ktor.server.netty.EngineMain
 - Add environment variables
 - Use classpath of module: eve-route.main
@@ -58,6 +58,7 @@ IntelliJ Configuration:
 ### Fat JAR
 
 ```
+./gradlew buildGraph
 ./gradlew shadowJar
 
 java -jar build/libs/eve-route-0.0.1.jar
@@ -70,4 +71,12 @@ java -jar build/libs/eve-route-0.0.1.jar
 
 cd build/libs/ && jar -xvf eve-route-0.0.1.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
+```
+
+## Tests
+
+Tests need `resources/graph.json`, see above.
+
+```
+./gradlew test
 ```
