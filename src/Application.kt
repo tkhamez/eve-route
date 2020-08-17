@@ -109,6 +109,6 @@ fun Application.module() {
         authentication()
         getGates(config)
         updateGates(config)
-        calculate()
+        calculate(config)
     }
 }

@@ -1,13 +1,14 @@
 package net.tkhamez.everoute
 
 import com.google.gson.Gson
+import net.tkhamez.everoute.data.Gate
 import net.tkhamez.everoute.data.Graph
 import net.tkhamez.everoute.data.System
 import java.io.File
 import java.util.*
 import kotlin.collections.HashSet
 
-class EveRoute {
+class EveRoute(ansiblexes: List<Gate>) {
     /**
      * Graph with ESI data of all systems with edges.
      */
@@ -29,9 +30,10 @@ class EveRoute {
 
         // build node connections
         centralNode = buildNodes(graph)
+        addGates(ansiblexes)
     }
 
-    fun find(from: String, to: String): List<System> {
+    fun find(from: String, to: String): List<Waypoint> {
         if (centralNode == null) { // should not happen
             return listOf()
         }
@@ -56,16 +58,15 @@ class EveRoute {
 
         // Get start node, then from there search the end node - both should never be null here
         val startNode = allNodes[startSystem.id] ?: return listOf()
-        val endNode = search(endSystem, startNode) ?: return listOf()
+        val lastConnection = search(endSystem, startNode) ?: return listOf()
 
-        // build path
-        val path: MutableList<System> = mutableListOf()
-        var currentNode = endNode
-        while (currentNode.predecessor != null) {
-            path.add(currentNode.getValue())
-            currentNode = currentNode.predecessor!! // should never be null here
+        // build path of waypoints from end to start
+        val path: MutableList<Waypoint> = mutableListOf()
+        var currentConnection: Connection<System>? = lastConnection
+        while (currentConnection != null) {
+            path.add(Waypoint(system = currentConnection.node.getValue(), type = currentConnection.type))
+            currentConnection = currentConnection.node.predecessor
         }
-        path.add(currentNode.getValue()) // startNode === currentNode here
 
         return path.reversed()
     }
@@ -101,7 +102,7 @@ class EveRoute {
             }
 
             if (sourceNode != null && targetNode != null) { // should always be true
-                sourceNode.connect(targetNode)
+                sourceNode.connect(targetNode, Waypoint.Type.Stargate)
 
                 if (sourceNode.getValue().name == "Skarkon") {
                     center = sourceNode
@@ -112,29 +113,51 @@ class EveRoute {
         return center
     }
 
+    private fun addGates(gates: List<Gate>) {
+        gates.forEach { gate ->
+            // find end system ID (full gate name e.g.: "5ELE-A » AZN-D2 - Easy Route")
+            val systemNames = gate.name.substring(0, gate.name.indexOf(" - ")) // e.g. "5ELE-A » AZN-D2"
+            val endSystemName = systemNames.substring(systemNames.indexOf(" » ") + 3)
+            var endSystemId: Int? = null
+            for (system in graph.systems) {
+                if (system.name == endSystemName) {
+                    endSystemId = system.id
+                    break
+                }
+            }
+
+            // connect nodes
+            val startSystemNode = allNodes[gate.solarSystemId]
+            val endSystemNode = allNodes[endSystemId]
+            if (startSystemNode != null && endSystemNode != null) { // should never be null
+                startSystemNode.connect(endSystemNode, Waypoint.Type.Ansiblex)
+            }
+        }
+    }
+
     /**
      * Breadth first search that keeps the predecessor of each vertex
      */
-    private fun <T> search(value: T, start: Node<T>): Node<T>? {
+    private fun <T> search(value: T, start: Node<T>): Connection<T>? {
         // clear predecessors
         allNodes.forEach { (_, value) -> value.predecessor = null }
 
-        val queue: Queue<Node<T>> = ArrayDeque()
-        queue.add(start)
-        var currentNode: Node<T>
-        val alreadyVisited: MutableSet<Node<T>> = HashSet()
+        val queue: Queue<Connection<T>> = ArrayDeque()
+        queue.add(Connection(node = start))
+        var currentConnection: Connection<T>
+        val alreadyVisited: MutableSet<Connection<T>> = HashSet()
         while (!queue.isEmpty()) {
-            currentNode = queue.remove()
-            if (currentNode.getValue() == value) {
-                return currentNode
+            currentConnection = queue.remove()
+            if (currentConnection.node.getValue() == value) {
+                return currentConnection
             } else {
-                currentNode.getNeighbors().forEach {
-                    if (it !== start && it.predecessor == null) {
-                        it.predecessor = currentNode
+                currentConnection.node.getConnections().forEach { connection ->
+                if (connection.node !== start && connection.node.predecessor == null) {
+                        connection.node.predecessor = currentConnection
                     }
+                    queue.add(connection)
                 }
-                alreadyVisited.add(currentNode)
-                queue.addAll(currentNode.getNeighbors())
+                alreadyVisited.add(currentConnection)
                 queue.removeAll(alreadyVisited)
             }
         }
@@ -142,28 +165,36 @@ class EveRoute {
     }
 
     class Node<T>(private val value: T) {
-        var predecessor: Node<T>? = null
+        var predecessor: Connection<T>? = null
 
-        private val neighbors: MutableSet<Node<T>>
-
-        init {
-            neighbors = java.util.HashSet()
-        }
+        private val connections: MutableSet<Connection<T>> = HashSet() // mutableSetOf() seems to be ordered
 
         fun getValue(): T {
             return value
         }
 
-        fun getNeighbors(): MutableSet<Node<T>> {
-            return neighbors
+        fun getConnections(): MutableSet<Connection<T>> {
+            return connections
         }
 
-        fun connect(node: Node<T>) {
+        fun connect(node: Node<T>, type: Waypoint.Type) {
             require(!(this === node)) {
                 "Can't connect node to itself"
             }
-            neighbors.add(node)
-            node.neighbors.add(this)
+            connections.add(Connection(node, type))
+            node.connections.add(Connection(this, type))
         }
+    }
+
+    data class Connection<T>(
+        val node: Node<T>,
+        val type: Waypoint.Type? = null
+    )
+
+    data class Waypoint(
+        val system: System,
+        val type: Type? // the type of the incoming connection, null for the start system
+    ) {
+        enum class Type { Stargate, Ansiblex }
     }
 }

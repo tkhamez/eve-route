@@ -4,6 +4,8 @@
 
 package net.tkhamez.everoute.data
 
+import net.tkhamez.everoute.EveRoute
+
 data class ResponseUser(
     val id: Long,
     val name: String
@@ -16,5 +18,5 @@ data class ResponseGates(
 )
 
 data class ResponseCalculate(
-    var route: List<System> = listOf()
+    var route: List<EveRoute.Waypoint> = listOf()
 )

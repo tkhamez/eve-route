@@ -7,12 +7,16 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import net.tkhamez.everoute.EveRoute
+import net.tkhamez.everoute.Mongo
+import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.ResponseCalculate
 
-fun Route.calculate() {
+fun Route.calculate(config: Config) {
     get("/calculate/{from}/{to}") {
+        val gates = Mongo(config.db).getGates()
         val response = ResponseCalculate()
-        response.route = EveRoute().find(
+
+        response.route = EveRoute(gates).find(
             call.parameters["from"].toString(),
             call.parameters["to"].toString()
         )

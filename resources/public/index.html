@@ -115,8 +115,18 @@
                         let route = '';
                         let dotlanHref = 'https://evemaps.dotlan.net/route/';
                         for (let i = 0; i < data.route.length; i++) {
-                            route += data.route[i].name + ' ('+data.route[i].security+')' + ' - ';
-                            dotlanHref += data.route[i].name.replace(' ', '_') + ':'
+                            route += data.route[i].system.name + ' ('+data.route[i].system.security+')';
+                            if (i + 1 < data.route.length) {
+                                route += ' - ';
+                            }
+                            if (i > 0) {
+                                if (data.route[i].type === "Stargate") {
+                                    dotlanHref += ':'
+                                } else { // Ansiblex
+                                    dotlanHref += '::'
+                                }
+                            }
+                            dotlanHref += data.route[i].system.name.replace(' ', '_')
                         }
                         $('#calculateResult').html(route);
                         $('#calculate a').attr('href', dotlanHref);
