@@ -81,11 +81,11 @@ private suspend fun fetchGates(
         log.error(e.message)
         return null
     }
+    log.info("Got ${esiSearchStructure.structure.size} results.")
 
     // Fetch structure info, needs scope esi-universe.read_structures.v1
     val gates = mutableListOf<Ansiblex>()
     for (id in esiSearchStructure.structure) {
-        log.info("Fetching $id")
         var gate: EsiStructure? = null
         try {
             gate = httpClient.get("$esiDomain/latest/universe/structures/$id/") {
@@ -96,7 +96,10 @@ private suspend fun fetchGates(
             log.error(e.message)
         }
         if (gate?.type_id == 35841) {
+            log.info("Fetched $id")
             gates.add(Ansiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id))
+        } else {
+            log.info("Not an Ansiblex $id")
         }
     }
 

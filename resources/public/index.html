@@ -122,6 +122,7 @@
                         for (let i = 0; i < data.route.length; i++) {
                             esiRoute.push({
                                 systemId: data.route[i].systemId,
+                                systemName: data.route[i].systemName, // for debugging
                                 ansiblexId: data.route[i].ansiblexId || null,
                             });
                             route += data.route[i].systemName + ' ' + data.route[i].systemSecurity;
