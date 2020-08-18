@@ -78,6 +78,7 @@ private suspend fun fetchGates(
             header("Authorization", "Bearer ${authToken.accessToken}")
         }
     } catch (e: Exception) {
+        log.error(e.message)
         return null
     }
 
