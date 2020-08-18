@@ -22,7 +22,7 @@ fun Route.gates(config: Config) {
     get("/gates/fetch") {
         val response = ResponseGates(success = true)
 
-        Mongo(config.db).getGates().forEach { response.gates.add(it) }
+        Mongo(config.db).getGates().forEach { response.ansiblexes.add(it) }
 
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
@@ -54,7 +54,7 @@ fun Route.gates(config: Config) {
 
         gates.forEach {
             mongo.storeGate(it)
-            response.gates.add(it)
+            response.ansiblexes.add(it)
         }
         mongo.removeOtherGates(gates)
 
@@ -68,7 +68,7 @@ private suspend fun fetchGates(
     esiVerify: EsiVerify,
     authToken: EsiToken.Data,
     log: Logger
-): List<Gate>? {
+): List<Ansiblex>? {
     // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
     val searchPath = "/latest/characters/${esiVerify.CharacterID}/search/"
     val searchParams = "?categories=structure&search=%20%C2%BB%20" // " » "
@@ -83,7 +83,7 @@ private suspend fun fetchGates(
     }
 
     // Fetch structure info, needs scope esi-universe.read_structures.v1
-    val gates = mutableListOf<Gate>()
+    val gates = mutableListOf<Ansiblex>()
     for (id in esiSearchStructure.structure) {
         log.info("Fetching $id")
         var gate: EsiStructure? = null
@@ -96,7 +96,7 @@ private suspend fun fetchGates(
             log.error(e.message)
         }
         if (gate?.type_id == 35841) {
-            gates.add(Gate(id = id, name = gate.name, solarSystemId = gate.solar_system_id))
+            gates.add(Ansiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id))
         }
     }
 

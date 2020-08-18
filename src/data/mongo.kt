@@ -4,10 +4,7 @@
 
 package net.tkhamez.everoute.data
 
-/**
- * Ansiblex
- */
-data class Gate(
+data class Ansiblex(
     val id: Long,
     val name: String,
     val solarSystemId: Int

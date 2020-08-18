@@ -1,14 +1,14 @@
 package net.tkhamez.everoute
 
 import com.google.gson.Gson
-import net.tkhamez.everoute.data.Gate
+import net.tkhamez.everoute.data.Ansiblex
 import net.tkhamez.everoute.data.Graph
 import net.tkhamez.everoute.data.System
 import java.io.File
 import java.util.*
 import kotlin.collections.HashSet
 
-class EveRoute(ansiblexes: List<Gate>) {
+class EveRoute(ansiblexes: List<Ansiblex>) {
     /**
      * Graph with ESI data of all systems with edges.
      */
@@ -22,7 +22,7 @@ class EveRoute(ansiblexes: List<Gate>) {
     /**
      * Helper variable that keeps a reference to all Ansiblexes, accessible by their system ID.
      */
-    private val allAnsiblexes: MutableMap<Int, Gate> = mutableMapOf()
+    private val allAnsiblexes: MutableMap<Int, Ansiblex> = mutableMapOf()
 
     val centralNode: Node<System>?
 
@@ -122,8 +122,8 @@ class EveRoute(ansiblexes: List<Gate>) {
         return center
     }
 
-    private fun addGates(gates: List<Gate>) {
-        gates.forEach { gate ->
+    private fun addGates(ansiblexes: List<Ansiblex>) {
+        ansiblexes.forEach { gate ->
             allAnsiblexes[gate.solarSystemId] = gate
 
             // find end system ID (full gate name e.g.: "5ELE-A » AZN-D2 - Easy Route")

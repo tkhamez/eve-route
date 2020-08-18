@@ -14,7 +14,7 @@ data class ResponseAuthUser(
 data class ResponseGates(
     var success: Boolean = false,
     var message: String = "",
-    var gates: MutableList<Gate> = mutableListOf()
+    var ansiblexes: MutableList<Ansiblex> = mutableListOf()
 )
 
 data class ResponseRouteCalculate(

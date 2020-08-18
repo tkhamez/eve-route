@@ -67,8 +67,8 @@
             $.get('/gates/fetch')
                 .done(function(data) {
                     let gates = '';
-                    for (let i = 0; i < data.gates.length; i++) {
-                        gates += data.gates[i].name + '<br>';
+                    for (let i = 0; i < data.ansiblexes.length; i++) {
+                        gates += data.ansiblexes[i].name + '<br>';
                     }
                     $('#gatesResult').html(gates);
                 })
@@ -91,8 +91,8 @@
                         return;
                     }
                     let gates = '';
-                    for (let i = 0; i < data.gates.length; i++) {
-                        gates += data.gates[i].name + '<br>';
+                    for (let i = 0; i < data.ansiblexes.length; i++) {
+                        gates += data.ansiblexes[i].name + '<br>';
                     }
                     $result.html(gates);
                 })

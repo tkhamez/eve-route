@@ -1,6 +1,6 @@
 package net.tkhamez.everoute
 
-import net.tkhamez.everoute.data.Gate
+import net.tkhamez.everoute.data.Ansiblex
 import org.litote.kmongo.*
 
 class Mongo(uri: String) {
@@ -8,31 +8,31 @@ class Mongo(uri: String) {
     private val client = KMongo.createClient(uri)
     private val database = client.getDatabase(dbName)
 
-    fun getGates(): List<Gate> {
-        val gates = mutableListOf<Gate>()
-        database.getCollection<Gate>().find().forEach { gates.add(it) }
+    fun getGates(): List<Ansiblex> {
+        val gates = mutableListOf<Ansiblex>()
+        database.getCollection<Ansiblex>().find().forEach { gates.add(it) }
         return gates
     }
 
-    fun storeGate(gate: Gate) {
-        val col = database.getCollection<Gate>()
-        val existingGate = col.findOne(Gate::id eq gate.id)
+    fun storeGate(ansiblex: Ansiblex) {
+        val col = database.getCollection<Ansiblex>()
+        val existingGate = col.findOne(Ansiblex::id eq ansiblex.id)
         if (existingGate == null) {
-            col.insertOne(gate)
+            col.insertOne(ansiblex)
         } else {
-            col.replaceOne(Gate::id eq gate.id, gate)
+            col.replaceOne(Ansiblex::id eq ansiblex.id, ansiblex)
         }
     }
 
-    fun removeOtherGates(gates: List<Gate>) {
-        val col = database.getCollection<Gate>()
+    fun removeOtherGates(ansiblexes: List<Ansiblex>) {
+        val col = database.getCollection<Ansiblex>()
 
         val ids: MutableList<Long> = mutableListOf()
-        gates.forEach { ids.add(it.id) }
+        ansiblexes.forEach { ids.add(it.id) }
 
-        val gatesToDelete = col.find(Gate::id nin ids)
+        val gatesToDelete = col.find(Ansiblex::id nin ids)
         gatesToDelete.forEach {
-            col.deleteOne(Gate::id eq it.id)
+            col.deleteOne(Ansiblex::id eq it.id)
         }
     }
 }
