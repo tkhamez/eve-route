@@ -6,7 +6,7 @@ package net.tkhamez.everoute.data
 
 import net.tkhamez.everoute.EveRoute
 
-data class ResponseUser(
+data class ResponseAuthUser(
     val id: Long,
     val name: String
 )
@@ -17,6 +17,6 @@ data class ResponseGates(
     var gates: MutableList<Gate> = mutableListOf()
 )
 
-data class ResponseCalculate(
+data class ResponseRouteCalculate(
     var route: List<EveRoute.Waypoint> = listOf()
 )

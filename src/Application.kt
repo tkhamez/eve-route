@@ -107,8 +107,7 @@ fun Application.module() {
     install(Routing) {
         frontend()
         authentication()
-        getGates(config)
-        updateGates(config)
-        calculate(config)
+        gates(config)
+        route(config)
     }
 }

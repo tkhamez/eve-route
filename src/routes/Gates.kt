@@ -15,22 +15,22 @@ import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.Mongo
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.httpClient
+import org.slf4j.Logger
 import java.lang.Exception
 
-fun Route.getGates(config: Config) {
-    get("/get-gates") {
+fun Route.gates(config: Config) {
+    get("/gates/fetch") {
         val response = ResponseGates(success = true)
 
         Mongo(config.db).getGates().forEach { response.gates.add(it) }
 
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
-}
 
-fun Route.updateGates(config: Config) {
-    get("/update-gates") {
+    get("/gates/update") {
         val response = ResponseGates()
         val session = call.sessions.get<Session>()
+        val log = call.application.environment.log
 
         // logged in?
         if (session?.esiVerify == null || session.esiToken == null) {
@@ -40,10 +40,10 @@ fun Route.updateGates(config: Config) {
         }
 
         // get/update access token
-        val esiToken = EsiToken(config).getAccessToken(session.esiToken)
+        val esiToken = EsiToken(config, log).getAccessToken(session.esiToken)
         call.sessions.set(session.copy(esiToken = esiToken))
 
-        val gates = fetchGates(config.esiDomain, session.esiVerify, esiToken)
+        val gates = fetchGates(config.esiDomain, session.esiVerify, esiToken, log)
         if (gates == null) {
             response.message = "ESI error."
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
@@ -63,8 +63,12 @@ fun Route.updateGates(config: Config) {
     }
 }
 
-private suspend fun fetchGates(esiDomain: String, esiVerify: EsiVerify, authToken: EsiToken.Data): List<Gate>? {
-
+private suspend fun fetchGates(
+    esiDomain: String,
+    esiVerify: EsiVerify,
+    authToken: EsiToken.Data,
+    log: Logger
+): List<Gate>? {
     // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
     val searchPath = "/latest/characters/${esiVerify.CharacterID}/search/"
     val searchParams = "?categories=structure&search=%20%C2%BB%20" // " » "
@@ -73,21 +77,22 @@ private suspend fun fetchGates(esiDomain: String, esiVerify: EsiVerify, authToke
         esiSearchStructure = httpClient.get(esiDomain + searchPath + searchParams) {
             header("Authorization", "Bearer ${authToken.accessToken}")
         }
-    } catch(e: Exception) {
+    } catch (e: Exception) {
         return null
     }
 
     // Fetch structure info, needs scope esi-universe.read_structures.v1
     val gates = mutableListOf<Gate>()
     for (id in esiSearchStructure.structure) {
+        log.info("Fetching $id")
         var gate: EsiStructure? = null
         try {
             gate = httpClient.get("$esiDomain/latest/universe/structures/$id/") {
                 header("Authorization", "Bearer ${authToken.accessToken}")
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             // TODO try again
-            println(e.message)
+            log.error(e.message)
         }
         if (gate?.type_id == 35841) {
             gates.add(Gate(id = id, name = gate.name, solarSystemId = gate.solar_system_id))

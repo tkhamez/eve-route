@@ -33,7 +33,7 @@ Make sure the necessary environment variables are set, e.g.:
 export EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route
 export EVE_ROUTE_CLIENT_ID=ab12
 export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/login
+export EVE_ROUTE_CALLBACK=http://localhost:8080/auth/login
 ```
 
 ### Dev

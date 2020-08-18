@@ -18,14 +18,14 @@ import io.ktor.sessions.sessions
 import io.ktor.sessions.set
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.data.EsiVerify
-import net.tkhamez.everoute.data.ResponseUser
+import net.tkhamez.everoute.data.ResponseAuthUser
 import net.tkhamez.everoute.data.Session
 import net.tkhamez.everoute.httpClient
 import java.lang.Exception
 
 fun Route.authentication() {
     authenticate("eve-oauth") {
-        route("/login") {
+        route("/auth/login") {
             handle {
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
                 if (principal != null) {
@@ -35,7 +35,7 @@ fun Route.authentication() {
                             header("Authorization", "Bearer ${principal.accessToken}")
                         }
                     } catch(e: Exception) {
-                        println(e.message)
+                        call.application.environment.log.error(e.message)
                     }
                     if (esiVerify != null) {
                         val session = call.sessions.get<Session>() ?: Session()
@@ -54,11 +54,11 @@ fun Route.authentication() {
         }
     }
 
-    get("/user") {
+    get("/auth/user") {
         val session = call.sessions.get<Session>()
-        var data: ResponseUser? = null
+        var data: ResponseAuthUser? = null
         if (session?.esiVerify?.CharacterID != null) {
-            data = ResponseUser(
+            data = ResponseAuthUser(
                 session.esiVerify.CharacterID,
                 session.esiVerify.CharacterName
             )
@@ -66,7 +66,7 @@ fun Route.authentication() {
         call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
     }
 
-    get("/logout") {
+    get("/auth/logout") {
         val session = call.sessions.get<Session>() ?: Session()
         call.sessions.set(session.copy(esiToken = null, esiVerify = null))
         call.respondRedirect("/")

@@ -21,7 +21,7 @@
     <h1>EVE Route</h1>
 
     <div id="login" class="cloak">
-        <a href="/login"><img
+        <a href="/auth/login"><img
                 src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-small.png"
                 alt="login"></a>
     </div>
@@ -29,18 +29,18 @@
     <div id="home" class="cloak">
         <p>
             Hello <span id="homeUserName"></span><br>
-            <a href="/logout">Logout</a>
+            <a href="/auth/logout">Logout</a>
         </p>
         <p id="calculate">
             <label>from <input type="text" name="from"></label>
             <label>to <input type="text" name="to"></label>
-            <button onclick="calculate(this)">calculate</button><br>
+            <button onclick="routeCalculate(this)">calculate</button><br>
             <span id="calculateResult"></span><br>
             <a href="#" target="_blank">Dotlan</a>
         </p>
         <p id="gates">
-            <button onclick="getGates(this)">show gates</button>
-            <button onclick="updateGates(this)">update gates</button><br>
+            <button onclick="gatesFetch(this)">show gates</button>
+            <button onclick="gatesUpdate(this)">update gates</button><br>
             <span id="gatesResult"></span><br>
         </p>
     </div>
@@ -49,7 +49,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
         $(function() {
-            $.get('/user', function(data) {
+            $.get('/auth/user', function(data) {
                 if (data && data.id) {
                     $('#home').show();
                     $('#homeUserName').text(data.name);
@@ -59,10 +59,10 @@
             });
         });
 
-        function getGates(button) {
+        function gatesFetch(button) {
             button.disabled = true;
             $('#gatesResult').html('');
-            $.get('/get-gates')
+            $.get('/gates/fetch')
                 .done(function(data) {
                     let gates = '';
                     for (let i = 0; i < data.gates.length; i++) {
@@ -78,11 +78,11 @@
                 });
         }
 
-        function updateGates(button) {
+        function gatesUpdate(button) {
             button.disabled = true;
             const $result = $('#gatesResult');
             $result.html('');
-            $.get('/update-gates')
+            $.get('/gates/update')
                 .done(function(data) {
                     if (! data.success) {
                         $result.text(data.message);
@@ -102,12 +102,12 @@
                 });
         }
 
-        function calculate(button) {
+        function routeCalculate(button) {
             button.disabled = true;
             $('#calculateResult').text('');
             const from = $('#calculate input[name="from"]').val();
             const to = $('#calculate input[name="to"]').val();
-            $.get('/calculate/' + from + '/' + to)
+            $.get('/route/calculate/' + from + '/' + to)
                 .done(function(data) {
                     if (data.route.length === 0) {
                         $('#calculateResult').text('No route found.');

@@ -6,12 +6,13 @@ import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.EsiRefreshToken
+import org.slf4j.Logger
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EsiToken(private val config: Config) {
+class EsiToken(private val config: Config, private val log: Logger) {
 
     data class Data(
         val refreshToken: String,
@@ -54,7 +55,7 @@ class EsiToken(private val config: Config) {
                 )
             }
         } catch (e: Exception) {
-            println(e.message)
+            log.error(e.message)
             return null
         }
 
