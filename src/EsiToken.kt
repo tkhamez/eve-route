@@ -22,9 +22,9 @@ class EsiToken(private val config: Config, private val log: Logger) {
 
     suspend fun getAccessToken(esiToken: Data): Data {
         val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-
         val df: DateFormat = SimpleDateFormat(dateFormat)
         df.timeZone = TimeZone.getTimeZone("UTC")
+
         val expiresOn = df.parse(esiToken.expiresOn)
         val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
@@ -36,7 +36,7 @@ class EsiToken(private val config: Config, private val log: Logger) {
         if (token != null) {
             val newExpiresOn = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             newExpiresOn.add(Calendar.SECOND, token.expires_in)
-            esiToken.expiresOn = SimpleDateFormat(dateFormat).format(newExpiresOn.time)
+            esiToken.expiresOn = df.format(newExpiresOn.time)
             esiToken.accessToken = token.access_token
         }
 
