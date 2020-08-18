@@ -20,3 +20,8 @@ data class ResponseGates(
 data class ResponseRouteCalculate(
     var route: List<EveRoute.Waypoint> = listOf()
 )
+
+data class ResponseRouteSet(
+    var message: String = ""
+)
+

@@ -31,12 +31,14 @@
             Hello <span id="homeUserName"></span><br>
             <a href="/auth/logout">Logout</a>
         </p>
-        <p id="calculate">
+        <p id="route">
             <label>from <input type="text" name="from"></label>
             <label>to <input type="text" name="to"></label>
-            <button onclick="routeCalculate(this)">calculate</button><br>
-            <span id="calculateResult"></span><br>
-            <a href="#" target="_blank">Dotlan</a>
+            <button onclick="routeCalculate(this)">calculate</button>
+            <button onclick="routeSet(this)">set route</button>
+            <span id="routeSetResult"></span><br>
+            <a href="#" target="_blank">Dotlan</a><br>
+            <span id="routeCalculateResult"></span><br>
         </p>
         <p id="gates">
             <button onclick="gatesFetch(this)">show gates</button>
@@ -102,38 +104,59 @@
                 });
         }
 
+        let esiRoute = []
+
         function routeCalculate(button) {
             button.disabled = true;
-            $('#calculateResult').text('');
-            const from = $('#calculate input[name="from"]').val();
-            const to = $('#calculate input[name="to"]').val();
+            $('#routeCalculateResult').text('');
+            const from = $('#route input[name="from"]').val();
+            const to = $('#route input[name="to"]').val();
             $.get('/route/calculate/' + from + '/' + to)
                 .done(function(data) {
                     if (data.route.length === 0) {
-                        $('#calculateResult').text('No route found.');
+                        $('#routeCalculateResult').text('No route found.');
                     } else {
+                        esiRoute = []
                         let route = '';
                         let dotlanHref = 'https://evemaps.dotlan.net/route/';
                         for (let i = 0; i < data.route.length; i++) {
-                            route += data.route[i].system.name + ' ('+data.route[i].system.security+')';
-                            if (i + 1 < data.route.length) {
-                                route += ' - ';
+                            esiRoute.push({
+                                systemId: data.route[i].systemId,
+                                ansiblexId: data.route[i].ansiblexId || null,
+                            });
+                            route += data.route[i].systemName + ' ' + data.route[i].systemSecurity;
+                            if (data.route[i].ansiblexName) {
+                                route += ' "' + data.route[i].ansiblexName + '"';
                             }
-                            if (i > 0) {
-                                if (data.route[i].type === "Stargate") {
-                                    dotlanHref += ':'
-                                } else { // Ansiblex
-                                    dotlanHref += '::'
-                                }
-                            }
-                            dotlanHref += data.route[i].system.name.replace(' ', '_')
+                            route += '<br>';
+                            dotlanHref += data.route[i].systemName.replace(' ', '_')
+                            if (data.route[i].connectionType === "Stargate") {
+                                dotlanHref += ':'
+                            } else if (data.route[i].connectionType === "Ansiblex") {
+                                dotlanHref += '::'
+                            } // else = end system
                         }
-                        $('#calculateResult').html(route);
-                        $('#calculate a').attr('href', dotlanHref);
+                        $('#routeCalculateResult').html(route);
+                        $('#route a').attr('href', dotlanHref);
                     }
                 })
                 .fail(function() {
-                    $('#calculateResult').text('Error.');
+                    $('#routeCalculateResult').text('Error.');
+                })
+                .always(function() {
+                    button.disabled = false;
+                });
+        }
+
+        function routeSet(button) {
+            button.disabled = true;
+            $('#routeSetResult').text("");
+            $.post('/route/set', JSON.stringify(esiRoute))
+                .done(function(result) {
+                    $('#routeSetResult').text(result.message);
+                })
+                .fail(function() {
+                    $('#routeSetResult').text('Error.');
                 })
                 .always(function() {
                     button.disabled = false;

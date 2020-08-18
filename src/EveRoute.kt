@@ -19,6 +19,11 @@ class EveRoute(ansiblexes: List<Gate>) {
      */
     private val allNodes: MutableMap<Int, Node<System>> = mutableMapOf()
 
+    /**
+     * Helper variable that keeps a reference to all Ansiblexes, accessible by their system ID.
+     */
+    private val allAnsiblexes: MutableMap<Int, Gate> = mutableMapOf()
+
     val centralNode: Node<System>?
 
     init {
@@ -52,8 +57,29 @@ class EveRoute(ansiblexes: List<Gate>) {
         // build path of waypoints from end to start
         val path: MutableList<Waypoint> = mutableListOf()
         var currentConnection: Connection<System>? = lastConnection
+        var previousConnection: Connection<System>? = null
         while (currentConnection != null) {
-            path.add(Waypoint(system = currentConnection.node.getValue(), type = currentConnection.type))
+            val ansiblex = if (previousConnection?.type == Waypoint.Type.Ansiblex) {
+                allAnsiblexes[currentConnection.node.getValue().id]
+            } else {
+                null
+            }
+            var ansiblexId = ansiblex?.id
+            var ansiblexName = ansiblex?.name
+            if (previousConnection?.type == Waypoint.Type.Ansiblex && ansiblex == null) {
+                // ESI returned only one Ansiblex from a pair - the one going the other direction
+                ansiblexId = -1
+                ansiblexName = "(Unknown Ansiblex)"
+            }
+            path.add(Waypoint(
+                systemId = currentConnection.node.getValue().id,
+                systemName = currentConnection.node.getValue().name,
+                systemSecurity = currentConnection.node.getValue().security,
+                connectionType = previousConnection?.type,
+                ansiblexId = ansiblexId,
+                ansiblexName = ansiblexName
+            ))
+            previousConnection = currentConnection
             currentConnection = currentConnection.node.predecessor
         }
 
@@ -98,6 +124,8 @@ class EveRoute(ansiblexes: List<Gate>) {
 
     private fun addGates(gates: List<Gate>) {
         gates.forEach { gate ->
+            allAnsiblexes[gate.solarSystemId] = gate
+
             // find end system ID (full gate name e.g.: "5ELE-A » AZN-D2 - Easy Route")
             val systemNames = gate.name.substring(0, gate.name.indexOf(" - ")) // e.g. "5ELE-A » AZN-D2"
             val endSystemName = systemNames.substring(systemNames.indexOf(" » ") + 3)
@@ -167,6 +195,8 @@ class EveRoute(ansiblexes: List<Gate>) {
             require(!(this === node)) {
                 "Can't connect node to itself"
             }
+
+            // This does *not* add the same node twice, even if the connection object is different
             connections.add(Connection(node, type))
             node.connections.add(Connection(this, type))
         }
@@ -178,8 +208,12 @@ class EveRoute(ansiblexes: List<Gate>) {
     )
 
     data class Waypoint(
-        val system: System,
-        val type: Type? // the type of the incoming connection, null for the start system
+        val systemId: Int,
+        val systemName: String,
+        val systemSecurity: Double,
+        val connectionType: Type?, // the type of the outgoing connection, null for the end system
+        val ansiblexId: Long?,
+        val ansiblexName: String?
     ) {
         enum class Type { Stargate, Ansiblex }
     }
