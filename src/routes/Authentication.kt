@@ -1,6 +1,7 @@
 package net.tkhamez.everoute.routes
 
 import com.google.gson.Gson
+import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.auth.OAuthAccessTokenResponse
 import io.ktor.auth.authenticate
@@ -8,6 +9,9 @@ import io.ktor.auth.authentication
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.path
+import io.ktor.response.respond
 import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
 import io.ktor.routing.Route
@@ -24,6 +28,21 @@ import net.tkhamez.everoute.httpClient
 import java.lang.Exception
 
 fun Route.authentication() {
+
+    /**
+     * Intercept all non-public routes and return 403 if client is not logged in.
+     */
+    intercept(ApplicationCallPipeline.Features) {
+        val publicRoutes = listOf("/", "/auth/login", "/auth/logout")
+        if (publicRoutes.indexOf(call.request.path()) == -1) {
+            val session = call.sessions.get<Session>()
+            if (session?.esiVerify == null) {
+                call.respond(HttpStatusCode.Forbidden, "")
+                return@intercept finish()
+            }
+        }
+    }
+
     authenticate("eve-oauth") {
         route("/auth/login") {
             handle {

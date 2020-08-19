@@ -51,14 +51,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
         $(function() {
-            $.get('/auth/user', function(data) {
-                if (data && data.id) {
+            $.get('/auth/user')
+                .done(function(data) {
                     $('#home').show();
                     $('#homeUserName').text(data.name);
-                } else {
+                })
+                .fail(function() { // 403
                     $('#login').show();
-                }
-            });
+                });
         });
 
         function gatesFetch(button) {
