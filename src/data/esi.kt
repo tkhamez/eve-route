@@ -5,10 +5,17 @@
 package net.tkhamez.everoute.data
 
 data class EsiVerify(
-    val CharacterID: Long,
+    val CharacterID: Int,
     val CharacterName: String,
     val ExpiresOn: String, // only used during login, never updated!
     val Scopes: String
+)
+
+data class EsiAffiliation(
+    val alliance_id: Int,
+    val character_id: Int,
+    val corporation_id: Int,
+    val faction_id: Int
 )
 
 data class EsiRefreshToken(

@@ -7,8 +7,9 @@ package net.tkhamez.everoute.data
 import net.tkhamez.everoute.EveRoute
 
 data class ResponseAuthUser(
-    val id: Long,
-    val name: String
+    val characterId: Int,
+    val characterName: String,
+    val allianceId: Int?
 )
 
 data class ResponseGates(
@@ -18,6 +19,7 @@ data class ResponseGates(
 )
 
 data class ResponseRouteCalculate(
+    var message: String = "",
     var route: List<EveRoute.Waypoint> = listOf()
 )
 

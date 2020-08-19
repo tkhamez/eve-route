@@ -46,6 +46,7 @@ fun Application.module() {
         environment.config.property("app.callback").getString(),
         environment.config.property("app.authorizeUrl").getString(),
         environment.config.property("app.accessTokenUrl").getString(),
+        environment.config.property("app.verifyUrl").getString(),
         environment.config.property("app.esiDomain").getString()
     )
 
@@ -106,7 +107,7 @@ fun Application.module() {
 
     install(Routing) {
         frontend()
-        authentication()
+        authentication(config)
         gates(config)
         route(config)
     }

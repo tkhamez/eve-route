@@ -6,9 +6,8 @@ import io.ktor.application.call
 import io.ktor.auth.OAuthAccessTokenResponse
 import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
-import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.path
 import io.ktor.response.respond
@@ -20,14 +19,11 @@ import io.ktor.routing.route
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
+import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
-import net.tkhamez.everoute.data.EsiVerify
-import net.tkhamez.everoute.data.ResponseAuthUser
-import net.tkhamez.everoute.data.Session
-import net.tkhamez.everoute.httpClient
-import java.lang.Exception
+import net.tkhamez.everoute.data.*
 
-fun Route.authentication() {
+fun Route.authentication(config: Config) {
 
     /**
      * Intercept all non-public routes and return 403 if client is not logged in.
@@ -46,17 +42,20 @@ fun Route.authentication() {
     authenticate("eve-oauth") {
         route("/auth/login") {
             handle {
+                val httpRequest = HttpRequest(config, call.application.environment.log)
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
                 if (principal != null) {
-                    var esiVerify: EsiVerify? = null
-                    try {
-                        esiVerify = httpClient.get("https://login.eveonline.com/oauth/verify") {
-                            header("Authorization", "Bearer ${principal.accessToken}")
-                        }
-                    } catch(e: Exception) {
-                        call.application.environment.log.error(e.message)
-                    }
+                    val esiVerify = httpRequest.request<EsiVerify>(
+                        config.verifyUrl,
+                        HttpMethod.Get,
+                        null,
+                        principal.accessToken
+                    )
                     if (esiVerify != null) {
+                        val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
+                            "latest/characters/affiliation/",
+                            "[${esiVerify.CharacterID}]"
+                        )
                         val session = call.sessions.get<Session>() ?: Session()
                         call.sessions.set(session.copy(
                             esiToken = EsiToken.Data(
@@ -64,7 +63,8 @@ fun Route.authentication() {
                                 refreshToken = principal.refreshToken.toString(),
                                 expiresOn = esiVerify.ExpiresOn
                             ),
-                            esiVerify = esiVerify
+                            esiVerify = esiVerify,
+                            esiAffiliation = esiAffiliation?.get(0)
                         ))
                     }
                 }
@@ -79,7 +79,8 @@ fun Route.authentication() {
         if (session?.esiVerify?.CharacterID != null) {
             data = ResponseAuthUser(
                 session.esiVerify.CharacterID,
-                session.esiVerify.CharacterName
+                session.esiVerify.CharacterName,
+                session.esiAffiliation?.alliance_id
             )
         }
         call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)

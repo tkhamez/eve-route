@@ -28,7 +28,7 @@
 
     <div id="home" class="cloak">
         <p>
-            Hello <span id="homeUserName"></span><br>
+            Hello <span id="homeUser"></span><br>
             <a href="/auth/logout">Logout</a>
         </p>
         <p id="route">
@@ -54,7 +54,7 @@
             $.get('/auth/user')
                 .done(function(data) {
                     $('#home').show();
-                    $('#homeUserName').text(data.name);
+                    $('#homeUser').text(data.characterName + ' ' + (data.allianceId || '(unknown alliance)'));
                 })
                 .fail(function() { // 403
                     $('#login').show();

@@ -1,10 +1,9 @@
 package net.tkhamez.everoute
 
 import io.ktor.application.ApplicationCall
-import io.ktor.client.request.header
-import io.ktor.client.request.post
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
@@ -12,7 +11,6 @@ import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.EsiRefreshToken
 import net.tkhamez.everoute.data.Session
 import org.slf4j.Logger
-import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,21 +63,17 @@ class EsiToken(private val config: Config, private val call: ApplicationCall) {
     }
 
     private suspend fun refreshToken(refreshToken: String): EsiRefreshToken? {
+        val httpRequest = HttpRequest(config, call.application.environment.log)
         val auth = Base64.getEncoder().encodeToString("${config.clientId}:${config.clientSecret}".toByteArray())
-        val response: EsiRefreshToken
-        try {
-            response = httpClient.post(config.accessTokenUrl) {
-                header("Authorization", "Basic $auth")
-                body = TextContent(
-                    "grant_type=refresh_token&refresh_token=$refreshToken",
-                    ContentType.Application.FormUrlEncoded
-                )
-            }
-        } catch (e: Exception) {
-            log.error(e.message)
-            return null
-        }
-
-        return response
+        return httpRequest.request<EsiRefreshToken>(
+            config.accessTokenUrl,
+            HttpMethod.Post,
+            TextContent(
+                "grant_type=refresh_token&refresh_token=$refreshToken",
+                ContentType.Application.FormUrlEncoded
+            ),
+            auth,
+            "Basic"
+        )
     }
 }

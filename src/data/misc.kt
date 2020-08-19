@@ -13,10 +13,12 @@ data class Config(
     val callback: String,
     val authorizeUrl: String,
     val accessTokenUrl: String,
+    val verifyUrl: String,
     val esiDomain: String
 )
 
 data class Session(
     val esiToken: EsiToken.Data? = null,
-    val esiVerify: EsiVerify? = null
+    val esiVerify: EsiVerify? = null,
+    val esiAffiliation: EsiAffiliation? = null
 )

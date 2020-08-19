@@ -2,8 +2,6 @@ package net.tkhamez.everoute.routes
 
 import com.google.gson.Gson
 import io.ktor.application.call
-import io.ktor.client.request.post
-import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -12,20 +10,26 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
-import net.tkhamez.everoute.EsiToken
-import net.tkhamez.everoute.EveRoute
-import net.tkhamez.everoute.Mongo
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import net.tkhamez.everoute.*
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.ResponseRouteCalculate
 import net.tkhamez.everoute.data.ResponseRouteSet
-import net.tkhamez.everoute.httpClient
-import java.lang.Exception
+import net.tkhamez.everoute.data.Session
 
 fun Route.route(config: Config) {
     get("/route/calculate/{from}/{to}") {
-        val gates = Mongo(config.db).getGates()
         val response = ResponseRouteCalculate()
+        val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
+        if (allianceId == null) {
+            response.message = "Failed to retrieve alliance of character or ESI token."
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
+        val gates = Mongo(config.db).getGates(allianceId)
         response.route = EveRoute(gates).find(
             call.parameters["from"].toString(),
             call.parameters["to"].toString()
@@ -44,6 +48,7 @@ fun Route.route(config: Config) {
             return@post
         }
 
+        val httpRequest = HttpRequest(config, call.application.environment.log)
         val body = call.receiveText()
         val waypoints = Gson().fromJson(body, Array<EveRoute.Waypoint>::class.java)
         var incomingAnsiblex = false
@@ -59,18 +64,11 @@ fun Route.route(config: Config) {
             } else {
                 value.systemId.toLong()
             }
-            val path = "/latest/ui/autopilot/waypoint/"
+            val path = "latest/ui/autopilot/waypoint/"
             var params = "?destination_id=${id}" // system, station or structure’s id
             val clear = if (index > 0) "false" else "true"
             params += "&add_to_beginning=false&clear_other_waypoints=$clear"
-            var result: HttpResponse? = null
-            try {
-                result = httpClient.post(config.esiDomain + path + params) {
-                    header("Authorization", "Bearer $accessToken")
-                }
-            } catch (e: Exception) {
-                call.application.environment.log.error(e.message)
-            }
+            val result = httpRequest.post<HttpResponse>(path + params, null, accessToken)
             if (result?.status != HttpStatusCode.NoContent) {
                 response.message = "Error: ${result?.status}"
             }

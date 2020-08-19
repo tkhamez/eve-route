@@ -8,14 +8,14 @@ class Mongo(uri: String) {
     private val client = KMongo.createClient(uri)
     private val database = client.getDatabase(dbName)
 
-    fun getGates(): List<Ansiblex> {
+    fun getGates(allianceId: Int): List<Ansiblex> {
         val gates = mutableListOf<Ansiblex>()
-        database.getCollection<Ansiblex>().find().forEach { gates.add(it) }
+        database.getCollection<Ansiblex>("ansiblex-$allianceId").find().forEach { gates.add(it) }
         return gates
     }
 
-    fun storeGate(ansiblex: Ansiblex) {
-        val col = database.getCollection<Ansiblex>()
+    fun storeGate(ansiblex: Ansiblex, allianceId: Int) {
+        val col = database.getCollection<Ansiblex>("ansiblex-$allianceId")
         val existingGate = col.findOne(Ansiblex::id eq ansiblex.id)
         if (existingGate == null) {
             col.insertOne(ansiblex)
@@ -24,8 +24,8 @@ class Mongo(uri: String) {
         }
     }
 
-    fun removeOtherGates(ansiblexes: List<Ansiblex>) {
-        val col = database.getCollection<Ansiblex>()
+    fun removeOtherGates(ansiblexes: List<Ansiblex>, allianceId: Int) {
+        val col = database.getCollection<Ansiblex>("ansiblex-$allianceId")
 
         val ids: MutableList<Long> = mutableListOf()
         ansiblexes.forEach { ids.add(it.id) }
