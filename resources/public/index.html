@@ -42,7 +42,8 @@
         </p>
         <p id="gates">
             <button onclick="gatesFetch(this)">show gates</button>
-            <button onclick="gatesUpdate(this)">update gates</button><br>
+            <button onclick="gatesUpdate(this)">update gates</button>
+            last update: <span id="gatesUpdated"></span><br>
             <span id="gatesResult"></span><br>
         </p>
     </div>
@@ -59,7 +60,17 @@
                 .fail(function() { // 403
                     $('#login').show();
                 });
+            gatesUpdated();
         });
+
+        function gatesUpdated() {
+            $.get('/gates/last-update')
+                .done(function(data) {
+                    if (data) {
+                        $('#gatesUpdated').text(data.updated);
+                    }
+                })
+        }
 
         function gatesFetch(button) {
             button.disabled = true;
@@ -86,7 +97,7 @@
             $result.html('');
             $.get('/gates/update')
                 .done(function(data) {
-                    if (! data.success) {
+                    if (data.message) { // some error
                         $result.text(data.message);
                         return;
                     }
@@ -95,6 +106,7 @@
                         gates += data.ansiblexes[i].name + '<br>';
                     }
                     $result.html(gates);
+                    gatesUpdated();
                 })
                 .fail(function() {
                     $result.text('Error.');

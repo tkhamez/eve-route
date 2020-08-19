@@ -5,6 +5,7 @@
 package net.tkhamez.everoute.data
 
 import net.tkhamez.everoute.EveRoute
+import java.util.*
 
 data class ResponseAuthUser(
     val characterId: Int,
@@ -13,9 +14,14 @@ data class ResponseAuthUser(
 )
 
 data class ResponseGates(
-    var success: Boolean = false,
     var message: String = "",
     var ansiblexes: MutableList<Ansiblex> = mutableListOf()
+)
+
+data class ResponseGatesUpdated(
+    var message: String = "",
+    var allianceId: Int? = null,
+    var updated: Date? = null
 )
 
 data class ResponseRouteCalculate(

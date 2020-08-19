@@ -29,7 +29,7 @@ fun Route.route(config: Config) {
             return@get
         }
 
-        val gates = Mongo(config.db).getGates(allianceId)
+        val gates = Mongo(config.db).gatesGet(allianceId)
         response.route = EveRoute(gates).find(
             call.parameters["from"].toString(),
             call.parameters["to"].toString()

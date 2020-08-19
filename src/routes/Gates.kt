@@ -13,10 +13,11 @@ import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.Mongo
 import net.tkhamez.everoute.data.*
 import org.slf4j.Logger
+import java.util.*
 
 fun Route.gates(config: Config) {
-    get("/gates/fetch") {
-        val response = ResponseGates(success = true)
+        get("/gates/fetch") {
+        val response = ResponseGates()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
         if (allianceId == null) {
@@ -25,7 +26,7 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        Mongo(config.db).getGates(allianceId).forEach { response.ansiblexes.add(it) }
+        Mongo(config.db).gatesGet(allianceId).forEach { response.ansiblexes.add(it) }
 
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
@@ -42,6 +43,15 @@ fun Route.gates(config: Config) {
             return@get
         }
 
+        val mongo = Mongo(config.db)
+
+        val alliance = mongo.allianceGet(allianceId)
+        if (alliance?.updated != null && alliance.updated.time.plus((60 * 60 * 1000)) > Date().time) {
+            response.message = "Gates were already updated within the last hour."
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
         val gates = fetchGates(config, characterId, accessToken, call.application.environment.log)
         if (gates == null) {
             response.message = "ESI error."
@@ -49,15 +59,31 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        val mongo = Mongo(config.db)
-
         gates.forEach {
-            mongo.storeGate(it, allianceId)
+            mongo.gateStore(it, allianceId)
             response.ansiblexes.add(it)
         }
-        mongo.removeOtherGates(gates, allianceId)
+        mongo.gatesRemoveOther(gates, allianceId)
+        mongo.allianceUpdate(Alliance(allianceId, Date()))
 
-        response.success = true
+        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+    }
+
+    get("/gates/last-update") {
+        val response = ResponseGatesUpdated()
+
+        val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
+        if (allianceId == null) {
+            response.message = "Failed to retrieve alliance of character."
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
+        val mongo = Mongo(config.db)
+        val alliance = mongo.allianceGet(allianceId)
+        response.allianceId = alliance?.id
+        response.updated = alliance?.updated
+
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 }
