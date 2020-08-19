@@ -39,6 +39,9 @@ fun Route.route(config: Config) {
     }
 
     post("/route/set") {
+        // This is not needed, but can make the route better visible in the in-game map
+        val setAnsiblexExitSystemAsWaypoint = false
+
         val response = ResponseRouteSet()
 
         val accessToken = EsiToken(config, call).get()
@@ -53,7 +56,12 @@ fun Route.route(config: Config) {
         val waypoints = Gson().fromJson(body, Array<EveRoute.Waypoint>::class.java)
         var incomingAnsiblex = false
         for ((index, value) in waypoints.withIndex()) {
-            if (index != 0 && value.ansiblexId == null && ! incomingAnsiblex && index + 1 < waypoints.size) {
+            if (
+                index != 0 && // not start system
+                index + 1 < waypoints.size && // not end system
+                value.ansiblexId == null && // not an ansiblex
+                (! setAnsiblexExitSystemAsWaypoint || ! incomingAnsiblex)
+            ) {
                 continue
             }
             incomingAnsiblex = value.ansiblexId != null
