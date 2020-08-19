@@ -1,18 +1,24 @@
 package net.tkhamez.everoute
 
+import io.ktor.application.ApplicationCall
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import io.ktor.sessions.set
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.EsiRefreshToken
+import net.tkhamez.everoute.data.Session
 import org.slf4j.Logger
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EsiToken(private val config: Config, private val log: Logger) {
+class EsiToken(private val config: Config, private val call: ApplicationCall) {
+    val log: Logger = call.application.environment.log
 
     data class Data(
         val refreshToken: String,
@@ -20,7 +26,22 @@ class EsiToken(private val config: Config, private val log: Logger) {
         var expiresOn: String
     )
 
-    suspend fun getAccessToken(esiToken: Data): Data {
+    /**
+     * Returns a valid ESI access token or null if no refresh token was found in the session.
+     */
+    suspend fun get(): String? {
+        val session = call.sessions.get<Session>()
+        if (session?.esiToken == null) {
+            return null
+        }
+
+        val esiToken = getToken(session.esiToken)
+        call.sessions.set(session.copy(esiToken = esiToken))
+
+        return esiToken.accessToken
+    }
+
+    private suspend fun getToken(esiToken: Data): Data {
         val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         val df: DateFormat = SimpleDateFormat(dateFormat)
         df.timeZone = TimeZone.getTimeZone("UTC")
