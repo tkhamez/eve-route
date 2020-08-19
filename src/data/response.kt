@@ -26,4 +26,3 @@ data class ResponseRouteCalculate(
 data class ResponseRouteSet(
     var message: String = ""
 )
-

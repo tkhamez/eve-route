@@ -1,5 +1,5 @@
 /**
- * ESI responses.
+ * OAuth/ESI responses.
  */
 
 package net.tkhamez.everoute.data
