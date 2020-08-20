@@ -8,3 +8,5 @@
 
 /.mongo
 /resources/graph.json
+/resources/public/*
+!/resources/public/.gitkeep

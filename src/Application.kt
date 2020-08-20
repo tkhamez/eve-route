@@ -13,6 +13,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
 import io.ktor.auth.*
+import io.ktor.features.CORS
 //import kotlinx.coroutines.*
 import io.ktor.features.StatusPages
 import io.ktor.util.KtorExperimentalAPI
@@ -103,6 +104,11 @@ fun Application.module() {
                 config.callback
             }
         }
+    }
+
+    install(CORS) {
+        host("localhost:3000") // allow React frontend dev port
+        allowCredentials = true
     }
 
     install(Routing) {

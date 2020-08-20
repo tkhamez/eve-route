@@ -38,6 +38,18 @@ export EVE_ROUTE_CLIENT_SECRET=12ab
 export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
 ```
 
+### Frontend
+
+```shell script
+cd frontend
+
+# start dev server
+yarn start
+
+# build for prod
+yarn build
+```
+
 ### Dev
 
 Run the app:
