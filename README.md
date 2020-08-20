@@ -87,6 +87,13 @@ cd build/libs/ && jar -xvf eve-route-0.0.1.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
 
+### Heroku
+
+```shell script
+heroku buildpacks:add heroku/nodejs
+heroku buildpacks:add heroku/gradle
+```
+
 ## Tests
 
 Tests need `resources/graph.json`, see above.

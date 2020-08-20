@@ -1,0 +1,7 @@
+{
+    "name": "eve-route-heroku",
+    "description": "For Heroku to recognizes a Node.js application.",
+    "scripts": {
+        "build": "cd frontend && yarn install && yarn build"
+    }
+}
