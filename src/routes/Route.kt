@@ -31,8 +31,8 @@ fun Route.route(config: Config) {
 
         val gates = Mongo(config.db).gatesGet(allianceId)
         response.route = EveRoute(gates).find(
-            call.parameters["from"].toString(),
-            call.parameters["to"].toString()
+            call.parameters["from"].toString().trim(),
+            call.parameters["to"].toString().trim()
         )
 
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
