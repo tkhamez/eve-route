@@ -26,11 +26,12 @@ import net.tkhamez.everoute.data.*
 fun Route.authentication(config: Config) {
 
     /**
-     * Intercept all non-public routes and return 403 if client is not logged in.
+     * Intercept all non-public routes below /api/ and return 403 if client is not logged in.
      */
     intercept(ApplicationCallPipeline.Features) {
-        val publicRoutes = listOf("/", "/auth/login", "/auth/logout")
-        if (publicRoutes.indexOf(call.request.path()) == -1) {
+        val path = call.request.path()
+        val publicRoutes = listOf("/api/auth/login")
+        if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1) {
             val session = call.sessions.get<Session>()
             if (session?.esiVerify == null) {
                 call.respond(HttpStatusCode.Forbidden, "")
@@ -40,7 +41,7 @@ fun Route.authentication(config: Config) {
     }
 
     authenticate("eve-oauth") {
-        route("/auth/login") {
+        route("/api/auth/login") {
             handle {
                 val httpRequest = HttpRequest(config, call.application.environment.log)
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
@@ -73,7 +74,7 @@ fun Route.authentication(config: Config) {
         }
     }
 
-    get("/auth/user") {
+    get("/api/auth/user") {
         val session = call.sessions.get<Session>()
         var data: ResponseAuthUser? = null
         if (session?.esiVerify?.CharacterID != null) {
@@ -86,7 +87,7 @@ fun Route.authentication(config: Config) {
         call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
     }
 
-    get("/auth/logout") {
+    get("/api/auth/logout") {
         val session = call.sessions.get<Session>() ?: Session()
         call.sessions.set(session.copy(esiToken = null, esiVerify = null))
         call.respondRedirect("/")

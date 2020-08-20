@@ -8,6 +8,8 @@ Create an EVE app at https://developers.eveonline.com with the following scopes
 - esi-universe.read_structures.v1
 - esi-ui.write_waypoint.v1
 
+Set the Callback URL to https://your.domain.tld/api/auth/login
+
 ## Database
 
 The app needs a MongoDB database.
@@ -33,7 +35,7 @@ Make sure the necessary environment variables are set, e.g.:
 export EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route
 export EVE_ROUTE_CLIENT_ID=ab12
 export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/auth/login
+export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
 ```
 
 ### Dev

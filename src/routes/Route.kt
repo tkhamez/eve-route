@@ -19,7 +19,7 @@ import net.tkhamez.everoute.data.ResponseRouteSet
 import net.tkhamez.everoute.data.Session
 
 fun Route.route(config: Config) {
-    get("/route/calculate/{from}/{to}") {
+    get("/api/route/calculate/{from}/{to}") {
         val response = ResponseRouteCalculate()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
@@ -38,7 +38,7 @@ fun Route.route(config: Config) {
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 
-    post("/route/set") {
+    post("/api/route/set") {
         // This is not needed, but can make the route better visible in the in-game map
         val setAnsiblexExitSystemAsWaypoint = false
 

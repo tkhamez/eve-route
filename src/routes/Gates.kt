@@ -16,7 +16,7 @@ import org.slf4j.Logger
 import java.util.*
 
 fun Route.gates(config: Config) {
-        get("/gates/fetch") {
+        get("/api/gates/fetch") {
         val response = ResponseGates()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
@@ -31,7 +31,7 @@ fun Route.gates(config: Config) {
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 
-    get("/gates/update") {
+    get("/api/gates/update") {
         val response = ResponseGates()
         val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
@@ -69,7 +69,7 @@ fun Route.gates(config: Config) {
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 
-    get("/gates/last-update") {
+    get("/api/gates/last-update") {
         val response = ResponseGatesUpdated()
 
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id

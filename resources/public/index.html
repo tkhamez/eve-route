@@ -21,7 +21,7 @@
     <h1>EVE Route</h1>
 
     <div id="login" class="cloak">
-        <a href="/auth/login"><img
+        <a href="/api/auth/login"><img
                 src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-small.png"
                 alt="login"></a>
     </div>
@@ -29,7 +29,7 @@
     <div id="home" class="cloak">
         <p>
             Hello <span id="homeUser"></span><br>
-            <a href="/auth/logout">Logout</a>
+            <a href="/api/auth/logout">Logout</a>
         </p>
         <p id="route">
             <label>from <input type="text" name="from"></label>
@@ -52,7 +52,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
         $(function() {
-            $.get('/auth/user')
+            $.get('/api/auth/user')
                 .done(function(data) {
                     $('#home').show();
                     $('#homeUser').text(data.characterName + ' ' + (data.allianceId || '(unknown alliance)'));
@@ -64,7 +64,7 @@
         });
 
         function gatesUpdated() {
-            $.get('/gates/last-update')
+            $.get('/api/gates/last-update')
                 .done(function(data) {
                     if (data) {
                         $('#gatesUpdated').text(data.updated);
@@ -75,7 +75,7 @@
         function gatesFetch(button) {
             button.disabled = true;
             $('#gatesResult').html('');
-            $.get('/gates/fetch')
+            $.get('/api/gates/fetch')
                 .done(function(data) {
                     let gates = '';
                     for (let i = 0; i < data.ansiblexes.length; i++) {
@@ -95,7 +95,7 @@
             button.disabled = true;
             const $result = $('#gatesResult');
             $result.html('');
-            $.get('/gates/update')
+            $.get('/api/gates/update')
                 .done(function(data) {
                     if (data.message) { // some error
                         $result.text(data.message);
@@ -123,7 +123,7 @@
             $('#routeCalculateResult').text('');
             const from = $('#route input[name="from"]').val();
             const to = $('#route input[name="to"]').val();
-            $.get('/route/calculate/' + from + '/' + to)
+            $.get('/api/route/calculate/' + from + '/' + to)
                 .done(function(data) {
                     if (data.route.length === 0) {
                         $('#routeCalculateResult').text('No route found.');
@@ -164,7 +164,7 @@
         function routeSet(button) {
             button.disabled = true;
             $('#routeSetResult').text("");
-            $.post('/route/set', JSON.stringify(esiRoute))
+            $.post('/api/route/set', JSON.stringify(esiRoute))
                 .done(function(result) {
                     $('#routeSetResult').text(result.message);
                 })
