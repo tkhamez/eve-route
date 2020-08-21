@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import axios from 'axios';
 import React from 'react';
 import './App.css';
 
@@ -8,33 +8,32 @@ class App extends React.Component {
       <div className="App">
         <h1>EVE Route</h1>
 
-        <div id="login" className="cloak">
-          <a href={this.domain+'/api/auth/login'}><img
-            src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-small.png"
-            alt="login"/></a>
+        <div id="login" className={ this.state.isLoggedIn ? 'cloak' : '' }>
+          <a href={this.domain+'/api/auth/login'}><img src="/eve-sso-login-black-small.png" alt="login"/></a>
         </div>
 
-        <div id="home" className="cloak">
+        <div id="home" className={ this.state.isLoggedIn ? '' : 'cloak' }>
           <p>
-            Hello <span id="homeUser"> </span><br/>
+            Hello {this.state.homeUser}<br/>
             <a href={this.domain+'/api/auth/logout'}>Logout</a>
           </p>
           <p id="route">
-            <label>from <input type="text" name="from"/></label>
-            <label>to <input type="text" name="to"/></label>
+            <label>from <input type="text" value={this.state.routeFrom} onChange={this.inputFromChange}/></label>
+            <label>to <input type="text" value={this.state.routeTo} onChange={this.inputToChange}/></label>
             <button onClick={this.routeCalculate}>calculate</button>
             <button onClick={this.routeSet}>set route</button>
-            <span id="routeSetResult"> </span><br/>
-            <a href="#" target="_blank">Dotlan</a><br/>
-            <span id="routeCalculateResult"> </span><br/>
+            {this.state.routeSetResult}<br/>
+            <a href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">Dotlan</a><br/>
+            {this.state.routeCalculateResult.map((value, index) => { return <span key={index}>{value}<br/></span> })}
           </p>
           <p id="gates">
             <button onClick={this.gatesFetch}>show gates</button>
             <button onClick={this.gatesUpdate}>update gates</button>
-            last update: <span id="gatesUpdated"> </span><br/>
-            <span id="gatesResult"> </span><br/>
+            last update: {this.state.gatesUpdated}<br/>
+            {this.state.gatesResult.map((value, index) => { return <span key={index}>{value}<br/></span> })}
           </p>
         </div>
+
       </div>
     );
   }
@@ -42,10 +41,23 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      isLoggedIn: false,
+      homeUser: '',
+      gatesUpdated: '',
+      gatesResult: [],
+      routeFrom: '',
+      routeTo: '',
+      routeCalculateResult: [],
+      dotlanHref: '',
+      routeSetResult: '',
+    }
+
     this.domain = '';
     if (window.location.port === '3000') {
       this.domain = 'http://localhost:8080'; // backend dev port
     }
+    this.esiRoute = []
 
     this.gatesUpdated = this.gatesUpdated.bind(this);
     this.gatesFetch = this.gatesFetch.bind(this);
@@ -53,136 +65,135 @@ class App extends React.Component {
     this.routeCalculate = this.routeCalculate.bind(this);
     this.routeSet = this.routeSet.bind(this);
 
-    $.ajaxSetup({crossDomain: true, xhrFields: { withCredentials: true } });
+    axios.defaults.withCredentials = true
+  }
 
-    $.get(this.domain+'/api/auth/user')
-      .done(function(data) {
-        $('#home').show();
-        $('#homeUser').text(data.characterName + ' ' + (data.allianceId || '(unknown alliance)'));
+  componentDidMount() {
+    const app = this;
+    axios.get(this.domain+'/api/auth/user').then(response => {
+      app.setState({
+        isLoggedIn: true,
+        homeUser: response.data.characterName + ' ' + (response.data.allianceId || '(unknown alliance)')
       })
-      .fail(function() { // 403
-        $('#login').show();
-      });
+    }).catch(() => { // 403
+      app.setState({ isLoggedIn: false })
+    });
 
     this.gatesUpdated();
-
-    this.esiRoute = []
   }
 
   gatesUpdated() {
-    $.get(this.domain+'/api/gates/last-update')
-      .done(function(data) {
-        if (data) {
-          $('#gatesUpdated').text(data.updated);
-        }
-      })
+    const app = this;
+    axios.get(this.domain+'/api/gates/last-update').then(response => {
+      if (response.data) {
+        app.setState({ gatesUpdated: response.data.updated })
+      }
+    })
   }
 
   gatesFetch(event) {
+    const app = this;
     const button = event.target;
     button.disabled = true;
-    $('#gatesResult').html('');
-    $.get(this.domain+'/api/gates/fetch')
-      .done(function(data) {
-        let gates = '';
-        for (let i = 0; i < data.ansiblexes.length; i++) {
-          gates += data.ansiblexes[i].name + '<br>';
-        }
-        $('#gatesResult').html(gates);
-      })
-      .fail(function() {
-        $('#gatesResult').text('Error.');
-      })
-      .always(function() {
-        button.disabled = false;
-      });
+    app.setState({ gatesResult: [] })
+    axios.get(this.domain+'/api/gates/fetch').then(response => {
+      let gates = [];
+      for (let i = 0; i < response.data.ansiblexes.length; i++) {
+        gates.push(response.data.ansiblexes[i].name);
+      }
+      app.setState({ gatesResult: gates })
+    }).catch(() => {
+      app.setState({ gatesResult: ['Error.'] })
+    }).then(() => {
+      button.disabled = false;
+    });
   }
 
   gatesUpdate(event) {
+    const app = this
     const button = event.target;
     button.disabled = true;
-    const $result = $('#gatesResult');
-    $result.html('');
-    const app = this
-    $.get(this.domain+'/api/gates/update')
-      .done(function(data) {
-        if (data.message) { // some error
-          $result.text(data.message);
-          return;
-        }
-        let gates = '';
-        for (let i = 0; i < data.ansiblexes.length; i++) {
-          gates += data.ansiblexes[i].name + '<br>';
-        }
-        $result.html(gates);
-        app.gatesUpdated();
-      })
-      .fail(function() {
-        $result.text('Error.');
-      })
-      .always(function() {
-        button.disabled = false;
-      });
+    app.setState({ gatesResult: [] })
+    axios.get(this.domain+'/api/gates/update').then(response => {
+      if (response.data.message) { // some error
+        app.setState({ gatesResult: [response.data.message] })
+        return;
+      }
+      let gates = [];
+      for (let i = 0; i < response.data.ansiblexes.length; i++) {
+        gates.push(response.data.ansiblexes[i].name);
+      }
+      app.setState({ gatesResult: gates })
+      app.gatesUpdated();
+    }).catch(() => {
+      app.setState({ gatesResult: ['Error.'] })
+    }).then(() => {
+      button.disabled = false;
+    });
+  }
+
+  inputFromChange = (e) => {
+    this.setState({routeFrom: e.target.value});
+  }
+
+  inputToChange = (e) => {
+    this.setState({routeTo: e.target.value});
   }
 
   routeCalculate(event) {
+    const app = this;
     const button = event.target;
     button.disabled = true;
-    $('#routeCalculateResult').text('');
-    const from = $('#route input[name="from"]').val();
-    const to = $('#route input[name="to"]').val();
-    $.get(this.domain+'/api/route/calculate/' + from + '/' + to)
-      .done(function(data) {
-        if (data.route.length === 0) {
-          $('#routeCalculateResult').text('No route found.');
-        } else {
-          this.esiRoute = []
-          let route = '';
-          let dotlanHref = 'https://evemaps.dotlan.net/route/';
-          for (let i = 0; i < data.route.length; i++) {
-            this.esiRoute.push({
-              systemId: data.route[i].systemId,
-              systemName: data.route[i].systemName, // for debugging
-              ansiblexId: data.route[i].ansiblexId || null,
-            });
-            route += data.route[i].systemName + ' ' + data.route[i].systemSecurity;
-            if (data.route[i].ansiblexName) {
-              route += ' "' + data.route[i].ansiblexName + '"';
-            }
-            route += '<br>';
-            dotlanHref += data.route[i].systemName.replace(' ', '_')
-            if (data.route[i].connectionType === "Stargate") {
-              dotlanHref += ':'
-            } else if (data.route[i].connectionType === "Ansiblex") {
-              dotlanHref += '::'
-            } // else = end system
+    app.setState({ routeCalculateResult: [] })
+    axios.get(this.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo).then(response => {
+      if (response.data.route.length === 0) {
+        app.setState({ routeCalculateResult: ['No route found.'] })
+      } else {
+        app.esiRoute = []
+        let route = [];
+        let dotlanHref = 'https://evemaps.dotlan.net/route/';
+        for (let i = 0; i < response.data.route.length; i++) {
+          app.esiRoute.push({
+            systemId: response.data.route[i].systemId,
+            systemName: response.data.route[i].systemName, // for debugging
+            ansiblexId: response.data.route[i].ansiblexId || null,
+          });
+          let waypoint = response.data.route[i].systemName + ' ' + response.data.route[i].systemSecurity;
+          if (response.data.route[i].ansiblexName) {
+            waypoint += ' "' + response.data.route[i].ansiblexName + '"';
           }
-          $('#routeCalculateResult').html(route);
-          $('#route a').attr('href', dotlanHref);
+          route.push(waypoint)
+          dotlanHref += response.data.route[i].systemName.replace(' ', '_')
+          if (response.data.route[i].connectionType === "Stargate") {
+            dotlanHref += ':'
+          } else if (response.data.route[i].connectionType === "Ansiblex") {
+            dotlanHref += '::'
+          } // else = end system
         }
-      })
-      .fail(function() {
-        $('#routeCalculateResult').text('Error.');
-      })
-      .always(function() {
-        button.disabled = false;
-      });
+        app.setState({ routeCalculateResult: route })
+        app.setState({ dotlanHref: dotlanHref })
+      }
+    })
+    .catch(() => {
+      app.setState({ routeCalculateResult: ['Error.'] })
+    })
+    .then(() => {
+      button.disabled = false;
+    });
   }
 
   routeSet(event) {
+    const app = this;
     const button = event.target;
     button.disabled = true;
-    $('#routeSetResult').text("");
-    $.post(this.domain+'/api/route/set', JSON.stringify(this.esiRoute))
-      .done(function(result) {
-        $('#routeSetResult').text(result.message);
-      })
-      .fail(function() {
-        $('#routeSetResult').text('Error.');
-      })
-      .always(function() {
-        button.disabled = false;
-      });
+    app.setState({ routeSetResult: '' })
+    axios.post(this.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
+      app.setState({ routeSetResult: response.data.message })
+    }).catch(() => {
+      app.setState({ routeSetResult: 'Error.' })
+    }).then(() => {
+      button.disabled = false;
+    });
   }
 }
 
