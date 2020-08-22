@@ -1,5 +1,7 @@
 /**
  * Application API responses.
+ *
+ * These have JS counterparts located in frontend/src/data.js
  */
 
 package net.tkhamez.everoute.data

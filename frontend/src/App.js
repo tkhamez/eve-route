@@ -51,13 +51,13 @@ class App extends React.Component {
       routeCalculateResult: [],
       dotlanHref: '',
       routeSetResult: '',
-    }
+    };
 
     this.domain = '';
     if (window.location.port === '3000') {
       this.domain = 'http://localhost:8080'; // backend dev port
     }
-    this.esiRoute = []
+    this.esiRoute = [];
 
     this.gatesUpdated = this.gatesUpdated.bind(this);
     this.gatesFetch = this.gatesFetch.bind(this);
@@ -65,7 +65,7 @@ class App extends React.Component {
     this.routeCalculate = this.routeCalculate.bind(this);
     this.routeSet = this.routeSet.bind(this);
 
-    axios.defaults.withCredentials = true
+    axios.defaults.withCredentials = true;
   }
 
   componentDidMount() {
@@ -88,14 +88,16 @@ class App extends React.Component {
       if (response.data) {
         app.setState({ gatesUpdated: response.data.updated })
       }
-    })
+    }).catch(() => { // 403
+      // do nothing (necessary or react dev tools will complain)
+    });
   }
 
   gatesFetch(event) {
     const app = this;
     const button = event.target;
     button.disabled = true;
-    app.setState({ gatesResult: [] })
+    app.setState({ gatesResult: [] });
     axios.get(this.domain+'/api/gates/fetch').then(response => {
       let gates = [];
       for (let i = 0; i < response.data.ansiblexes.length; i++) {
@@ -110,23 +112,23 @@ class App extends React.Component {
   }
 
   gatesUpdate(event) {
-    const app = this
+    const app = this;
     const button = event.target;
     button.disabled = true;
-    app.setState({ gatesResult: [] })
+    app.setState({ gatesResult: [] });
     axios.get(this.domain+'/api/gates/update').then(response => {
       if (response.data.message) { // some error
-        app.setState({ gatesResult: [response.data.message] })
+        app.setState({ gatesResult: [response.data.message] });
         return;
       }
       let gates = [];
       for (let i = 0; i < response.data.ansiblexes.length; i++) {
         gates.push(response.data.ansiblexes[i].name);
       }
-      app.setState({ gatesResult: gates })
+      app.setState({ gatesResult: gates });
       app.gatesUpdated();
     }).catch(() => {
-      app.setState({ gatesResult: ['Error.'] })
+      app.setState({ gatesResult: ['Error.'] });
     }).then(() => {
       button.disabled = false;
     });
@@ -134,22 +136,22 @@ class App extends React.Component {
 
   inputFromChange = (e) => {
     this.setState({routeFrom: e.target.value});
-  }
+  };
 
   inputToChange = (e) => {
     this.setState({routeTo: e.target.value});
-  }
+  };
 
   routeCalculate(event) {
     const app = this;
     const button = event.target;
     button.disabled = true;
-    app.setState({ routeCalculateResult: [] })
+    app.setState({ routeCalculateResult: [] });
     axios.get(this.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo).then(response => {
       if (response.data.route.length === 0) {
-        app.setState({ routeCalculateResult: ['No route found.'] })
+        app.setState({ routeCalculateResult: ['No route found.'] });
       } else {
-        app.esiRoute = []
+        app.esiRoute = [];
         let route = [];
         let dotlanHref = 'https://evemaps.dotlan.net/route/';
         for (let i = 0; i < response.data.route.length; i++) {
@@ -162,20 +164,20 @@ class App extends React.Component {
           if (response.data.route[i].ansiblexName) {
             waypoint += ' "' + response.data.route[i].ansiblexName + '"';
           }
-          route.push(waypoint)
-          dotlanHref += response.data.route[i].systemName.replace(' ', '_')
+          route.push(waypoint);
+          dotlanHref += response.data.route[i].systemName.replace(' ', '_');
           if (response.data.route[i].connectionType === "Stargate") {
-            dotlanHref += ':'
+            dotlanHref += ':';
           } else if (response.data.route[i].connectionType === "Ansiblex") {
-            dotlanHref += '::'
+            dotlanHref += '::';
           } // else = end system
         }
-        app.setState({ routeCalculateResult: route })
-        app.setState({ dotlanHref: dotlanHref })
+        app.setState({ routeCalculateResult: route });
+        app.setState({ dotlanHref: dotlanHref });
       }
     })
     .catch(() => {
-      app.setState({ routeCalculateResult: ['Error.'] })
+      app.setState({ routeCalculateResult: ['Error.'] });
     })
     .then(() => {
       button.disabled = false;
@@ -186,11 +188,11 @@ class App extends React.Component {
     const app = this;
     const button = event.target;
     button.disabled = true;
-    app.setState({ routeSetResult: '' })
+    app.setState({ routeSetResult: '' });
     axios.post(this.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
-      app.setState({ routeSetResult: response.data.message })
+      app.setState({ routeSetResult: response.data.message });
     }).catch(() => {
-      app.setState({ routeSetResult: 'Error.' })
+      app.setState({ routeSetResult: 'Error.' });
     }).then(() => {
       button.disabled = false;
     });
