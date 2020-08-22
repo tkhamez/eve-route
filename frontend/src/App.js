@@ -1,35 +1,46 @@
 import axios from 'axios';
-import React from 'react';
+import React, { Suspense } from 'react';
+import { withTranslation } from 'react-i18next';
 import './App.css';
 
-class App extends React.Component {
+class EveRoute extends React.Component {
   render() {
+    const { t } = this.props;
+
     return (
       <div className="App">
         <h1>EVE Route</h1>
 
         <div id="login" className={ this.state.isLoggedIn ? 'cloak' : '' }>
-          <a href={this.domain+'/api/auth/login'}><img src="/eve-sso-login-black-small.png" alt="login"/></a>
+          <a href={this.domain+'/api/auth/login'}>
+            <img src="/eve-sso-login-black-small.png" alt={t('login.login')}/>
+          </a>
         </div>
 
         <div id="home" className={ this.state.isLoggedIn ? '' : 'cloak' }>
           <p>
-            Hello {this.state.homeUser}<br/>
-            <a href={this.domain+'/api/auth/logout'}>Logout</a>
+            {t('home.hello')} {this.state.homeUser}<br/>
+            <a href={this.domain+'/api/auth/logout'}>{t('home.logout')}</a>
           </p>
           <p id="route">
-            <label>from <input type="text" value={this.state.routeFrom} onChange={this.inputFromChange}/></label>
-            <label>to <input type="text" value={this.state.routeTo} onChange={this.inputToChange}/></label>
-            <button onClick={this.routeCalculate}>calculate</button>
-            <button onClick={this.routeSet}>set route</button>
+            <label>
+              {t('home.from')}
+              <input type="text" value={this.state.routeFrom} onChange={this.inputFromChange} />
+            </label>
+            <label>
+              {t('home.to')}
+              <input type="text" value={this.state.routeTo} onChange={this.inputToChange} />
+            </label>
+            <button onClick={this.routeCalculate}>{t('home.calculate')}</button>
+            <button onClick={this.routeSet}>{t('home.set-route')}</button>
             {this.state.routeSetResult}<br/>
             <a href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">Dotlan</a><br/>
             {this.state.routeCalculateResult.map((value, index) => { return <span key={index}>{value}<br/></span> })}
           </p>
           <p id="gates">
-            <button onClick={this.gatesFetch}>show gates</button>
-            <button onClick={this.gatesUpdate}>update gates</button>
-            last update: {this.state.gatesUpdated}<br/>
+            <button onClick={this.gatesFetch}>{t('home.show-gates')}</button>
+            <button onClick={this.gatesUpdate}>{t('home.update-gates')}</button>
+            {t('home.last-update')}: {this.state.gatesUpdated}<br/>
             {this.state.gatesResult.map((value, index) => { return <span key={index}>{value}<br/></span> })}
           </p>
         </div>
@@ -40,6 +51,7 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
+    this.t = props.t;
 
     this.state = {
       isLoggedIn: false,
@@ -103,9 +115,9 @@ class App extends React.Component {
       for (let i = 0; i < response.data.ansiblexes.length; i++) {
         gates.push(response.data.ansiblexes[i].name);
       }
-      app.setState({ gatesResult: gates })
+      app.setState({ gatesResult: gates });
     }).catch(() => {
-      app.setState({ gatesResult: ['Error.'] })
+      app.setState({ gatesResult: [app.t('home.error')+'.'] })
     }).then(() => {
       button.disabled = false;
     });
@@ -128,7 +140,7 @@ class App extends React.Component {
       app.setState({ gatesResult: gates });
       app.gatesUpdated();
     }).catch(() => {
-      app.setState({ gatesResult: ['Error.'] });
+      app.setState({ gatesResult: [app.t('home.error')+'.'] });
     }).then(() => {
       button.disabled = false;
     });
@@ -147,9 +159,10 @@ class App extends React.Component {
     const button = event.target;
     button.disabled = true;
     app.setState({ routeCalculateResult: [] });
-    axios.get(this.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo).then(response => {
+    axios.get(this.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo)
+    .then(response => {
       if (response.data.route.length === 0) {
-        app.setState({ routeCalculateResult: ['No route found.'] });
+        app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
       } else {
         app.esiRoute = [];
         let route = [];
@@ -177,7 +190,7 @@ class App extends React.Component {
       }
     })
     .catch(() => {
-      app.setState({ routeCalculateResult: ['Error.'] });
+      app.setState({ routeCalculateResult: [app.t('home.error')+'.'] });
     })
     .then(() => {
       button.disabled = false;
@@ -192,11 +205,21 @@ class App extends React.Component {
     axios.post(this.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
       app.setState({ routeSetResult: response.data.message });
     }).catch(() => {
-      app.setState({ routeSetResult: 'Error.' });
+      app.setState({ routeSetResult: app.t('home.error')+'.' });
     }).then(() => {
       button.disabled = false;
     });
   }
 }
 
-export default App;
+const EveRouteComponent = withTranslation()(EveRoute);
+
+// i18n translations might still be loaded by the http backend
+// use react's Suspense
+export default function App() {
+  return (
+    <Suspense fallback="loading">
+      <EveRouteComponent />
+    </Suspense>
+  );
+};

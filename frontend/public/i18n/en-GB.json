@@ -1,0 +1,18 @@
+{
+  "login": {
+    "login": "login"
+  },
+  "home": {
+    "hello": "Hello",
+    "logout": "Logout",
+    "from": "from",
+    "to": "to",
+    "calculate": "calculate",
+    "set-route": "set route",
+    "show-gates": "show gates",
+    "update-gates": "update gates",
+    "last-update": "last update",
+    "error": "Error",
+    "no-route-found": "No route found."
+  }
+}
