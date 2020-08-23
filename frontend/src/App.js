@@ -1,14 +1,23 @@
 import axios from 'axios';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { withTranslation } from 'react-i18next';
 import './App.css';
 
-class EveRoute extends React.Component {
+class App extends React.Component {
   render() {
     const { t } = this.props;
 
+    const changeLanguage = (lng) => {
+      this.props.i18n.changeLanguage(lng).then();
+    };
+
     return (
       <div className="App">
+        <div id="head">
+          <button type="button" onClick={() => changeLanguage('en-GB')} title="en-GB">{t('head.en')}</button>
+          <button type="button" onClick={() => changeLanguage('zh-HK')} title="zh-HK">{t('head.zh')}</button>
+        </div>
+
         <h1>EVE Route</h1>
 
         <div id="login" className={ this.state.isLoggedIn ? 'cloak' : '' }>
@@ -86,9 +95,9 @@ class EveRoute extends React.Component {
       app.setState({
         isLoggedIn: true,
         homeUser: response.data.characterName + ' ' + (response.data.allianceId || '(unknown alliance)')
-      })
+      });
     }).catch(() => { // 403
-      app.setState({ isLoggedIn: false })
+      app.setState({ isLoggedIn: false });
     });
 
     this.gatesUpdated();
@@ -98,7 +107,7 @@ class EveRoute extends React.Component {
     const app = this;
     axios.get(this.domain+'/api/gates/last-update').then(response => {
       if (response.data) {
-        app.setState({ gatesUpdated: response.data.updated })
+        app.setState({ gatesUpdated: response.data.updated });
       }
     }).catch(() => { // 403
       // do nothing (necessary or react dev tools will complain)
@@ -117,7 +126,7 @@ class EveRoute extends React.Component {
       }
       app.setState({ gatesResult: gates });
     }).catch(() => {
-      app.setState({ gatesResult: [app.t('home.error')+'.'] })
+      app.setState({ gatesResult: [app.t('home.error')+'.'] });
     }).then(() => {
       button.disabled = false;
     });
@@ -212,14 +221,4 @@ class EveRoute extends React.Component {
   }
 }
 
-const EveRouteComponent = withTranslation()(EveRoute);
-
-// i18n translations might still be loaded by the http backend
-// use react's Suspense
-export default function App() {
-  return (
-    <Suspense fallback="loading">
-      <EveRouteComponent />
-    </Suspense>
-  );
-};
+export default withTranslation('translations')(App);
