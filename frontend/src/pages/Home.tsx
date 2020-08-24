@@ -3,13 +3,14 @@ import axios from "axios";
 import {WithTranslation, withTranslation} from 'react-i18next';
 import {TFunction} from "i18next";
 import {GlobalDataContext} from '../GlobalDataContext';
+import {ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet} from "../response";
 
 interface Props extends WithTranslation {
   t: TFunction,
 }
 
 type HomeState = {
-  gatesUpdated: string,
+  gatesUpdated: Date|null,
   gatesResult: Array<string>,
   routeFrom: string,
   routeTo: string,
@@ -69,7 +70,7 @@ class Home extends React.Component<Props, HomeState> {
     this.t = props.t;
 
     this.state = {
-      gatesUpdated: '',
+      gatesUpdated: null,
       gatesResult: [],
       routeFrom: '',
       routeTo: '',
@@ -91,7 +92,7 @@ class Home extends React.Component<Props, HomeState> {
 
   gatesUpdated() {
     const app = this;
-    axios.get(this.context.domain+'/api/gates/last-update').then(response => {
+    axios.get<ResponseGatesUpdated>(this.context.domain+'/api/gates/last-update').then(response => {
       if (response.data) {
         app.setState({ gatesUpdated: response.data.updated });
       }
@@ -105,7 +106,7 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ gatesResult: [] });
-    axios.get(this.context.domain+'/api/gates/fetch').then(response => {
+    axios.get<ResponseGates>(this.context.domain+'/api/gates/fetch').then(response => {
       let gates = [];
       for (let i = 0; i < response.data.ansiblexes.length; i++) {
         gates.push(response.data.ansiblexes[i].name);
@@ -123,7 +124,7 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ gatesResult: [] });
-    axios.get(this.context.domain+'/api/gates/update').then(response => {
+    axios.get<ResponseGates>(this.context.domain+'/api/gates/update').then(response => {
       if (response.data.message) { // some error
         app.setState({ gatesResult: [response.data.message] });
         return;
@@ -155,7 +156,7 @@ class Home extends React.Component<Props, HomeState> {
     button.disabled = true;
     app.setState({ routeCalculateResult: [] });
     const url = this.context.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo;
-    axios.get(url)
+    axios.get<ResponseRouteCalculate>(url)
       .then(response => {
         if (response.data.route.length === 0) {
           app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
@@ -198,13 +199,14 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ routeSetResult: '' });
-    axios.post(this.context.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
-      app.setState({ routeSetResult: response.data.message });
-    }).catch(() => {
-      app.setState({ routeSetResult: app.t('home.error')+'.' });
-    }).then(() => {
-      button.disabled = false;
-    });
+    axios.post<ResponseRouteSet>(this.context.domain+'/api/route/set', JSON.stringify(this.esiRoute))
+      .then(response => {
+        app.setState({ routeSetResult: response.data.message });
+      }).catch(() => {
+        app.setState({ routeSetResult: app.t('home.error')+'.' });
+      }).then(() => {
+        button.disabled = false;
+      });
   }
 }
 

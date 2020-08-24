@@ -6,6 +6,7 @@ import {GlobalDataContext} from './GlobalDataContext';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import {ResponseAuthUser} from "./response";
 
 type AppState = {
   isLoggedIn: Boolean|null,
@@ -53,7 +54,7 @@ class App extends React.Component<Props, AppState> {
 
   componentDidMount() {
     const app = this;
-    axios.get(this.globalData.domain+'/api/auth/user').then(response => {
+    axios.get<ResponseAuthUser>(this.globalData.domain+'/api/auth/user').then(response => {
       app.globalData.user = {
         name: response.data.characterName,
         alliance: response.data.allianceId || '(unknown alliance)',
