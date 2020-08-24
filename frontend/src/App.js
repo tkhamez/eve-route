@@ -2,31 +2,22 @@ import axios from 'axios';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import './App.css';
+import LanguageSwitcher from './components/LanguageSwitcher.js';
 import Login from './pages/Login.js';
 import Home from './pages/Home.js';
 
 class App extends React.Component {
   render() {
-    const { t } = this.props;
-
-    const changeLanguage = (lng) => {
-      this.props.i18n.changeLanguage(lng).then();
-    };
-
     return (
       <div>
-        <div>
-          <button type="button" onClick={() => changeLanguage('en-GB')} title="en-GB">{t('head.en')}</button>
-          <button type="button" onClick={() => changeLanguage('zh-HK')} title="zh-HK">{t('head.zh')}</button>
-        </div>
-
+        <LanguageSwitcher />
         <h1>EVE Route</h1>
 
         {! this.state.isLoggedIn > 0 &&
-          <Login domain={this.domain} t={t} />
+          <Login domain={this.domain} />
         }
         {this.state.isLoggedIn > 0 &&
-          <Home domain={this.domain} t={t} user={this.state.user} />
+          <Home domain={this.domain} user={this.state.user} />
         }
       </div>
     );

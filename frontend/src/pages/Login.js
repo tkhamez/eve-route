@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 function Login(props) {
-  const { t, domain } = props;
+  const { domain } = props;
+  const { t } = useTranslation();
 
   return (
     <div>

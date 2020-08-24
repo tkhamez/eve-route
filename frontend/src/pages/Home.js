@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from "axios";
+import { withTranslation } from 'react-i18next';
 
 class Home extends React.Component {
   render() {
@@ -183,4 +184,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default withTranslation()(Home);
