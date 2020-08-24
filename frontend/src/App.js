@@ -2,6 +2,7 @@ import axios from 'axios';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import './App.css';
+import { GlobalDataContext } from './GlobalDataContext.js';
 import LanguageSwitcher from './components/LanguageSwitcher.js';
 import Login from './pages/Login.js';
 import Home from './pages/Home.js';
@@ -9,31 +10,31 @@ import Home from './pages/Home.js';
 class App extends React.Component {
   render() {
     return (
-      <div>
+      <GlobalDataContext.Provider value={this.globalData}>
         <LanguageSwitcher />
         <h1>EVE Route</h1>
 
-        {! this.state.isLoggedIn > 0 &&
-          <Login domain={this.domain} />
-        }
-        {this.state.isLoggedIn > 0 &&
-          <Home domain={this.domain} user={this.state.user} />
-        }
-      </div>
+        { this.state.isLoggedIn === false && <Login /> }
+        { this.state.isLoggedIn           && <Home /> }
+
+      </GlobalDataContext.Provider>
     );
   }
 
   constructor(props) {
     super(props);
 
-    this.state = {
-      isLoggedIn: false,
-      user: "",
+    this.globalData = {
+      domain: '',
+      user: null,
     };
 
-    this.domain = '';
+    this.state = {
+      isLoggedIn: null,
+    };
+
     if (window.location.port === '3000') {
-      this.domain = 'http://localhost:8080'; // backend dev port
+      this.globalData.domain = 'http://localhost:8080'; // backend dev port
     }
 
     axios.defaults.withCredentials = true;
@@ -41,11 +42,12 @@ class App extends React.Component {
 
   componentDidMount() {
     const app = this;
-    axios.get(this.domain+'/api/auth/user').then(response => {
-      app.setState({
-        isLoggedIn: true,
-        user: response.data.characterName + ' ' + (response.data.allianceId || '(unknown alliance)')
-      });
+    axios.get(this.globalData.domain+'/api/auth/user').then(response => {
+      app.globalData.user = {
+        name: response.data.characterName,
+        alliance: response.data.allianceId || '(unknown alliance)',
+      };
+      app.setState({ isLoggedIn: true }); // change state *after* the user data is set
     }).catch(() => { // 403
       app.setState({ isLoggedIn: false });
     });

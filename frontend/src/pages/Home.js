@@ -1,16 +1,19 @@
 import React from 'react';
 import axios from "axios";
 import { withTranslation } from 'react-i18next';
+import { GlobalDataContext } from '../GlobalDataContext.js';
 
 class Home extends React.Component {
+  static contextType = GlobalDataContext;
+
   render() {
-    const { t, user, domain } = this.props;
+    const { t } = this.props;
 
     return (
       <div>
         <p>
-          {t('home.hello')} {user}<br/>
-          <a href={domain + '/api/auth/logout'}>{t('home.logout')}</a>
+          {t('home.hello')} {this.context.user.name} {this.context.user.alliance}<br/>
+          <a href={this.context.domain + '/api/auth/logout'}>{t('home.logout')}</a>
         </p>
 
         <p id="route">
@@ -42,7 +45,6 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.t = props.t;
-    this.domain = props.domain;
 
     this.state = {
       gatesUpdated: '',
@@ -68,7 +70,7 @@ class Home extends React.Component {
 
   gatesUpdated() {
     const app = this;
-    axios.get(this.domain+'/api/gates/last-update').then(response => {
+    axios.get(this.context.domain+'/api/gates/last-update').then(response => {
       if (response.data) {
         app.setState({ gatesUpdated: response.data.updated });
       }
@@ -82,7 +84,7 @@ class Home extends React.Component {
     const button = event.target;
     button.disabled = true;
     app.setState({ gatesResult: [] });
-    axios.get(this.domain+'/api/gates/fetch').then(response => {
+    axios.get(this.context.domain+'/api/gates/fetch').then(response => {
       let gates = [];
       for (let i = 0; i < response.data.ansiblexes.length; i++) {
         gates.push(response.data.ansiblexes[i].name);
@@ -100,7 +102,7 @@ class Home extends React.Component {
     const button = event.target;
     button.disabled = true;
     app.setState({ gatesResult: [] });
-    axios.get(this.domain+'/api/gates/update').then(response => {
+    axios.get(this.context.domain+'/api/gates/update').then(response => {
       if (response.data.message) { // some error
         app.setState({ gatesResult: [response.data.message] });
         return;
@@ -131,7 +133,7 @@ class Home extends React.Component {
     const button = event.target;
     button.disabled = true;
     app.setState({ routeCalculateResult: [] });
-    axios.get(this.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo)
+    axios.get(this.context.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo)
       .then(response => {
         if (response.data.route.length === 0) {
           app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
@@ -174,7 +176,7 @@ class Home extends React.Component {
     const button = event.target;
     button.disabled = true;
     app.setState({ routeSetResult: '' });
-    axios.post(this.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
+    axios.post(this.context.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
       app.setState({ routeSetResult: response.data.message });
     }).catch(() => {
       app.setState({ routeSetResult: app.t('home.error')+'.' });
