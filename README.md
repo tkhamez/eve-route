@@ -112,6 +112,11 @@ heroku buildpacks:add heroku/gradle
 
 ## Final Notes
 
+### Contact
+
+If you have any questions or feedback, you can contact Tian Khamez on [Tweetfleet Slack](https://tweetfleet.slack.com) 
+(get invites [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)) or on Discord Tian#0172.
+
 ### Donations
 
 If you like this software, you can thank me by sending ISK to the character 
