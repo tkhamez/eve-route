@@ -30,7 +30,10 @@ fun Route.authentication(config: Config) {
      */
     intercept(ApplicationCallPipeline.Features) {
         val path = call.request.path()
-        val publicRoutes = listOf("/api/auth/login")
+        val publicRoutes = listOf(
+            "/api/auth/login",
+            "/api/auth/logout" // to make sure that the redirect is done
+        )
         if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1) {
             val session = call.sessions.get<Session>()
             if (session?.esiVerify == null) {
