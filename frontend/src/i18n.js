@@ -9,6 +9,7 @@ i18n
     //debug: true,
     fallbackLng: 'en-GB',
     lng: 'en-GB',
+    load: 'currentOnly',
     backend: { loadPath: '/i18n/{{lng}}.json', },
     interpolation: {
       escapeValue: false,

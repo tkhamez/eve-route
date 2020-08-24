@@ -61,4 +61,4 @@ class App extends React.Component {
   }
 }
 
-export default withTranslation('translations')(App);
+export default withTranslation()(App);
