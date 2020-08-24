@@ -1,9 +1,27 @@
 import React from 'react';
 import axios from "axios";
-import { withTranslation } from 'react-i18next';
-import { GlobalDataContext } from '../GlobalDataContext.js';
+import {WithTranslation, withTranslation} from 'react-i18next';
+import {TFunction} from "i18next";
+import {GlobalDataContext} from '../GlobalDataContext';
 
-class Home extends React.Component {
+interface Props extends WithTranslation {
+  t: TFunction,
+}
+
+type HomeState = {
+  gatesUpdated: string,
+  gatesResult: Array<string>,
+  routeFrom: string,
+  routeTo: string,
+  routeCalculateResult: Array<string>,
+  dotlanHref: string,
+  routeSetResult: string,
+}
+
+class Home extends React.Component<Props, HomeState> {
+  private t: Function;
+  private esiRoute: Array<object> = [];
+
   static contextType = GlobalDataContext;
 
   render() {
@@ -29,20 +47,24 @@ class Home extends React.Component {
           <button onClick={this.routeSet}>{t('home.set-route')}</button>
           {this.state.routeSetResult}<br/>
           <a href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">Dotlan</a><br/>
-          {this.state.routeCalculateResult.map((value, index) => { return <span key={index}>{value}<br/></span> })}
+          {this.state.routeCalculateResult.map((value, index) => {
+            return <span key={index}>{value}<br/></span>
+          })}
         </p>
 
         <p id="gates">
           <button onClick={this.gatesFetch}>{t('home.show-gates')}</button>
           <button onClick={this.gatesUpdate}>{t('home.update-gates')}</button>
           {t('home.last-update')}: {this.state.gatesUpdated}<br/>
-          {this.state.gatesResult.map((value, index) => { return <span key={index}>{value}<br/></span> })}
+          {this.state.gatesResult.map((value, index) => {
+            return <span key={index}>{value}<br/></span>
+          })}
         </p>
       </div>
     );
   }
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.t = props.t;
 
@@ -55,7 +77,6 @@ class Home extends React.Component {
       dotlanHref: '',
       routeSetResult: '',
     };
-    this.esiRoute = [];
 
     this.gatesUpdated = this.gatesUpdated.bind(this);
     this.gatesFetch = this.gatesFetch.bind(this);
@@ -79,9 +100,9 @@ class Home extends React.Component {
     });
   }
 
-  gatesFetch(event) {
+  gatesFetch(event: React.MouseEvent<HTMLButtonElement>) {
     const app = this;
-    const button = event.target;
+    const button = event.currentTarget;
     button.disabled = true;
     app.setState({ gatesResult: [] });
     axios.get(this.context.domain+'/api/gates/fetch').then(response => {
@@ -97,9 +118,9 @@ class Home extends React.Component {
     });
   }
 
-  gatesUpdate(event) {
+  gatesUpdate(event: React.MouseEvent<HTMLButtonElement>) {
     const app = this;
-    const button = event.target;
+    const button = event.currentTarget;
     button.disabled = true;
     app.setState({ gatesResult: [] });
     axios.get(this.context.domain+'/api/gates/update').then(response => {
@@ -120,20 +141,21 @@ class Home extends React.Component {
     });
   }
 
-  inputFromChange = (e) => {
+  inputFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({routeFrom: e.target.value});
   };
 
-  inputToChange = (e) => {
+  inputToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({routeTo: e.target.value});
   };
 
-  routeCalculate(event) {
+  routeCalculate(event: React.MouseEvent<HTMLButtonElement>) {
     const app = this;
-    const button = event.target;
+    const button = event.currentTarget;
     button.disabled = true;
     app.setState({ routeCalculateResult: [] });
-    axios.get(this.context.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo)
+    const url = this.context.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo;
+    axios.get(url)
       .then(response => {
         if (response.data.route.length === 0) {
           app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
@@ -171,9 +193,9 @@ class Home extends React.Component {
       });
   }
 
-  routeSet(event) {
+  routeSet(event: React.MouseEvent<HTMLButtonElement>) {
     const app = this;
-    const button = event.target;
+    const button = event.currentTarget;
     button.disabled = true;
     app.setState({ routeSetResult: '' });
     axios.post(this.context.domain+'/api/route/set', JSON.stringify(this.esiRoute)).then(response => {
