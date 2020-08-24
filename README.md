@@ -1,6 +1,10 @@
-# eve-route
+# EVE Route
 
-## EVE App
+A route planner for [EVE Online](https://www.eveonline.com/).
+
+## Setup
+
+### EVE App
 
 Create an EVE app at https://developers.eveonline.com with the following scopes
 - esi-location.read_location.v1
@@ -10,7 +14,7 @@ Create an EVE app at https://developers.eveonline.com with the following scopes
 
 Set the Callback URL to https://your.domain.tld/api/auth/login
 
-## Database
+### Database
 
 The app needs a MongoDB database.
 
@@ -21,14 +25,30 @@ docker-compose up
 
 GUI: http://localhost:8081
 
-## Generate Graph from ESI Data
+## Run and Build
+
+### Frontend
+
+Requires [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
+
+```shell script
+cd frontend
+
+# start dev server
+yarn start
+
+# build (files are copied to the backend into resources/public)
+yarn build
+```
+
+### Generate Graph from ESI Data
 
 Generate `resources/graph.json`:
 ```shell script
 ./gradlew buildGraph
 ```
 
-## Run
+### Backend
 
 Make sure the necessary environment variables are set, e.g.:
 ```shell script
@@ -38,19 +58,7 @@ export EVE_ROUTE_CLIENT_SECRET=12ab
 export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
 ```
 
-### Frontend
-
-```shell script
-cd frontend
-
-# start dev server
-yarn start
-
-# build for prod
-yarn build
-```
-
-### Dev
+#### Dev
 
 Run the app:
 ```shell script
@@ -62,6 +70,12 @@ To continuously rebuild on change, execute in a second console:
 ./gradlew build -t -x test -x shadowJar -x war
 ```
 
+#### Tests
+
+```shell script
+./gradlew test
+```
+
 #### Debug
 
 IntelliJ Configuration (from Kotlin template):
@@ -69,7 +83,7 @@ IntelliJ Configuration (from Kotlin template):
 - Add environment variables
 - Use classpath of module: eve-route.main
 
-### Fat JAR
+#### Fat JAR
 
 ```shell script
 ./gradlew buildGraph
@@ -78,7 +92,7 @@ IntelliJ Configuration (from Kotlin template):
 java -jar build/libs/eve-route-0.0.1.jar
 ```
 
-### WAR (Servlet Container)
+#### WAR (Servlet Container)
 
 ```shell script
 ./gradlew war
@@ -87,17 +101,25 @@ cd build/libs/ && jar -xvf eve-route-0.0.1.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
 
-### Heroku
+## Deploy to Heroku
+
+Add build packs in this order:
 
 ```shell script
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/gradle
 ```
 
-## Tests
+## Final Notes
 
-Tests need `resources/graph.json`, see above.
+### Donations
 
-```shell script
-./gradlew test
-```
+If you like this software, you can thank me by sending ISK to the character 
+[Tian Khamez](https://evewho.com/character/96061222).
+
+### Copyright Notice
+
+EVE Route is licensed under the [MIT license](LICENSE).
+
+"EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
+[CCP hf](http://www.ccpgames.com/).
