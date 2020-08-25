@@ -14,7 +14,8 @@ data class Config(
     val authorizeUrl: String,
     val accessTokenUrl: String,
     val verifyUrl: String,
-    val esiDomain: String
+    val esiDomain: String,
+    val cors: String
 )
 
 data class Session(

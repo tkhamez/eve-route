@@ -48,7 +48,8 @@ fun Application.module() {
         environment.config.property("app.authorizeUrl").getString(),
         environment.config.property("app.accessTokenUrl").getString(),
         environment.config.property("app.verifyUrl").getString(),
-        environment.config.property("app.esiDomain").getString()
+        environment.config.property("app.esiDomain").getString(),
+        environment.config.property("app.corsDomain").getString()
     )
 
     // Remove all those DEBUG messages from the console
@@ -106,9 +107,15 @@ fun Application.module() {
         }
     }
 
-    install(CORS) {
-        host("localhost:3000") // allow React frontend dev port
-        allowCredentials = true
+    if (config.cors.isNotEmpty()) {
+        install(CORS) {
+            method(HttpMethod.Put)
+            method(HttpMethod.Delete)
+            method(HttpMethod.Options)
+            host(config.cors, listOf("http", "https"))
+            allowCredentials = true
+            allowNonSimpleContentTypes = true
+        }
     }
 
     install(Routing) {

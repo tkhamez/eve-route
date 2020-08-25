@@ -156,42 +156,41 @@ class Home extends React.Component<Props, HomeState> {
     button.disabled = true;
     app.setState({ routeCalculateResult: [] });
     const url = this.context.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo;
-    axios.get<ResponseRouteCalculate>(url)
-      .then(response => {
-        if (response.data.route.length === 0) {
-          app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
-        } else {
-          app.esiRoute = [];
-          let route = [];
-          let dotlanHref = 'https://evemaps.dotlan.net/route/';
-          for (let i = 0; i < response.data.route.length; i++) {
-            app.esiRoute.push({
-              systemId: response.data.route[i].systemId,
-              systemName: response.data.route[i].systemName, // for debugging
-              ansiblexId: response.data.route[i].ansiblexId || null,
-            });
-            let waypoint = response.data.route[i].systemName + ' ' + response.data.route[i].systemSecurity;
-            if (response.data.route[i].ansiblexName) {
-              waypoint += ' "' + response.data.route[i].ansiblexName + '"';
-            }
-            route.push(waypoint);
-            dotlanHref += response.data.route[i].systemName.replace(' ', '_');
-            if (response.data.route[i].connectionType === "Stargate") {
-              dotlanHref += ':';
-            } else if (response.data.route[i].connectionType === "Ansiblex") {
-              dotlanHref += '::';
-            } // else = end system
+    axios.get<ResponseRouteCalculate>(url).then(response => {
+      if (response.data.route.length === 0) {
+        app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
+      } else {
+        app.esiRoute = [];
+        let route = [];
+        let dotlanHref = 'https://evemaps.dotlan.net/route/';
+        for (let i = 0; i < response.data.route.length; i++) {
+          app.esiRoute.push({
+            systemId: response.data.route[i].systemId,
+            systemName: response.data.route[i].systemName, // for debugging
+            ansiblexId: response.data.route[i].ansiblexId || null,
+          });
+          let waypoint = response.data.route[i].systemName + ' ' + response.data.route[i].systemSecurity;
+          if (response.data.route[i].ansiblexName) {
+            waypoint += ' "' + response.data.route[i].ansiblexName + '"';
           }
-          app.setState({ routeCalculateResult: route });
-          app.setState({ dotlanHref: dotlanHref });
+          route.push(waypoint);
+          dotlanHref += response.data.route[i].systemName.replace(' ', '_');
+          if (response.data.route[i].connectionType === "Stargate") {
+            dotlanHref += ':';
+          } else if (response.data.route[i].connectionType === "Ansiblex") {
+            dotlanHref += '::';
+          } // else = end system
         }
-      })
-      .catch(() => {
-        app.setState({ routeCalculateResult: [app.t('home.error')+'.'] });
-      })
-      .then(() => {
-        button.disabled = false;
-      });
+        app.setState({ routeCalculateResult: route });
+        app.setState({ dotlanHref: dotlanHref });
+      }
+    })
+    .catch(() => {
+      app.setState({ routeCalculateResult: [app.t('home.error')+'.'] });
+    })
+    .then(() => {
+      button.disabled = false;
+    });
   }
 
   routeSet(event: React.MouseEvent<HTMLButtonElement>) {
@@ -199,8 +198,11 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ routeSetResult: '' });
-    axios.post<ResponseRouteSet>(this.context.domain+'/api/route/set', JSON.stringify(this.esiRoute))
-      .then(response => {
+    axios.post<ResponseRouteSet>(
+      this.context.domain+'/api/route/set',
+      JSON.stringify(this.esiRoute),
+      { headers: { 'Content-Type': 'application/json' } },
+    ).then(response => {
         app.setState({ routeSetResult: response.data.message });
       }).catch(() => {
         app.setState({ routeSetResult: app.t('home.error')+'.' });
