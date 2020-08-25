@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from "axios";
-import {WithTranslation, withTranslation} from 'react-i18next';
-import {TFunction} from "i18next";
-import {GlobalDataContext} from '../GlobalDataContext';
-import {ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet} from "../response";
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TFunction } from "i18next";
+import { GlobalDataContext } from '../GlobalDataContext';
+import { ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet } from "../response";
 
 interface Props extends WithTranslation {
   t: TFunction,

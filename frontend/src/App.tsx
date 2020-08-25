@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React from 'react';
-import {WithTranslation, withTranslation} from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import './App.css';
-import {GlobalDataContext} from './GlobalDataContext';
+import { GlobalDataContext } from './GlobalDataContext';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import {ResponseAuthUser} from "./response";
+import { ResponseAuthUser } from "./response";
 
 type AppState = {
   isLoggedIn: Boolean|null,

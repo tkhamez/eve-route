@@ -1,6 +1,6 @@
-import React, {useContext} from 'react';
-import {useTranslation} from 'react-i18next';
-import {GlobalDataContext} from "../GlobalDataContext";
+import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { GlobalDataContext } from "../GlobalDataContext";
 
 const Login = () => {
   const globalData = useContext(GlobalDataContext);
