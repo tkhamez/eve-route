@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Box, Link } from '@material-ui/core';
 import { GlobalDataContext } from "../GlobalDataContext";
 
 const Login = () => {
@@ -7,11 +8,11 @@ const Login = () => {
   const { t } = useTranslation();
 
   return (
-    <div>
-      <a href={globalData.domain+'/api/auth/login'}>
-        <img src="/eve-sso-login-black-small.png" alt={t('login.login')}/>
-      </a>
-    </div>
+      <Box display="flex" justifyContent="center">
+        <Link href={globalData.domain+'/api/auth/login'} rel="noopener noreferrer">
+          <img src="/eve-sso-login-black-large.png" alt={t('login.login')}/>
+        </Link>
+      </Box>
   );
 };
 

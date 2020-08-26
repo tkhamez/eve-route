@@ -1,9 +1,10 @@
 import React from 'react';
-import axios from "axios";
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { TFunction } from "i18next";
+import { TFunction } from 'i18next';
+import { Link } from '@material-ui/core';
+import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet } from "../response";
+import { ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet } from '../response';
 
 interface Props extends WithTranslation {
   t: TFunction,
@@ -30,11 +31,6 @@ class Home extends React.Component<Props, HomeState> {
 
     return (
       <div>
-        <p>
-          {t('home.hello')} {this.context.user.name} {this.context.user.alliance}<br/>
-          <a href={this.context.domain + '/api/auth/logout'}>{t('home.logout')}</a>
-        </p>
-
         <p id="route">
           <label>
             {t('home.from')}
@@ -47,7 +43,14 @@ class Home extends React.Component<Props, HomeState> {
           <button onClick={this.routeCalculate}>{t('home.calculate')}</button>
           <button onClick={this.routeSet}>{t('home.set-route')}</button>
           {this.state.routeSetResult}<br/>
-          <a href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">Dotlan</a><br/>
+
+          {this.state.dotlanHref &&
+            <span>
+              <Link href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">{t('home.dotlan')}</Link>
+              <br />
+            </span>
+          }
+
           {this.state.routeCalculateResult.map((value, index) => {
             return <span key={index}>{value}<br/></span>
           })}

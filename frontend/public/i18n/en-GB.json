@@ -1,14 +1,22 @@
 {
-  "head": {
+  "app": {
+    "name": "EVE Route"
+  },
+  "header": {
+    "logout": "Logout",
     "en": "English",
     "zh": "Chinese"
   },
+  "footer": {
+    "github": "EVE Route on <1>GitHub</1>.",
+    "donate": "Donate ISK to the <1>author</1>.",
+    "ccp": "\"EVE\", \"EVE Online\", \"CCP\" and all related logos and images are trademarks or registered trademarks of <1>CCP hf</1>."
+  },
   "login": {
-    "login": "login"
+    "login": "Login with EVE Online"
   },
   "home": {
-    "hello": "Hello",
-    "logout": "Logout",
+    "dotlan": "DOTLAN EveMaps",
     "from": "from",
     "to": "to",
     "calculate": "calculate",

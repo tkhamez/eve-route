@@ -1,34 +1,60 @@
 import axios from 'axios';
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import './App.css';
+import { createStyles, Theme, Container } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import { GlobalDataContext } from './GlobalDataContext';
-import LanguageSwitcher from './components/LanguageSwitcher';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import { ResponseAuthUser } from "./response";
+
+const styles = (theme: Theme) => createStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
+  main: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  footer: {
+    padding: theme.spacing(3, 2),
+    marginTop: 'auto',
+    backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
+  },
+});
+
+interface Props extends WithTranslation {
+  classes: any
+}
 
 type AppState = {
   isLoggedIn: Boolean|null,
 }
 
-interface Props extends WithTranslation {}
-
 class App extends React.Component<Props, AppState> {
-  private readonly globalData: {
-    domain: string,
-    user: object,
-  };
+  private readonly globalData: any;
 
   render() {
+    const { classes } = this.props;
+
     return (
       <GlobalDataContext.Provider value={this.globalData}>
-        <LanguageSwitcher />
-        <h1>EVE Route</h1>
+        <div className={classes.root}>
+          <Header />
 
-        { this.state.isLoggedIn === false && <Login /> }
-        { this.state.isLoggedIn           && <Home /> }
+          <Container component="main" className={classes.main} maxWidth="md">
+            { this.state.isLoggedIn === false && <Login /> }
+            { this.state.isLoggedIn           && <Home /> }
+          </Container>
 
+          <footer className={classes.footer}>
+            <Footer />
+          </footer>
+        </div>
       </GlobalDataContext.Provider>
     );
   }
@@ -36,15 +62,13 @@ class App extends React.Component<Props, AppState> {
   constructor(props: Props) {
     super(props);
 
-    this.globalData = {
-      domain: '',
-      user: {},
-    };
+    this.globalData = {};
 
     this.state = {
       isLoggedIn: null,
     };
 
+    this.globalData.domain = '';
     if (window.location.port === '3000') {
       this.globalData.domain = 'http://localhost:8080'; // backend dev port
     }
@@ -66,4 +90,4 @@ class App extends React.Component<Props, AppState> {
   }
 }
 
-export default withTranslation()(App);
+export default withTranslation()(withStyles(styles)(App));
