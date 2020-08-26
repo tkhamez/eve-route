@@ -3,7 +3,7 @@ import { Trans } from 'react-i18next';
 import { Container, Grid, Link, Typography } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 
-function Footer() {
+export default function Footer() {
   return (
       <Container maxWidth="md">
         <Grid container spacing={6}>
@@ -37,5 +37,3 @@ function Footer() {
       </Container>
   );
 }
-
-export default Footer;

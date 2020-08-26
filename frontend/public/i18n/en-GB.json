@@ -4,8 +4,9 @@
   },
   "header": {
     "logout": "Logout",
-    "en": "English",
-    "zh": "Chinese"
+    "change-language": "Change language",
+    "en-GB": "English",
+    "zh-CN": "中文"
   },
   "footer": {
     "github": "EVE Route on <1>GitHub</1>.",
