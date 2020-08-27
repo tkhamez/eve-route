@@ -26,6 +26,11 @@ data class ResponseGatesUpdated(
     var updated: Date? = null
 )
 
+data class ResponseRouteSystems(
+    var message: String = "",
+    var systems: MutableList<String> = mutableListOf()
+)
+
 data class ResponseRouteCalculate(
     var message: String = "",
     var route: List<EveRoute.Waypoint> = listOf()

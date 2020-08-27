@@ -13,12 +13,25 @@ import io.ktor.routing.post
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import net.tkhamez.everoute.*
-import net.tkhamez.everoute.data.Config
-import net.tkhamez.everoute.data.ResponseRouteCalculate
-import net.tkhamez.everoute.data.ResponseRouteSet
-import net.tkhamez.everoute.data.Session
+import net.tkhamez.everoute.data.*
+import java.io.File
 
 fun Route.route(config: Config) {
+    get("/api/route/systems") {
+        val resource = javaClass.getResource("/graph.json")
+
+        val graphJson = resource?.readText() ?: File("resources/graph.json").readText()
+        val graph = Gson().fromJson(graphJson, Graph::class.java)
+
+        val response = ResponseRouteSystems()
+        graph.systems.forEach {
+            response.systems.add(it.name)
+        }
+        response.systems.sort()
+
+        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+    }
+
     get("/api/route/calculate/{from}/{to}") {
         val response = ResponseRouteCalculate()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
