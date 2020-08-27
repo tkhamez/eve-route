@@ -1,10 +1,11 @@
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { Link } from '@material-ui/core';
+import { Box, Grid, Link } from '@material-ui/core';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet } from '../response';
+import SystemInput from '../components/SystemInput';
 
 interface Props extends WithTranslation {
   t: TFunction,
@@ -31,15 +32,21 @@ class Home extends React.Component<Props, HomeState> {
 
     return (
       <div>
+
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Box display="flex" justifyContent="center">
+              <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}/>
+            </Box>
+          </Grid>
+          <Grid item xs={6}>
+            <Box display="flex" justifyContent="center">
+              <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
+            </Box>
+          </Grid>
+        </Grid>
+
         <p id="route">
-          <label>
-            {t('home.from')}
-            <input type="text" value={this.state.routeFrom} onChange={this.inputFromChange} />
-          </label>
-          <label>
-            {t('home.to')}
-            <input type="text" value={this.state.routeTo} onChange={this.inputToChange} />
-          </label>
           <button onClick={this.routeCalculate}>{t('home.calculate')}</button>
           <button onClick={this.routeSet}>{t('home.set-route')}</button>
           {this.state.routeSetResult}<br/>
@@ -145,12 +152,12 @@ class Home extends React.Component<Props, HomeState> {
     });
   }
 
-  inputFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({routeFrom: e.target.value});
+  startChanged = (value: string) => {
+    this.setState({routeFrom: value});
   };
 
-  inputToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({routeTo: e.target.value});
+  endChanged = (value: string) => {
+    this.setState({routeTo: value});
   };
 
   routeCalculate(event: React.MouseEvent<HTMLButtonElement>) {
@@ -158,7 +165,7 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ routeCalculateResult: [] });
-    const url = this.context.domain+'/api/route/calculate/' + this.state.routeFrom + '/' + this.state.routeTo;
+    const url = `${this.context.domain}/api/route/calculate/${this.state.routeFrom}/${this.state.routeTo}`;
     axios.get<ResponseRouteCalculate>(url).then(response => {
       if (response.data.route.length === 0) {
         app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });

@@ -19,8 +19,8 @@
   },
   "home": {
     "dotlan": "DOTLAN EveMaps",
-    "from": "from",
-    "to": "to",
+    "start-system": "Start system",
+    "end-system": "End system",
     "calculate": "calculate",
     "set-route": "set route",
     "show-gates": "show gates",
