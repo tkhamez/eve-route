@@ -1,7 +1,7 @@
 {
   "header": {
-    "logout": "登出",
-    "change-language": "更改语言",
+    "logout": "выйти",
+    "change-language": "Сменить язык",
     "en-GB": "English",
     "ru-RU": "Русский",
     "zh-CN": "中文"

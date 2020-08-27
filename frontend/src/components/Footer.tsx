@@ -6,9 +6,9 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 export default function Footer() {
   return (
       <Container maxWidth="md">
-        <Grid container spacing={6}>
+        <Grid container spacing={0}>
           <Grid item xs={6}>
-            <Typography variant="body2" color="textSecondary" align="right">
+            <Typography variant="body2" color="textSecondary" align="center">
               <GitHubIcon fontSize="inherit"/>{' '}
               <Trans i18nKey="footer.github">
                 %<Link color="inherit" underline="always" target="_blank" rel="noopener noreferrer"
@@ -17,7 +17,7 @@ export default function Footer() {
             </Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body2" color="textSecondary" align="left">
+            <Typography variant="body2" color="textSecondary" align="center">
               <strong>Ƶ</strong>{' '}
               <Trans i18nKey="footer.donate">
                 %<Link color="inherit" underline="always" target="_blank" rel="noopener noreferrer" title="Tian Khamez"

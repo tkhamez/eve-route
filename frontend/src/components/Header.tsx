@@ -26,6 +26,8 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     flexWrap: 'wrap',
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   toolbarTitle: {
     flexGrow: 1,
@@ -44,7 +46,7 @@ export default function Header() {
     <HideOnScroll>
       <AppBar position="sticky" color="default" elevation={0} className={classes.appBar}>
         <Container maxWidth="md">
-          <Toolbar className={classes.toolbar}>
+          <Toolbar className={classes.toolbar} variant="dense">
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>
 
             { globalData.user &&

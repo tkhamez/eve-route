@@ -6,6 +6,7 @@
     "logout": "Logout",
     "change-language": "Change language",
     "en-GB": "English",
+    "ru-RU": "Русский",
     "zh-CN": "中文"
   },
   "footer": {
@@ -14,7 +15,7 @@
     "ccp": "\"EVE\", \"EVE Online\", \"CCP\" and all related logos and images are trademarks or registered trademarks of <1>CCP hf</1>."
   },
   "login": {
-    "login": "Login with EVE Online"
+    "log-in": "Log in with EVE Online"
   },
   "home": {
     "dotlan": "DOTLAN EveMaps",

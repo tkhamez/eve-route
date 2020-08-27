@@ -22,15 +22,21 @@ export default function LanguageSwitcher() {
   return (
     <div>
       <Tooltip title={t('header.change-language').toString()}>
-        <Button aria-controls="language-menu" aria-haspopup="true" onClick={handleClick}>
-          <TranslateIcon /> &nbsp;
-          {t('header.'+i18n.language)}
+        <Button aria-controls="language-menu" aria-haspopup="true" onClick={handleClick} style={{paddingRight: 0}}>
+          <TranslateIcon />
           <ExpandMoreIcon />
         </Button>
       </Tooltip>
       <Menu id="language-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
-        <MenuItem onClick={handleClose} data-language='en-GB'>{t('header.en-GB')}</MenuItem>
-        <MenuItem onClick={handleClose} data-language='zh-CN'>{t('header.zh-CN')}</MenuItem>
+        <MenuItem onClick={handleClose} data-language='en-GB' selected={i18n.language === 'en-GB'} title="en-GB">
+          {t('header.en-GB')}
+        </MenuItem>
+        <MenuItem onClick={handleClose} data-language='ru-RU' selected={i18n.language === 'ru-RU'} title="ru-RU">
+          {t('header.ru-RU')}
+        </MenuItem>
+        <MenuItem onClick={handleClose} data-language='zh-CN' selected={i18n.language === 'zh-CN'} title="zh-CN">
+          {t('header.zh-CN')}
+        </MenuItem>
       </Menu>
     </div>
   );

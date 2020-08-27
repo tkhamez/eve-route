@@ -21,7 +21,7 @@ const styles = (theme: Theme) => createStyles({
     marginBottom: theme.spacing(2),
   },
   footer: {
-    padding: theme.spacing(3, 2),
+    padding: theme.spacing(2, 0),
     marginTop: 'auto',
     backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
   },
