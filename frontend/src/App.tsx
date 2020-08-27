@@ -1,8 +1,8 @@
-import axios from 'axios';
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { createStyles, Theme, Container } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
+import axios from 'axios';
 import { GlobalDataContext } from './GlobalDataContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -69,8 +69,8 @@ class App extends React.Component<Props, AppState> {
     };
 
     this.globalData.domain = '';
-    if (window.location.port === '3000') {
-      this.globalData.domain = 'http://localhost:8080'; // backend dev port
+    if (window.location.port === '3000') { // frontend dev port
+      this.globalData.domain = `http://${window.location.hostname}:8080`; // backend dev port
     }
 
     axios.defaults.withCredentials = true;
