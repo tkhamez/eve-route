@@ -13,8 +13,12 @@ val graph = buildGraph(esiData)
 writeJsonFile(graph)
 
 fun readData(): Data {
-    val regionBlackList = listOf("ADR01", "ADR02", "ADR03", "ADR04", "ADR05", "PR-01")
-    val regionBlackListSubString = "-R00"
+    val regionDenyList = listOf(
+        "A821-A", "J7HZ-F", "UUA-F4", // unreachable normal regions
+        //"A-R00001", "A-R00002", "A-R00003", // Wormholes
+        "ADR01", "ADR02", "ADR03", "ADR04", "ADR05", // Abyssal Deadspace
+        "PR-01" // unknown
+    )
     val dataPath = "esi-data/json/universe/"
 
     val esiData = Data()
@@ -22,10 +26,7 @@ fun readData(): Data {
     val regionsJson = File(dataPath + "regions/regions.json").readText()
     val regions = Gson().fromJson(regionsJson, Array<Region>::class.java)
     for (region in regions) {
-        if (
-            regionBlackList.indexOf(region.name) != -1 ||
-            region.name.indexOf(regionBlackListSubString) != -1
-        ) {
+        if (regionDenyList.indexOf(region.name) != -1) {
             continue
         }
         esiData.regions.add(region)
