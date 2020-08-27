@@ -57,7 +57,7 @@ fun Route.authentication(config: Config) {
                     )
                     if (esiVerify != null) {
                         val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
-                            "latest/characters/affiliation/",
+                            "latest/characters/affiliation/?datasource=${config.esiDatasource}",
                             "[${esiVerify.CharacterID}]"
                         )
                         val session = call.sessions.get<Session>() ?: Session()

@@ -49,6 +49,7 @@ fun Application.module() {
         environment.config.property("app.accessTokenUrl").getString(),
         environment.config.property("app.verifyUrl").getString(),
         environment.config.property("app.esiDomain").getString(),
+        environment.config.property("app.esiDatasource").getString(),
         environment.config.property("app.corsDomain").getString()
     )
 

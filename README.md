@@ -56,7 +56,14 @@ export EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route
 export EVE_ROUTE_CLIENT_ID=ab12
 export EVE_ROUTE_CLIENT_SECRET=12ab
 export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
+
+# the following are optional:
 export EVE_ROUTE_CORS_DOMAIN=localhost:3000
+export EVE_ROUTE_OAUTH_AUTHORIZE=https://login.eveonline.com/v2/oauth/authorize
+export EVE_ROUTE_OAUTH_TOKEN=https://login.eveonline.com/v2/oauth/token
+export EVE_ROUTE_OAUTH_VERIFY=https://login.eveonline.com/oauth/verify
+export EVE_ROUTE_ESI_DOMAIN=https://esi.evetech.net
+export EVE_ROUTE_ESI_DATASOURCE=tranquility
 ```
 
 The CORS domain setting includes http and https.

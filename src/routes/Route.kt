@@ -72,8 +72,8 @@ fun Route.route(config: Config) {
             } else {
                 value.systemId.toLong()
             }
-            val path = "latest/ui/autopilot/waypoint/"
-            var params = "?destination_id=${id}" // system, station or structure’s id
+            val path = "latest/ui/autopilot/waypoint/?datasource=${config.esiDatasource}"
+            var params = "&destination_id=${id}" // system, station or structure’s id
             val clear = if (index > 0) "false" else "true"
             params += "&add_to_beginning=false&clear_other_waypoints=$clear"
             val result = httpRequest.post<HttpResponse>(path + params, null, accessToken)

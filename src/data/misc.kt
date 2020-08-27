@@ -15,6 +15,7 @@ data class Config(
     val accessTokenUrl: String,
     val verifyUrl: String,
     val esiDomain: String,
+    val esiDatasource: String,
     val cors: String
 )
 

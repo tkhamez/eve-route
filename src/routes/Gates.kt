@@ -97,8 +97,8 @@ private suspend fun fetchGates(
     val httpRequest = HttpRequest(config, log)
 
     // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
-    val searchPath = "latest/characters/$characterId/search/"
-    val searchParams = "?categories=structure&search=%20%C2%BB%20" // " » "
+    val searchPath = "latest/characters/$characterId/search/?datasource=${config.esiDatasource}"
+    val searchParams = "&categories=structure&search=%20%C2%BB%20" // " » "
     val esiSearchStructure = httpRequest.get<EsiSearchStructure>(searchPath + searchParams, accessToken) ?: return null
 
     log.info("Got ${esiSearchStructure.structure.size} results.")
@@ -106,7 +106,10 @@ private suspend fun fetchGates(
     // Fetch structure info, needs scope esi-universe.read_structures.v1
     val gates = mutableListOf<Ansiblex>()
     for (id in esiSearchStructure.structure) {
-        val gate = httpRequest.get<EsiStructure>("latest/universe/structures/$id/", accessToken)
+        val gate = httpRequest.get<EsiStructure>(
+            "latest/universe/structures/$id/?datasource=${config.esiDatasource}",
+            accessToken
+        )
             ?: // TODO try again
             continue
         if (gate.type_id == 35841) {
