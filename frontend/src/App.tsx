@@ -15,15 +15,12 @@ const styles = (theme: Theme) => createStyles({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-  },
-  main: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    backgroundColor: theme.palette.grey[900],
   },
   footer: {
     padding: theme.spacing(2, 0),
     marginTop: 'auto',
-    backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
+    backgroundColor: theme.palette.background.default,
   },
 });
 
@@ -46,7 +43,7 @@ class App extends React.Component<Props, AppState> {
         <div className={classes.root}>
           <Header />
 
-          <Container component="main" className={classes.main} maxWidth="md">
+          <Container component="main" maxWidth="md">
             { this.state.isLoggedIn === false && <Login /> }
             { this.state.isLoggedIn           && <Home /> }
           </Container>

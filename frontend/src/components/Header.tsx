@@ -22,7 +22,7 @@ function HideOnScroll(props: HideOnScrollProps) {
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    backgroundColor: theme.palette.background.default,
   },
   toolbar: {
     flexWrap: 'wrap',
@@ -44,7 +44,7 @@ export default function Header() {
 
   return (
     <HideOnScroll>
-      <AppBar position="sticky" color="default" elevation={0} className={classes.appBar}>
+      <AppBar position="sticky" color="default" elevation={8} className={classes.appBar}>
         <Container maxWidth="md">
           <Toolbar className={classes.toolbar} variant="dense">
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>

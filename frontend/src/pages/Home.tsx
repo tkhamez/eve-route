@@ -1,22 +1,53 @@
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { Box, Grid, Link } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  createStyles,
+  Grid,
+  Link,
+  List, ListItem, ListItemIcon, ListItemText, ListSubheader,
+  Theme,
+  Typography
+} from '@material-ui/core';
+import { withStyles } from "@material-ui/styles";
+import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
+import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseGates, ResponseGatesUpdated, ResponseRouteCalculate, ResponseRouteSet } from '../response';
+import { ResponseGates, ResponseGatesUpdated, ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
+
+const styles = (theme: Theme) => createStyles({
+  card: {
+    backgroundColor: theme.palette.background.default,
+    margin: theme.spacing(2, 0),
+    borderRadius: "4px",
+  },
+  list: {
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: "4px",
+  },
+  listIcon: {
+    minWidth: 0,
+    marginRight: '15px',
+  }
+});
 
 interface Props extends WithTranslation {
   t: TFunction,
+  classes: any,
 }
 
 type HomeState = {
   gatesUpdated: Date|null,
   gatesResult: Array<string>,
-  routeFrom: string,
-  routeTo: string,
-  routeCalculateResult: Array<string>,
+  routeFrom: string|null,
+  routeTo: string|null,
+  buttonRouteFindDisabled: boolean,
+  routeFindResultMessage: string,
+  routeFindResultWaypoints: Array<Waypoint>,
   dotlanHref: string,
   routeSetResult: string,
 }
@@ -29,11 +60,27 @@ class Home extends React.Component<Props, HomeState> {
 
   render() {
     const { t } = this.props;
+    const { classes } = this.props;
 
     return (
-      <div>
+      <div style={{ width: 'calc(100% - 16px)' }}> {
+        /* Grid with spacing>0 is bigger than the parent, this fixes that for spacing=2,
+         see also https://github.com/mui-org/material-ui/issues/7466 */}
 
-        <Grid container spacing={2}>
+        <p>
+          <button onClick={this.gatesFetch}>{t('home.show-gates')}</button>
+          <button onClick={this.gatesUpdate}>{t('home.update-gates')}</button>
+          {t('home.last-update')}: {this.state.gatesUpdated}<br/>
+          {this.state.gatesResult.map((value, index) => {
+            return <span key={index}>{value}<br/></span>
+          })}
+        </p>
+
+        <Grid container spacing={2} className={classes.card}>
+          <Grid item xs={12}>
+            <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
+          </Grid>
+
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}/>
@@ -44,33 +91,72 @@ class Home extends React.Component<Props, HomeState> {
               <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
             </Box>
           </Grid>
+
+          <Grid item xs={6}>
+            <Box display="flex" justifyContent="right">
+              <Button variant="contained" color="primary" onClick={this.routeFind}
+                      disabled={this.state.buttonRouteFindDisabled}>
+                {t('home.find-route')}
+              </Button>
+            </Box>
+          </Grid>
+          <Grid item xs={6}>
+            <Box display="flex" justifyContent="left">
+              <Typography>
+                <Button variant="contained" color="primary" onClick={this.routeSet}
+                        disabled={this.esiRoute.length === 0}>
+                  {t('home.set-route')}
+                </Button>
+                {' '}{this.state.routeSetResult}
+              </Typography>
+            </Box>
+          </Grid>
         </Grid>
 
-        <p id="route">
-          <button onClick={this.routeCalculate}>{t('home.calculate')}</button>
-          <button onClick={this.routeSet}>{t('home.set-route')}</button>
-          {this.state.routeSetResult}<br/>
-
-          {this.state.dotlanHref &&
+        <Grid container spacing={2} className={classes.card}>
+          <Grid item sm={4} xs={12}>
+            {this.state.routeFindResultWaypoints.length > 0 &&
+              <List dense={true} className={classes.list} subheader={
+                <ListSubheader component="div" id="nested-list-subheader">{t('home.route')}</ListSubheader>
+              }>
+                {this.state.routeFindResultWaypoints.map((value, index) => {
+                  return (
+                    <ListItem key={index}>
+                      {value.ansiblexId &&
+                        <ListItemIcon className={classes.listIcon}><SettingsEthernetOutlinedIcon/></ListItemIcon>
+                      }
+                      {! value.ansiblexId &&
+                        <ListItemIcon className={classes.listIcon}><FiberManualRecordOutlinedIcon /></ListItemIcon>
+                      }
+                      <ListItemText
+                        primary={
+                          <React.Fragment>
+                            {value.systemName}
+                            <Typography component="span" variant="body2" color="textSecondary">
+                              <small>{' ' + value.systemSecurity}</small>
+                            </Typography>
+                          </React.Fragment>
+                        }
+                        secondary={<small>{value.ansiblexName}</small>}
+                      />
+                    </ListItem>
+                  )
+                })}
+              </List>
+            }
+          </Grid>
+          <Grid item sm={8} xs={12}>
+            {this.state.routeFindResultMessage}
+            {this.state.dotlanHref &&
             <span>
+              <br />
               <Link href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">{t('home.dotlan')}</Link>
               <br />
             </span>
-          }
+            }
+          </Grid>
+        </Grid>
 
-          {this.state.routeCalculateResult.map((value, index) => {
-            return <span key={index}>{value}<br/></span>
-          })}
-        </p>
-
-        <p id="gates">
-          <button onClick={this.gatesFetch}>{t('home.show-gates')}</button>
-          <button onClick={this.gatesUpdate}>{t('home.update-gates')}</button>
-          {t('home.last-update')}: {this.state.gatesUpdated}<br/>
-          {this.state.gatesResult.map((value, index) => {
-            return <span key={index}>{value}<br/></span>
-          })}
-        </p>
       </div>
     );
   }
@@ -82,9 +168,11 @@ class Home extends React.Component<Props, HomeState> {
     this.state = {
       gatesUpdated: null,
       gatesResult: [],
-      routeFrom: '',
-      routeTo: '',
-      routeCalculateResult: [],
+      routeFrom: null,
+      routeTo: null,
+      buttonRouteFindDisabled: true,
+      routeFindResultMessage: '',
+      routeFindResultWaypoints: [],
       dotlanHref: '',
       routeSetResult: '',
     };
@@ -92,7 +180,7 @@ class Home extends React.Component<Props, HomeState> {
     this.gatesUpdated = this.gatesUpdated.bind(this);
     this.gatesFetch = this.gatesFetch.bind(this);
     this.gatesUpdate = this.gatesUpdate.bind(this);
-    this.routeCalculate = this.routeCalculate.bind(this);
+    this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
   }
 
@@ -154,24 +242,27 @@ class Home extends React.Component<Props, HomeState> {
 
   startChanged = (value: string) => {
     this.setState({routeFrom: value});
+    this.setState({buttonRouteFindDisabled: !(value !== null && this.state.routeTo !== null)});
   };
 
   endChanged = (value: string) => {
     this.setState({routeTo: value});
+    this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== null && value !== null)});
   };
 
-  routeCalculate(event: React.MouseEvent<HTMLButtonElement>) {
+  async routeFind() {
     const app = this;
-    const button = event.currentTarget;
-    button.disabled = true;
-    app.setState({ routeCalculateResult: [] });
-    const url = `${this.context.domain}/api/route/calculate/${this.state.routeFrom}/${this.state.routeTo}`;
-    axios.get<ResponseRouteCalculate>(url).then(response => {
+    app.setState({buttonRouteFindDisabled: true});
+    app.setState({ routeFindResultMessage: '' });
+    app.setState({ routeFindResultWaypoints: [] });
+    app.setState({ dotlanHref: '' });
+    app.setState({ routeSetResult: '' });
+    const url = `${this.context.domain}/api/route/find/${this.state.routeFrom}/${this.state.routeTo}`;
+    axios.get<ResponseRouteFind>(url).then(response => {
       if (response.data.route.length === 0) {
-        app.setState({ routeCalculateResult: [app.t('home.no-route-found')] });
+        app.setState({ routeFindResultMessage: app.t('home.no-route-found') });
       } else {
         app.esiRoute = [];
-        let route = [];
         let dotlanHref = 'https://evemaps.dotlan.net/route/';
         for (let i = 0; i < response.data.route.length; i++) {
           app.esiRoute.push({
@@ -179,11 +270,6 @@ class Home extends React.Component<Props, HomeState> {
             systemName: response.data.route[i].systemName, // for debugging
             ansiblexId: response.data.route[i].ansiblexId || null,
           });
-          let waypoint = response.data.route[i].systemName + ' ' + response.data.route[i].systemSecurity;
-          if (response.data.route[i].ansiblexName) {
-            waypoint += ' "' + response.data.route[i].ansiblexName + '"';
-          }
-          route.push(waypoint);
           dotlanHref += response.data.route[i].systemName.replace(' ', '_');
           if (response.data.route[i].connectionType === "Stargate") {
             dotlanHref += ':';
@@ -191,15 +277,15 @@ class Home extends React.Component<Props, HomeState> {
             dotlanHref += '::';
           } // else = end system
         }
-        app.setState({ routeCalculateResult: route });
+        app.setState({ routeFindResultWaypoints: response.data.route });
         app.setState({ dotlanHref: dotlanHref });
       }
     })
     .catch(() => {
-      app.setState({ routeCalculateResult: [app.t('home.error')+'.'] });
+      app.setState({ routeFindResultMessage: app.t('home.find-route-error') });
     })
     .then(() => {
-      button.disabled = false;
+      this.setState({buttonRouteFindDisabled: false});
     });
   }
 
@@ -222,4 +308,4 @@ class Home extends React.Component<Props, HomeState> {
   }
 }
 
-export default withTranslation()(Home);
+export default withTranslation()(withStyles(styles)(Home));

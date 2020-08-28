@@ -8,7 +8,7 @@ const Login = () => {
   const { t } = useTranslation();
 
   return (
-      <Box display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center" marginTop="60px">
         <Link href={globalData.domain+'/api/auth/login'} rel="noopener noreferrer">
           <img src="/eve-sso-login-black-large.png" alt={t('login.log-in')} title={t('login.log-in')}/>
         </Link>

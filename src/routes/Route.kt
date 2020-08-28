@@ -32,8 +32,8 @@ fun Route.route(config: Config) {
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 
-    get("/api/route/calculate/{from}/{to}") {
-        val response = ResponseRouteCalculate()
+    get("/api/route/find/{from}/{to}") {
+        val response = ResponseRouteFind()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
         if (allianceId == null) {

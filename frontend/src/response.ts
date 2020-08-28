@@ -20,11 +20,10 @@ export type ResponseGatesUpdated = {
 }
 
 export type ResponseRouteSystems = {
-  message: string,
   systems: Array<string>,
 }
 
-export type ResponseRouteCalculate = {
+export type ResponseRouteFind = {
   message: string,
   route: Array<Waypoint>,
 }

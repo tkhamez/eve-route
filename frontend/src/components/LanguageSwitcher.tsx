@@ -22,7 +22,8 @@ export default function LanguageSwitcher() {
   return (
     <div>
       <Tooltip title={t('header.change-language').toString()}>
-        <Button aria-controls="language-menu" aria-haspopup="true" onClick={handleClick} style={{paddingRight: 0}}>
+        <Button aria-controls="language-menu" aria-haspopup="true" onClick={handleClick}
+                style={{paddingLeft: 0, paddingRight: 0}}>
           <TranslateIcon />
           <ExpandMoreIcon />
         </Button>

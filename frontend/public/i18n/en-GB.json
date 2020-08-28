@@ -18,15 +18,17 @@
     "log-in": "Log in with EVE Online"
   },
   "home": {
-    "dotlan": "DOTLAN EveMaps",
+    "select-systems": "Please select your start and end system:",
     "start-system": "Start system",
     "end-system": "End system",
-    "calculate": "calculate",
-    "set-route": "set route",
+    "find-route": "Find route",
+    "set-route": "Set route",
+    "route": "Route",
+    "dotlan": "DOTLAN EveMaps",
+    "find-route-error": "Error.",
+    "no-route-found": "No route found.",
     "show-gates": "show gates",
     "update-gates": "update gates",
-    "last-update": "last update",
-    "error": "Error",
-    "no-route-found": "No route found."
+    "last-update": "last update"
   }
 }
