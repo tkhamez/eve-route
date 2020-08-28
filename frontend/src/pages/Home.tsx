@@ -46,6 +46,7 @@ type HomeState = {
   routeFrom: string|null,
   routeTo: string|null,
   buttonRouteFindDisabled: boolean,
+  buttonRouteSetDisabled: boolean,
   routeFindResultMessage: string,
   routeFindResultWaypoints: Array<Waypoint>,
   dotlanHref: string,
@@ -104,7 +105,7 @@ class Home extends React.Component<Props, HomeState> {
             <Box display="flex" justifyContent="left">
               <Typography>
                 <Button variant="contained" color="primary" onClick={this.routeSet}
-                        disabled={this.esiRoute.length === 0}>
+                        disabled={this.state.buttonRouteSetDisabled}>
                   {t('home.set-route')}
                 </Button>
                 {' '}{this.state.routeSetResult}
@@ -171,6 +172,7 @@ class Home extends React.Component<Props, HomeState> {
       routeFrom: null,
       routeTo: null,
       buttonRouteFindDisabled: true,
+      buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
       routeFindResultWaypoints: [],
       dotlanHref: '',
@@ -253,6 +255,7 @@ class Home extends React.Component<Props, HomeState> {
   async routeFind() {
     const app = this;
     app.setState({buttonRouteFindDisabled: true});
+    app.setState({buttonRouteSetDisabled: true});
     app.setState({ routeFindResultMessage: '' });
     app.setState({ routeFindResultWaypoints: [] });
     app.setState({ dotlanHref: '' });
@@ -279,6 +282,7 @@ class Home extends React.Component<Props, HomeState> {
         }
         app.setState({ routeFindResultWaypoints: response.data.route });
         app.setState({ dotlanHref: dotlanHref });
+        app.setState({buttonRouteSetDisabled: app.esiRoute.length <= 1});
       }
     })
     .catch(() => {
@@ -289,10 +293,9 @@ class Home extends React.Component<Props, HomeState> {
     });
   }
 
-  routeSet(event: React.MouseEvent<HTMLButtonElement>) {
+  routeSet() {
     const app = this;
-    const button = event.currentTarget;
-    button.disabled = true;
+    app.setState({buttonRouteSetDisabled: true});
     app.setState({ routeSetResult: '' });
     axios.post<ResponseRouteSet>(
       this.context.domain+'/api/route/set',
@@ -303,7 +306,7 @@ class Home extends React.Component<Props, HomeState> {
       }).catch(() => {
         app.setState({ routeSetResult: app.t('home.error')+'.' });
       }).then(() => {
-        button.disabled = false;
+        app.setState({buttonRouteSetDisabled: false});
       });
   }
 }
