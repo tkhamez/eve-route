@@ -12,8 +12,9 @@ import {
   Typography
 } from '@material-ui/core';
 import { withStyles } from "@material-ui/styles";
+import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
+import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
-import SettingsEthernetOutlinedIcon from '@material-ui/icons/SettingsEthernetOutlined';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGates, ResponseGatesUpdated, ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
@@ -112,21 +113,23 @@ class Home extends React.Component<Props, HomeState> {
               </Typography>
             </Box>
           </Grid>
-        </Grid>
 
-        <Grid container spacing={2} className={classes.card}>
           <Grid item sm={4} xs={12}>
             {this.state.routeFindResultWaypoints.length > 0 &&
               <List dense={true} className={classes.list} subheader={
-                <ListSubheader component="div" id="nested-list-subheader">{t('home.route')}</ListSubheader>
+                <ListSubheader component="li" id="nested-list-subheader">{t('home.route')}</ListSubheader>
               }>
                 {this.state.routeFindResultWaypoints.map((value, index) => {
+                  const last = index + 1 === this.state.routeFindResultWaypoints.length;
                   return (
                     <ListItem key={index}>
-                      {value.ansiblexId &&
-                        <ListItemIcon className={classes.listIcon}><SettingsEthernetOutlinedIcon/></ListItemIcon>
+                      {! last && value.ansiblexId &&
+                        <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleTwoToneIcon /></ListItemIcon>
                       }
-                      {! value.ansiblexId &&
+                      {! last && ! value.ansiblexId &&
+                        <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleOutlinedIcon/></ListItemIcon>
+                      }
+                      {last &&
                         <ListItemIcon className={classes.listIcon}><FiberManualRecordOutlinedIcon /></ListItemIcon>
                       }
                       <ListItemText
@@ -179,7 +182,6 @@ class Home extends React.Component<Props, HomeState> {
       routeSetResult: '',
     };
 
-    this.gatesUpdated = this.gatesUpdated.bind(this);
     this.gatesFetch = this.gatesFetch.bind(this);
     this.gatesUpdate = this.gatesUpdate.bind(this);
     this.routeFind = this.routeFind.bind(this);
@@ -187,10 +189,10 @@ class Home extends React.Component<Props, HomeState> {
   }
 
   componentDidMount() {
-    this.gatesUpdated();
+    this.fetchGatesUpdated();
   }
 
-  gatesUpdated() {
+  fetchGatesUpdated() {
     const app = this;
     axios.get<ResponseGatesUpdated>(this.context.domain+'/api/gates/last-update').then(response => {
       if (response.data) {
@@ -234,7 +236,7 @@ class Home extends React.Component<Props, HomeState> {
         gates.push(response.data.ansiblexes[i].name);
       }
       app.setState({ gatesResult: gates });
-      app.gatesUpdated();
+      app.fetchGatesUpdated();
     }).catch(() => {
       app.setState({ gatesResult: [app.t('home.error')+'.'] });
     }).then(() => {
