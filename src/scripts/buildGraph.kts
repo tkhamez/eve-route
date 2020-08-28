@@ -1,7 +1,6 @@
 package net.tkhamez.everoute.scripts
 
 import com.google.gson.Gson
-import net.tkhamez.everoute.data.Edge
 import net.tkhamez.everoute.data.Graph
 import net.tkhamez.everoute.data.Position
 import net.tkhamez.everoute.data.System as DataSystem
@@ -70,7 +69,7 @@ fun buildGraph(data: Data): Graph {
         }
         if (uniqueEdges.indexOf(uniqueEdge) == -1) {
             uniqueEdges.add(uniqueEdge)
-            graph.edges.add(Edge(stargate.systemId, stargate.destination.systemId))
+            graph.connections.add(intArrayOf(stargate.systemId, stargate.destination.systemId))
         }
     }
 

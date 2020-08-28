@@ -17,12 +17,7 @@ data class System(
     val position: Position
 )
 
-data class Edge(
-    val source: Int,
-    val target: Int
-)
-
 data class Graph(
     val systems: MutableList<System> = mutableListOf(),
-    val edges: MutableList<Edge> = mutableListOf()
+    val connections: MutableList<IntArray> = mutableListOf()
 )

@@ -107,9 +107,9 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
 
         var center: Node<System>? = null
 
-        graph.edges.forEach {
-            val sourceNode = getNode(it.source)
-            val targetNode = getNode(it.target)
+        graph.connections.forEach {
+            val sourceNode = getNode(it[0])
+            val targetNode = getNode(it[1])
             if (sourceNode != null && targetNode != null) { // should always be true
                 sourceNode.connect(targetNode, Waypoint.Type.Stargate)
 
