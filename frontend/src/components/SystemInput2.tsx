@@ -1,41 +1,47 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
-  FormControl,
+  CircularProgress,
   IconButton,
   InputAdornment,
-  InputLabel,
   List,
   ListItem,
-  OutlinedInput,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import CloseIcon from '@material-ui/icons/Close';
-import { GlobalDataContext } from "../GlobalDataContext";
+  TextField,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ClearIcon from '@material-ui/icons/Clear';
+import { GlobalDataContext } from '../GlobalDataContext';
 import axios from 'axios';
 import { ResponseSystems } from "../response";
 
 const useStyles = makeStyles((theme) => ({
   wrap: {
-    position: "relative",
-    maxWidth: "300px",
+    position: 'relative',
+    maxWidth: '300px',
   },
-  form: {
+  textField: {
+    '&:hover $clearIndicator, & .Mui-focused $clearIndicator': {
+      visibility: 'visible'
+    },
+  },
+  clearIndicator: {
+    visibility: 'hidden',
+  },
+  loadingHidden: {
+    visibility: 'hidden',
   },
   box: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 100,
-    width: "100%",
-    marginTop: "3px",
+    width: '100%',
+    marginTop: '3px',
     backgroundColor: theme.palette.background.paper,
-    borderRadius: "4px",
-    maxHeight: "250px", // TODO dyn. height + open above/below
-    overflowY: "auto",
+    borderRadius: '4px',
+    maxHeight: '250px',
+    overflowY: 'auto',
   },
-  list: {
-  }
 }));
 
 type Props = {
@@ -52,6 +58,7 @@ export default function Search(props: Props) {
   const [systems, setSystems] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -62,7 +69,9 @@ export default function Search(props: Props) {
       }
 
       (async () => {
+        setLoading(true);
         const response = await axios.get<ResponseSystems>(`${globalData.domain}/api/systems/find/${searchTerm}`);
+        setLoading(false);
         setSystems(response.data.systems);
         setOpen(true);
       })();
@@ -85,31 +94,52 @@ export default function Search(props: Props) {
     props.onChange(system);
   };
 
+  const clearInput = () => {
+    onChange("");
+    if (textInput && textInput.current) {
+      // @ts-ignore
+      textInput.current.focus();
+    }
+  };
+
+  let textInput = useRef(null);
+
   return (
     <div className={classes.wrap}>
-      <FormControl className={classes.form} variant="outlined">
-        <InputLabel htmlFor={props.fieldId}>{props.fieldName}</InputLabel>
-        <OutlinedInput
-          id={props.fieldId}
-          type="search"
-          autoComplete="off"
-          value={inputValue}
-          onChange={(e) => onChange(e.target.value)}
-          endAdornment={ // TODO smaller, grey, hover = white
+      <TextField
+        inputRef={textInput}
+        variant="outlined"
+        className={classes.textField}
+        label={props.fieldName}
+        id={props.fieldId}
+        type="search"
+        autoComplete="off"
+        value={inputValue}
+        onChange={e => onChange(e.target.value)}
+        InputProps={{
+          endAdornment: (
             <InputAdornment position="end">
-              <IconButton title={t('systemInput.clear')} onClick={() => onChange("")} edge="end">
-                {inputValue !== '' ? <CloseIcon /> : ''}
+              {loading && false ? <CircularProgress color="inherit" size={15} /> : null}
+              <CircularProgress color="inherit" size={15} className={!loading ? classes.loadingHidden : ''} />
+              {' '}
+              <IconButton
+                className={classes.clearIndicator}
+                style={inputValue.length === 0 ? {visibility: 'hidden'} : {}}
+                size="small"
+                title={t('systemInput.clear')}
+                onClick={() => clearInput()}
+              >
+                <ClearIcon fontSize="small" />
               </IconButton>
             </InputAdornment>
-          }
-          labelWidth={70}
-        />
-      </FormControl>
+          )
+        }}
+      />
       {open &&
         <Box boxShadow={2} className={classes.box}>
-          <List className={classes.list}>
+          <List>
             {systems.map((value, index) => {
-              if (index > 100) { // TODO better way to prevent lag?
+              if (index > 200) { // TODO better way to prevent lag? react-window?
                 return '';
               }
               return (

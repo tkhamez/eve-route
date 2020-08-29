@@ -18,7 +18,7 @@
     "log-in": "Log in with EVE Online"
   },
   "home": {
-    "select-systems": "Please select your start and end system:",
+    "select-systems": "Please enter your start and end system:",
     "start-system": "Start system",
     "end-system": "End system",
     "find-route": "Find route",

@@ -11,25 +11,24 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import { withStyles } from "@material-ui/styles";
+import { withStyles } from '@material-ui/styles';
 import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGates, ResponseGatesUpdated, ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
-import SystemInput from '../components/SystemInput';
 import SystemInput2 from '../components/SystemInput2';
 
 const styles = (theme: Theme) => createStyles({
   card: {
     backgroundColor: theme.palette.background.default,
     margin: theme.spacing(2, 0),
-    borderRadius: "4px",
+    borderRadius: '4px',
   },
   list: {
     backgroundColor: theme.palette.background.paper,
-    borderRadius: "4px",
+    borderRadius: '4px',
   },
   listIcon: {
     minWidth: 0,
@@ -46,7 +45,7 @@ type HomeState = {
   gatesUpdated: Date|null,
   gatesResult: Array<string>,
   routeFrom: string,
-  routeTo: string|null,
+  routeTo: string,
   buttonRouteFindDisabled: boolean,
   buttonRouteSetDisabled: boolean,
   routeFindResultMessage: string,
@@ -91,7 +90,7 @@ class Home extends React.Component<Props, HomeState> {
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
+              <SystemInput2 fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
             </Box>
           </Grid>
 
@@ -174,7 +173,7 @@ class Home extends React.Component<Props, HomeState> {
       gatesUpdated: null,
       gatesResult: [],
       routeFrom: '',
-      routeTo: null,
+      routeTo: '',
       buttonRouteFindDisabled: true,
       buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
@@ -247,12 +246,12 @@ class Home extends React.Component<Props, HomeState> {
 
   startChanged = (value: string) => {
     this.setState({routeFrom: value});
-    this.setState({buttonRouteFindDisabled: !(value !== "" && this.state.routeTo !== "")});
+    this.setState({buttonRouteFindDisabled: !(value !== '' && this.state.routeTo !== '')});
   };
 
   endChanged = (value: string) => {
     this.setState({routeTo: value});
-    this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== null && value !== null)});
+    this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== '' && value !== '')});
   };
 
   async routeFind() {
@@ -277,9 +276,9 @@ class Home extends React.Component<Props, HomeState> {
             ansiblexId: response.data.route[i].ansiblexId || null,
           });
           dotlanHref += response.data.route[i].systemName.replace(' ', '_');
-          if (response.data.route[i].connectionType === "Stargate") {
+          if (response.data.route[i].connectionType === 'Stargate') {
             dotlanHref += ':';
-          } else if (response.data.route[i].connectionType === "Ansiblex") {
+          } else if (response.data.route[i].connectionType === 'Ansiblex') {
             dotlanHref += '::';
           } // else = end system
         }
