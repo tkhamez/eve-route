@@ -28,7 +28,7 @@ export default function Footer() {
         </Grid>
         <Typography variant="body2" color="textSecondary" align="center">
           <small>
-            <Trans i18nKey="footer.ccp">
+            <Trans i18nKey="footer.ccp" tOptions={{ returnObjects: true }}>
               %<Link color="inherit" underline="always" target="_blank" rel="noopener noreferrer"
                      href="https://www.ccpgames.com">%</Link>%
             </Trans>

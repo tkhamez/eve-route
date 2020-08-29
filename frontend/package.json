@@ -15,7 +15,7 @@
     "axios": "^0.19.2",
     "fontsource-roboto": "^3.0.3",
     "i18next": "^19.7.0",
-    "i18next-xhr-backend": "^3.2.2",
+    "i18next-http-backend": "^1.0.18",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-i18next": "^11.7.1",
