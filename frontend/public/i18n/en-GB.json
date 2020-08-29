@@ -25,7 +25,7 @@
     "set-route": "Set route",
     "route": "Route",
     "dotlan": "DOTLAN EveMaps",
-    "find-route-error": "Error.",
+    "error": "Error.",
     "no-route-found": "No route found.",
     "show-gates": "show gates",
     "update-gates": "update gates",

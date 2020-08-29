@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from 'react';
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   CircularProgress,
@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import { GlobalDataContext } from '../GlobalDataContext';
 import axios from 'axios';
-import { ResponseSystems } from "../response";
+import { ResponseSystems } from '../response';
 
 const useStyles = makeStyles((theme) => ({
   wrap: {
@@ -88,7 +88,7 @@ export default function Search(props: Props) {
   };
 
   const selectSystem = (e: React.MouseEvent) => {
-    const system = e.currentTarget.textContent + '';
+    const system = e.currentTarget.textContent || '';
     setOpen(false);
     setInputValue(system);
     props.onChange(system);
@@ -96,7 +96,7 @@ export default function Search(props: Props) {
 
   const clearInput = () => {
     onChange("");
-    if (textInput && textInput.current) {
+    if (textInput.current !== null) {
       // @ts-ignore
       textInput.current.focus();
     }

@@ -7,18 +7,15 @@ import {
   createStyles,
   Grid,
   Link,
-  List, ListItem, ListItemIcon, ListItemText, ListSubheader,
   Theme,
   Typography
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
-import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
-import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGates, ResponseGatesUpdated, ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
-import SystemInput2 from '../components/SystemInput2';
+import SystemInput from '../components/SystemInput';
+import RouteList from '../components/RouteList';
 
 const styles = (theme: Theme) => createStyles({
   card: {
@@ -26,14 +23,6 @@ const styles = (theme: Theme) => createStyles({
     margin: theme.spacing(2, 0),
     borderRadius: '4px',
   },
-  list: {
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: '4px',
-  },
-  listIcon: {
-    minWidth: 0,
-    marginRight: '15px',
-  }
 });
 
 interface Props extends WithTranslation {
@@ -85,12 +74,12 @@ class Home extends React.Component<Props, HomeState> {
 
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput2 fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged} />
+              <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged} />
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput2 fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
+              <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
             </Box>
           </Grid>
 
@@ -116,37 +105,7 @@ class Home extends React.Component<Props, HomeState> {
 
           <Grid item sm={4} xs={12}>
             {this.state.routeFindResultWaypoints.length > 0 &&
-              <List dense={true} className={classes.list} subheader={
-                <ListSubheader component="li" id="nested-list-subheader">{t('home.route')}</ListSubheader>
-              }>
-                {this.state.routeFindResultWaypoints.map((value, index) => {
-                  const last = index + 1 === this.state.routeFindResultWaypoints.length;
-                  return (
-                    <ListItem key={index}>
-                      {! last && value.ansiblexId &&
-                        <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleTwoToneIcon /></ListItemIcon>
-                      }
-                      {! last && ! value.ansiblexId &&
-                        <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleOutlinedIcon/></ListItemIcon>
-                      }
-                      {last &&
-                        <ListItemIcon className={classes.listIcon}><FiberManualRecordOutlinedIcon /></ListItemIcon>
-                      }
-                      <ListItemText
-                        primary={
-                          <React.Fragment>
-                            {value.systemName}
-                            <Typography component="span" variant="body2" color="textSecondary">
-                              <small>{' ' + value.systemSecurity}</small>
-                            </Typography>
-                          </React.Fragment>
-                        }
-                        secondary={<small>{value.ansiblexName}</small>}
-                      />
-                    </ListItem>
-                  )
-                })}
-              </List>
+              <RouteList waypoints={this.state.routeFindResultWaypoints} />
             }
           </Grid>
           <Grid item sm={8} xs={12}>
@@ -194,7 +153,7 @@ class Home extends React.Component<Props, HomeState> {
 
   fetchGatesUpdated() {
     const app = this;
-    axios.get<ResponseGatesUpdated>(this.context.domain+'/api/gates/last-update').then(response => {
+    axios.get<ResponseGatesUpdated>(`${this.context.domain}/api/gates/last-update`).then(response => {
       if (response.data) {
         app.setState({ gatesUpdated: response.data.updated });
       }
@@ -208,14 +167,14 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ gatesResult: [] });
-    axios.get<ResponseGates>(this.context.domain+'/api/gates/fetch').then(response => {
+    axios.get<ResponseGates>(`${this.context.domain}/api/gates/fetch`).then(response => {
       let gates = [];
       for (let i = 0; i < response.data.ansiblexes.length; i++) {
         gates.push(response.data.ansiblexes[i].name);
       }
       app.setState({ gatesResult: gates });
     }).catch(() => {
-      app.setState({ gatesResult: [app.t('home.error')+'.'] });
+      app.setState({ gatesResult: [app.t('home.error')] });
     }).then(() => {
       button.disabled = false;
     });
@@ -226,7 +185,7 @@ class Home extends React.Component<Props, HomeState> {
     const button = event.currentTarget;
     button.disabled = true;
     app.setState({ gatesResult: [] });
-    axios.get<ResponseGates>(this.context.domain+'/api/gates/update').then(response => {
+    axios.get<ResponseGates>(`${this.context.domain}/api/gates/update`).then(response => {
       if (response.data.message) { // some error
         app.setState({ gatesResult: [response.data.message] });
         return;
@@ -238,7 +197,7 @@ class Home extends React.Component<Props, HomeState> {
       app.setState({ gatesResult: gates });
       app.fetchGatesUpdated();
     }).catch(() => {
-      app.setState({ gatesResult: [app.t('home.error')+'.'] });
+      app.setState({ gatesResult: [app.t('home.error')] });
     }).then(() => {
       button.disabled = false;
     });
@@ -288,7 +247,7 @@ class Home extends React.Component<Props, HomeState> {
       }
     })
     .catch(() => {
-      app.setState({ routeFindResultMessage: app.t('home.find-route-error') });
+      app.setState({ routeFindResultMessage: app.t('home.error') });
     })
     .then(() => {
       this.setState({buttonRouteFindDisabled: false});
@@ -300,13 +259,13 @@ class Home extends React.Component<Props, HomeState> {
     app.setState({buttonRouteSetDisabled: true});
     app.setState({ routeSetResult: '' });
     axios.post<ResponseRouteSet>(
-      this.context.domain+'/api/route/set',
+      `${this.context.domain}/api/route/set`,
       JSON.stringify(this.esiRoute),
       { headers: { 'Content-Type': 'application/json' } },
     ).then(response => {
         app.setState({ routeSetResult: response.data.message });
       }).catch(() => {
-        app.setState({ routeSetResult: app.t('home.error')+'.' });
+        app.setState({ routeSetResult: app.t('home.error') });
       }).then(() => {
         app.setState({buttonRouteSetDisabled: false});
       });

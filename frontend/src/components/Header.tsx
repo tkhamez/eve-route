@@ -52,7 +52,7 @@ export default function Header() {
             { globalData.user &&
               <span>
                 {globalData.user.name}, {globalData.user.alliance}
-                <Button href={globalData.domain + '/api/auth/logout'} color="secondary" variant="outlined"
+                <Button href={`${globalData.domain}/api/auth/logout`} color="secondary" variant="outlined"
                         className={classes.link}>
                   {t('header.logout')}
                 </Button>
