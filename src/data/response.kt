@@ -26,7 +26,7 @@ data class ResponseGatesUpdated(
     var updated: Date? = null
 )
 
-data class ResponseRouteSystems(
+data class ResponseSystems(
     var systems: MutableList<String> = mutableListOf()
 )
 

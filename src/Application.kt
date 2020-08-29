@@ -124,5 +124,6 @@ fun Application.module() {
         authentication(config)
         gates(config)
         route(config)
+        systems()
     }
 }

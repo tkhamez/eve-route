@@ -1,10 +1,8 @@
 package net.tkhamez.everoute
 
-import com.google.gson.Gson
 import net.tkhamez.everoute.data.Ansiblex
 import net.tkhamez.everoute.data.Graph
 import net.tkhamez.everoute.data.System
-import java.io.File
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -12,7 +10,7 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
     /**
      * Graph with ESI data of all systems with edges.
      */
-    private val graph: Graph
+    private val graph: Graph = net.tkhamez.everoute.Graph().getSystems()
 
     /**
      * Helper variable to keep a reference to all nodes, accessible by their system ID.
@@ -27,12 +25,6 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
     val centralNode: Node<System>?
 
     init {
-        // null for DEV mode (run task), not sure why, it works for Route.frontend()
-        val resource = javaClass.getResource("/graph.json")
-
-        val graphJson = resource?.readText() ?: File("resources/graph.json").readText()
-        graph = Gson().fromJson(graphJson, Graph::class.java)
-
         // build node connections
         centralNode = buildNodes(graph)
         addGates(ansiblexes)
