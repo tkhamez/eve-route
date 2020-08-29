@@ -30,5 +30,8 @@
     "show-gates": "show gates",
     "update-gates": "update gates",
     "last-update": "last update"
+  },
+  "systemInput": {
+    "clear": "Clear"
   }
 }

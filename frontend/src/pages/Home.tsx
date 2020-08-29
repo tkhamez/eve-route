@@ -19,6 +19,7 @@ import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGates, ResponseGatesUpdated, ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
+import SystemInput2 from '../components/SystemInput2';
 
 const styles = (theme: Theme) => createStyles({
   card: {
@@ -44,7 +45,7 @@ interface Props extends WithTranslation {
 type HomeState = {
   gatesUpdated: Date|null,
   gatesResult: Array<string>,
-  routeFrom: string|null,
+  routeFrom: string,
   routeTo: string|null,
   buttonRouteFindDisabled: boolean,
   buttonRouteSetDisabled: boolean,
@@ -85,7 +86,7 @@ class Home extends React.Component<Props, HomeState> {
 
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}/>
+              <SystemInput2 fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged} />
             </Box>
           </Grid>
           <Grid item xs={6}>
@@ -172,7 +173,7 @@ class Home extends React.Component<Props, HomeState> {
     this.state = {
       gatesUpdated: null,
       gatesResult: [],
-      routeFrom: null,
+      routeFrom: '',
       routeTo: null,
       buttonRouteFindDisabled: true,
       buttonRouteSetDisabled: true,
@@ -246,7 +247,7 @@ class Home extends React.Component<Props, HomeState> {
 
   startChanged = (value: string) => {
     this.setState({routeFrom: value});
-    this.setState({buttonRouteFindDisabled: !(value !== null && this.state.routeTo !== null)});
+    this.setState({buttonRouteFindDisabled: !(value !== "" && this.state.routeTo !== "")});
   };
 
   endChanged = (value: string) => {

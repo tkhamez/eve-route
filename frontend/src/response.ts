@@ -19,7 +19,7 @@ export type ResponseGatesUpdated = {
   updated: Date|null,
 }
 
-export type ResponseRouteSystems = {
+export type ResponseSystems = {
   systems: Array<string>,
 }
 

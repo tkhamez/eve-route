@@ -3,7 +3,7 @@ import { CircularProgress, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import axios from 'axios';
 import { GlobalDataContext } from "../GlobalDataContext";
-import { ResponseRouteSystems } from "../response";
+import { ResponseSystems } from "../response";
 
 type Props = {
   fieldId: string,
@@ -25,7 +25,7 @@ export default function SystemInput(props: Props) {
     }
 
     (async () => {
-      const response = await axios.get<ResponseRouteSystems>(`${globalData.domain}/api/route/systems`);
+      const response = await axios.get<ResponseSystems>(`${globalData.domain}/api/systems/fetch`);
       if (active) {
         setOptions(response.data.systems);
       }
