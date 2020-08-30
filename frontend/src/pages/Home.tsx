@@ -13,9 +13,10 @@ import {
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseGates, ResponseGatesUpdated, ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
+import { ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
 import RouteList from '../components/RouteList';
+import NavModal from "../components/NavModal";
 
 const styles = (theme: Theme) => createStyles({
   card: {
@@ -31,8 +32,6 @@ interface Props extends WithTranslation {
 }
 
 type HomeState = {
-  gatesUpdated: Date|null,
-  gatesResult: Array<string>,
   routeFrom: string,
   routeTo: string,
   buttonRouteFindDisabled: boolean,
@@ -58,14 +57,7 @@ class Home extends React.Component<Props, HomeState> {
         /* Grid with spacing>0 is bigger than the parent, this fixes that for spacing=2,
          see also https://github.com/mui-org/material-ui/issues/7466 */}
 
-        <p>
-          <button onClick={this.gatesFetch}>{t('home.show-gates')}</button>
-          <button onClick={this.gatesUpdate}>{t('home.update-gates')}</button>
-          {t('home.last-update')}: {this.state.gatesUpdated}<br/>
-          {this.state.gatesResult.map((value, index) => {
-            return <span key={index}>{value}<br/></span>
-          })}
-        </p>
+        <NavModal classesCard={classes.card}/>
 
         <Grid container spacing={2} className={classes.card}>
           <Grid item xs={12}>
@@ -129,8 +121,6 @@ class Home extends React.Component<Props, HomeState> {
     this.t = props.t;
 
     this.state = {
-      gatesUpdated: null,
-      gatesResult: [],
       routeFrom: '',
       routeTo: '',
       buttonRouteFindDisabled: true,
@@ -141,66 +131,12 @@ class Home extends React.Component<Props, HomeState> {
       routeSetResult: '',
     };
 
-    this.gatesFetch = this.gatesFetch.bind(this);
-    this.gatesUpdate = this.gatesUpdate.bind(this);
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
   }
 
   componentDidMount() {
-    this.fetchGatesUpdated();
-  }
-
-  fetchGatesUpdated() {
-    const app = this;
-    axios.get<ResponseGatesUpdated>(`${this.context.domain}/api/gates/last-update`).then(response => {
-      if (response.data) {
-        app.setState({ gatesUpdated: response.data.updated });
-      }
-    }).catch(() => { // 403
-      // do nothing (necessary or react dev tools will complain)
-    });
-  }
-
-  gatesFetch(event: React.MouseEvent<HTMLButtonElement>) {
-    const app = this;
-    const button = event.currentTarget;
-    button.disabled = true;
-    app.setState({ gatesResult: [] });
-    axios.get<ResponseGates>(`${this.context.domain}/api/gates/fetch`).then(response => {
-      let gates = [];
-      for (let i = 0; i < response.data.ansiblexes.length; i++) {
-        gates.push(response.data.ansiblexes[i].name);
-      }
-      app.setState({ gatesResult: gates });
-    }).catch(() => {
-      app.setState({ gatesResult: [app.t('home.error')] });
-    }).then(() => {
-      button.disabled = false;
-    });
-  }
-
-  gatesUpdate(event: React.MouseEvent<HTMLButtonElement>) {
-    const app = this;
-    const button = event.currentTarget;
-    button.disabled = true;
-    app.setState({ gatesResult: [] });
-    axios.get<ResponseGates>(`${this.context.domain}/api/gates/update`).then(response => {
-      if (response.data.message) { // some error
-        app.setState({ gatesResult: [response.data.message] });
-        return;
-      }
-      let gates = [];
-      for (let i = 0; i < response.data.ansiblexes.length; i++) {
-        gates.push(response.data.ansiblexes[i].name);
-      }
-      app.setState({ gatesResult: gates });
-      app.fetchGatesUpdated();
-    }).catch(() => {
-      app.setState({ gatesResult: [app.t('home.error')] });
-    }).then(() => {
-      button.disabled = false;
-    });
+    //this.fetchGatesUpdated(); TODO
   }
 
   startChanged = (value: string) => {
@@ -247,7 +183,7 @@ class Home extends React.Component<Props, HomeState> {
       }
     })
     .catch(() => {
-      app.setState({ routeFindResultMessage: app.t('home.error') });
+      app.setState({ routeFindResultMessage: app.t('app.error') });
     })
     .then(() => {
       this.setState({buttonRouteFindDisabled: false});
@@ -265,7 +201,7 @@ class Home extends React.Component<Props, HomeState> {
     ).then(response => {
         app.setState({ routeSetResult: response.data.message });
       }).catch(() => {
-        app.setState({ routeSetResult: app.t('home.error') });
+        app.setState({ routeSetResult: app.t('app.error') });
       }).then(() => {
         app.setState({buttonRouteSetDisabled: false});
       });

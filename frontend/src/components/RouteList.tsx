@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { List, ListItem, ListItemIcon, ListItemText, ListSubheader, Typography } from '@material-ui/core';
+import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
@@ -27,9 +27,8 @@ export default function RouteList(props: Props) {
   const classes = useStyles();
 
   return (
-      <List dense={true} className={classes.list} subheader={
-        <ListSubheader component="li" id="nested-list-subheader">{t('home.route')}</ListSubheader>
-      }>
+      <List dense={true} className={classes.list}>
+        <ListItem>{t('home.route')}</ListItem>
         {props.waypoints.map((value, index) => {
           const last = index + 1 === props.waypoints.length;
           return (

@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "EVE Route"
+    "name": "EVE Route",
+    "error": "Error."
   },
   "header": {
     "logout": "Logout",
@@ -26,12 +27,19 @@
     "end-system": "End system",
     "find-route": "Find route",
     "set-route": "Set route",
-    "route": "Route",
-    "dotlan": "DOTLAN EveMaps",
-    "error": "Error.",
+
     "no-route-found": "No route found.",
+    "route": "Route",
+    "dotlan": "DOTLAN EveMaps"
+  },
+  "navModal": {
+    "how-this-works": "How this works",
+    "limitations": "Limitations",
+    "update-gates": "Update Gates",
+    "add-wormhole-connections": "Add Wormhole Connections"
+  },
+  "updateGates": {
     "show-gates": "show gates",
-    "update-gates": "update gates",
     "last-update": "last update"
   },
   "systemInput": {
