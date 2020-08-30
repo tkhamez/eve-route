@@ -8,6 +8,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
+import kotlinx.coroutines.launch
 import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.Mongo
@@ -31,39 +32,50 @@ fun Route.gates(config: Config) {
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 
-    get("/api/gates/update") {
-        val response = ResponseGates()
+    get("/api/gates/search/{term}") {
+        val log = call.application.environment.log
+        val response = ResponseMessage()
+
+        val searchTerm = call.parameters["term"].toString().trim()
+        if (searchTerm != "»") {
+            response.code = ResponseCodes.WrongSearchTerm
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
         val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
-
         val accessToken = EsiToken(config, call).get()
         if (accessToken == null || characterId == null || allianceId == null) {
-            response.message = "Failed to retrieve alliance of character or ESI token."
+            response.code = ResponseCodes.AuthAllianceOrTokenFail
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
         val mongo = Mongo(config.db)
-
         val alliance = mongo.allianceGet(allianceId)
         if (alliance?.updated != null && alliance.updated.time.plus((60 * 60 * 1000)) > Date().time) {
-            response.message = "Gates were already updated within the last hour."
+            response.code = ResponseCodes.AlreadyUpdated
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
-        val gates = fetchGates(config, characterId, accessToken, call.application.environment.log)
-        if (gates == null) {
-            response.message = "ESI error."
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
-            return@get
+        // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
+        val httpRequest = HttpRequest(config, log)
+        val searchPath = "latest/characters/$characterId/search/?datasource=${config.esiDatasource}"
+        val searchParams = "&categories=structure&search=%20%C2%BB%20" // " » "
+        val esiSearchStructure = httpRequest.get<EsiSearchStructure>(searchPath + searchParams, accessToken)
+        if (esiSearchStructure == null) {
+            response.code = ResponseCodes.SearchError
+        } else {
+            response.code = ResponseCodes.SearchSuccess
+            response.param = esiSearchStructure.structure.size.toString()
+
+            // fetch all gates in the background
+            launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log) }
         }
 
-        gates.forEach {
-            mongo.gateStore(it, allianceId)
-            response.ansiblexes.add(it)
-        }
-        mongo.gatesRemoveOther(gates, allianceId)
+        // Set update date now to prevent a second parallel update.
         mongo.allianceUpdate(Alliance(allianceId, Date()))
 
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
@@ -88,37 +100,39 @@ fun Route.gates(config: Config) {
     }
 }
 
-private suspend fun fetchGates(
-    config: Config,
-    characterId: Int,
+private suspend fun fetchAndStoreGates(
+    allianceId: Int,
+    structures: List<Long>,
     accessToken: String,
+    config: Config,
     log: Logger
-): List<Ansiblex>? {
+) {
     val httpRequest = HttpRequest(config, log)
+    val mongo = Mongo(config.db)
 
-    // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1
-    val searchPath = "latest/characters/$characterId/search/?datasource=${config.esiDatasource}"
-    val searchParams = "&categories=structure&search=%20%C2%BB%20" // " » "
-    val esiSearchStructure = httpRequest.get<EsiSearchStructure>(searchPath + searchParams, accessToken) ?: return null
-
-    log.info("Got ${esiSearchStructure.structure.size} results.")
-
-    // Fetch structure info, needs scope esi-universe.read_structures.v1
     val gates = mutableListOf<Ansiblex>()
-    for (id in esiSearchStructure.structure) {
+    val failed = mutableListOf<Long>()
+    var fetched = 0
+    for (id in structures) {
         val gate = httpRequest.get<EsiStructure>(
             "latest/universe/structures/$id/?datasource=${config.esiDatasource}",
             accessToken
         )
-            ?: // TODO try again
+        if (gate == null) {
+            // TODO try again
+            failed.add(id)
             continue
+        }
         if (gate.type_id == 35841) {
             log.info("Fetched $id")
-            gates.add(Ansiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id))
-        } else {
-            log.info("Not an Ansiblex $id")
+            fetched ++
+            val ansiblex = Ansiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id)
+            gates.add(ansiblex)
+            mongo.gateStore(ansiblex, allianceId)
         }
     }
 
-    return gates
+    mongo.gatesRemoveOther(gates, allianceId)
+
+    log.info("Fetched and stored $fetched Ansiblexes, ${failed.size} requests failed.")
 }

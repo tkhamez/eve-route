@@ -7,7 +7,20 @@
 package net.tkhamez.everoute.data
 
 import net.tkhamez.everoute.EveRoute
-import java.util.*
+import java.util.Date
+
+enum class ResponseCodes {
+    WrongSearchTerm,
+    AuthAllianceOrTokenFail,
+    AlreadyUpdated,
+    SearchError,
+    SearchSuccess
+}
+
+data class ResponseMessage(
+    var code: ResponseCodes? = null,
+    var param: String? = null
+)
 
 data class ResponseAuthUser(
     val characterId: Int,
