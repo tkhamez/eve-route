@@ -28,7 +28,8 @@ export default function LanguageSwitcher() {
           <ExpandMoreIcon />
         </Button>
       </Tooltip>
-      <Menu id="language-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
+      <Menu id="language-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}
+            disableScrollLock disablePortal>
         <MenuItem onClick={handleClose} data-language='en-GB' selected={i18n.language === 'en-GB'} title="en-GB">
           {t('header.en-GB')}
         </MenuItem>

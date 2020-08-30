@@ -2,6 +2,14 @@
  * Counterparts of backend data classes located in src/data/response.kt.
  */
 
+/**
+ * Contains a translation key from the "responseCode" group.
+ */
+export type ResponseMessage = {
+  code: string,
+  param: string|null,
+}
+
 export type ResponseAuthUser = {
   characterId: bigint,
   characterName: string,

@@ -181,11 +181,9 @@ class Home extends React.Component<Props, HomeState> {
         app.setState({ dotlanHref: dotlanHref });
         app.setState({buttonRouteSetDisabled: app.esiRoute.length <= 1});
       }
-    })
-    .catch(() => {
+    }).catch(() => {
       app.setState({ routeFindResultMessage: app.t('app.error') });
-    })
-    .then(() => {
+    }).then(() => {
       this.setState({buttonRouteFindDisabled: false});
     });
   }
@@ -200,11 +198,11 @@ class Home extends React.Component<Props, HomeState> {
       { headers: { 'Content-Type': 'application/json' } },
     ).then(response => {
         app.setState({ routeSetResult: response.data.message });
-      }).catch(() => {
-        app.setState({ routeSetResult: app.t('app.error') });
-      }).then(() => {
-        app.setState({buttonRouteSetDisabled: false});
-      });
+    }).catch(() => {
+      app.setState({ routeSetResult: app.t('app.error') });
+    }).then(() => {
+      app.setState({buttonRouteSetDisabled: false});
+    });
   }
 }
 

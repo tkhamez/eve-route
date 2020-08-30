@@ -1,31 +1,38 @@
 import React from 'react';
-import { useTranslation } from "react-i18next";
-import { Box, Button, Grid, Modal } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
+import { Box, Button, Grid, IconButton, Modal, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import HowThisWorks from "../modals/HowThisWorks";
-import Limitations from "../modals/Limitations";
-import UpdateGates from "../modals/UpdateGates";
-import Wormholes from "../modals/Wormholes";
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import HowThisWorks from '../modals/HowThisWorks';
+import Limitations from '../modals/Limitations';
+import UpdateGates from '../modals/UpdateGates';
+import Wormholes from '../modals/Wormholes';
 
 const useStyles = makeStyles((theme) => ({
   topButton: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(0, 1),
     textTransform: 'none',
   },
-  content: {
-    top: '15px',
+  modal: {
+    top: '30px',
     left: '50%',
-    transform: `translate(-50%)`,
+    transform: 'translate(-50%)',
     position: 'absolute',
     width: '90%',
-    maxWidth: '882px', // 960 - 2*24 + 2*15
-    maxHeight: 'calc(100vh - 15px - 15px)',
-    overflow: 'auto',
+    maxWidth: '560px',
     backgroundColor: theme.palette.background.default,
-    //border: '2px solid #000',
     borderRadius: '2px',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2),
+  },
+  closeButton: {
+    position: 'relative',
+    top: '-5px',
+  },
+  body: {
+    maxHeight: 'calc(100vh - 30px - 15px - 68px)',
+    overflow: 'auto',
+    marginTop: '10px',
   },
 }));
 
@@ -68,17 +75,33 @@ export default function NavModal(props: Props) {
           </Box>
         </Grid>
       </Grid>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-      >
-        <div className={classes.content}>
-          {content === 'HowThisWorks' && <HowThisWorks />}
-          {content === 'Limitations' && <Limitations />}
-          {content === 'UpdateGates' && <UpdateGates />}
-          {content === 'Wormholes' && <Wormholes />}
+      <Modal open={open} onClose={handleClose}>
+        <div className={classes.modal}>
+          <Grid container style={{borderBottom: "1px solid black"}}>
+            <Grid item xs={6}>
+              <Box display="flex" justifyContent="left">
+                <Typography>
+                  {content === 'HowThisWorks' && t('navModal.how-this-works')}
+                  {content === 'Limitations' && t('navModal.limitations')}
+                  {content === 'UpdateGates' && t('navModal.update-gates')}
+                  {content === 'Wormholes' && t('navModal.add-wormhole-connections')}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <Box display="flex" justifyContent="right">
+                <IconButton size="small" className={classes.closeButton} onClick={handleClose}>
+                  <CloseRoundedIcon/>
+                </IconButton>
+              </Box>
+            </Grid>
+          </Grid>
+          <div className={classes.body}>
+            {content === 'HowThisWorks' && <HowThisWorks />}
+            {content === 'Limitations' && <Limitations />}
+            {content === 'UpdateGates' && <UpdateGates />}
+            {content === 'Wormholes' && <Wormholes />}
+          </div>
         </div>
       </Modal>
     </div>

@@ -3,6 +3,17 @@
     "name": "EVE Route",
     "error": "Error."
   },
+  "responseCode": {
+    "WrongSearchTerm": "Wrong search term.",
+    "AuthAllianceOrTokenFail": "Failed to retrieve alliance of character or ESI token.",
+    "AlreadyUpdated": "Gates were already updated within the last hour.",
+    "SearchError": "An error occurred during the ESI search.",
+    "SearchSuccess": [
+      "The search returned {{number}} results. ",
+      "The Ansiblex data is now updated in the background, this may take a minute. ",
+      "You may close this window."
+  ]
+  },
   "header": {
     "logout": "Logout",
     "change-language": "Change language",
@@ -36,11 +47,15 @@
     "how-this-works": "How this works",
     "limitations": "Limitations",
     "update-gates": "Update Gates",
-    "add-wormhole-connections": "Add Wormhole Connections"
+    "add-wormhole-connections": "Add Wormhole Connection"
   },
   "updateGates": {
-    "show-gates": "show gates",
-    "last-update": "last update"
+    "last-update": "Last update:",
+    "esi-search-label": "ESI search",
+    "esi-search-help": "Search for: »",
+    "input-required": "Missing required input.",
+    "submit": "Submit",
+    "show-gates": "Show Gates"
   },
   "systemInput": {
     "clear": "Clear"
