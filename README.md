@@ -33,11 +33,16 @@ Requires [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
 
 ```shell script
 cd frontend
+```
 
-# start dev server
+Dev: build map and start server:
+```shell script
+node scripts/map.js
 yarn start
+```
 
-# build (files are copied to the backend into resources/public)
+Prod: build (files are copied to the backend into resources/public):
+```shell script
 yarn build
 ```
 

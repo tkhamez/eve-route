@@ -16,7 +16,8 @@ import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
 import RouteList from '../components/RouteList';
-import NavModal from "../components/NavModal";
+import NavModal from '../components/NavModal';
+import Map from '../components/Map';
 
 const styles = (theme: Theme) => createStyles({
   card: {
@@ -103,12 +104,13 @@ class Home extends React.Component<Props, HomeState> {
           <Grid item sm={8} xs={12}>
             {this.state.routeFindResultMessage}
             {this.state.dotlanHref &&
-            <span>
-              <br />
-              <Link href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">{t('home.dotlan')}</Link>
-              <br />
-            </span>
+              <span>
+                <br />
+                <Link href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">{t('home.dotlan')}</Link>
+                <br />
+              </span>
             }
+            <Map />
           </Grid>
         </Grid>
 
@@ -133,10 +135,6 @@ class Home extends React.Component<Props, HomeState> {
 
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
-  }
-
-  componentDidMount() {
-    //this.fetchGatesUpdated(); TODO
   }
 
   startChanged = (value: string) => {

@@ -24,6 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "prebuild": "node scripts/map.js",
     "build": "react-scripts build",
     "postbuild": "rm -Rf ../resources/public/* && mv build/* ../resources/public/",
     "test": "react-scripts test",

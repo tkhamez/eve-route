@@ -1,0 +1,16 @@
+
+.null-sec {
+    fill: #d10404;
+}
+.low-sec {
+    fill: #efc804;
+}
+.high-sec {
+    fill: #08e27f;
+}
+
+.connection {
+    stroke: lightblue;
+    stroke-width: 3;
+    stroke-linecap: round;
+}
