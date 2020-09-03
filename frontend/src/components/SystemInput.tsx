@@ -127,7 +127,7 @@ export default function Search(props: Props) {
                 style={inputValue.length === 0 ? {visibility: 'hidden'} : {}}
                 size="small"
                 title={t('systemInput.clear')}
-                onClick={() => clearInput()}
+                onClick={clearInput}
               >
                 <ClearIcon fontSize="small" />
               </IconButton>

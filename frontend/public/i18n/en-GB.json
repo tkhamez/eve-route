@@ -11,7 +11,7 @@
     "SearchSuccess": [
       "The search returned {{number}} results. ",
       "The Ansiblex data is now updated in the background, this may take a minute. ",
-      "You may close this window."
+      "You can close this window."
   ]
   },
   "header": {
@@ -47,7 +47,7 @@
     "how-this-works": "How this works",
     "limitations": "Limitations",
     "update-gates": "Update Gates",
-    "add-wormhole-connections": "Add Wormhole Connection"
+    "add-wormhole-connections": "Add (Wormhole) Connection"
   },
   "updateGates": {
     "last-update": "Last update:",
