@@ -1,9 +1,10 @@
+import { MapData } from "../types";
 const fs = require('fs');
 
 fs.writeFileSync('public/map.json', JSON.stringify(readJson()));
 
 function readJson() {
-  const data = {
+  const data: MapData = {
     min: { x: 0, y: 0 },
     max: { x: 0, y: 0 },
     systems: [],

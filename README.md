@@ -37,7 +37,7 @@ cd frontend
 
 Dev: build map and start server:
 ```shell script
-node scripts/map.js
+npx ts-node src/scripts/map.ts
 yarn start
 ```
 
