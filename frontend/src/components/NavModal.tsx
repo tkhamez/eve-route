@@ -2,9 +2,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Grid, IconButton, Modal, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import SyncIcon from '@material-ui/icons/Sync';
 import HowThisWorks from '../modals/HowThisWorks';
-import Limitations from '../modals/Limitations';
 import UpdateGates from '../modals/UpdateGates';
 import Wormholes from '../modals/Wormholes';
 
@@ -61,17 +63,24 @@ export default function NavModal(props: Props) {
         <Grid item xs={6}>
           <Box display="flex" justifyContent="left">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('HowThisWorks')}>{t('navModal.how-this-works')}</Button>
-            <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('Limitations')}>{t('navModal.limitations')}</Button>
+                    onClick={() => handleOpen('HowThisWorks')}>
+              <HelpOutlineIcon fontSize="small" style={{marginRight: "4px"}} />
+              {t('navModal.how-this-works-limitations')}
+            </Button>
           </Box>
         </Grid>
         <Grid item xs={6}>
           <Box display="flex" justifyContent="right">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('UpdateGates')}>{t('navModal.update-gates')}</Button>
+                    onClick={() => handleOpen('UpdateGates')}>
+              <SyncIcon fontSize="small" style={{marginRight: "2px"}} />
+              {t('navModal.update-gates')}
+            </Button>
             <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('Wormholes')}>{t('navModal.add-wormhole-connections')}</Button>
+                    onClick={() => handleOpen('Wormholes')}>
+              <AddIcon fontSize="small" />
+              {t('navModal.add-wormhole-connections')}
+            </Button>
           </Box>
         </Grid>
       </Grid>
@@ -81,8 +90,7 @@ export default function NavModal(props: Props) {
             <Grid item xs={6}>
               <Box display="flex" justifyContent="left">
                 <Typography>
-                  {content === 'HowThisWorks' && t('navModal.how-this-works')}
-                  {content === 'Limitations' && t('navModal.limitations')}
+                  {content === 'HowThisWorks' && t('navModal.how-this-works-limitations')}
                   {content === 'UpdateGates' && t('navModal.update-gates')}
                   {content === 'Wormholes' && t('navModal.add-wormhole-connections')}
                 </Typography>
@@ -98,7 +106,6 @@ export default function NavModal(props: Props) {
           </Grid>
           <div className={classes.body}>
             {content === 'HowThisWorks' && <HowThisWorks />}
-            {content === 'Limitations' && <Limitations />}
             {content === 'UpdateGates' && <UpdateGates />}
             {content === 'Wormholes' && <Wormholes />}
           </div>

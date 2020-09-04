@@ -44,10 +44,11 @@
     "dotlan": "DOTLAN EveMaps"
   },
   "navModal": {
+    "how-this-works-limitations": "How this works and Limitations",
     "how-this-works": "How this works",
     "limitations": "Limitations",
     "update-gates": "Update Gates",
-    "add-wormhole-connections": "Add (Wormhole) Connection"
+    "add-wormhole-connections": "Add Connections"
   },
   "updateGates": {
     "last-update": "Last update:",

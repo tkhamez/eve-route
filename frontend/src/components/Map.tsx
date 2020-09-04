@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from "axios";
+import { makeStyles } from "@material-ui/core/styles";
 
 type MapData = {
   min: { x: number, y: number },
@@ -8,7 +9,15 @@ type MapData = {
   connections: Array<{ x1: number, y1: number, x2: number, y2: number }>,
 }
 
+const useStyles = makeStyles((theme) => ({
+  map: {
+    backgroundColor: theme.palette.grey[900],
+    borderRadius: '4px',
+  },
+}));
+
 export default function Map() {
+  const classes = useStyles();
   const [mapData, setMapData] = useState<MapData>();
   const [svgLoaded, setSvgLoaded] = useState(false);
 
@@ -77,7 +86,7 @@ export default function Map() {
   }, [addMapData, mapData, svgLoaded]);
 
   return (
-    <div>
+    <div className={classes.map}>
       <object id="map" type="image/svg+xml" data="/map.svg" onLoad={svgOnLoad}>SVG</object>
     </div>
   )
