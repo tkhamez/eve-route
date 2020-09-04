@@ -32,7 +32,9 @@ export default function HowThisWorks() {
 
   const fetchGatesUpdated = () => {
     axios.get<ResponseGatesUpdated>(`${globalData.domain}/api/gates/last-update`).then(response => {
-      if (response.data) {
+      if (response.data.code) {
+        setGatesUpdated(t(`responseCode.${response.data.code}`));
+      } else {
         setGatesUpdated(response.data.updated);
       }
     }).catch(() => { // 403
@@ -46,8 +48,12 @@ export default function HowThisWorks() {
     setGatesResult([]);
     axios.get<ResponseGates>(`${globalData.domain}/api/gates/fetch`).then(response => {
       let gates = [];
-      for (let i = 0; i < response.data.ansiblexes.length; i++) {
-        gates.push(response.data.ansiblexes[i].name);
+      if (response.data.code) {
+        gates.push(t(`responseCode.${response.data.code}`));
+      } else {
+        for (let i = 0; i < response.data.ansiblexes.length; i++) {
+          gates.push(response.data.ansiblexes[i].name);
+        }
       }
       setGatesResult(gates);
     }).catch(() => {

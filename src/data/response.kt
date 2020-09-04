@@ -10,11 +10,15 @@ import net.tkhamez.everoute.EveRoute
 import java.util.Date
 
 enum class ResponseCodes {
-    WrongSearchTerm,
-    AuthAllianceOrTokenFail,
     AlreadyUpdated,
+    AuthAllianceFail,
+    AuthAllianceOrTokenFail,
+    Error,
+    NotLoggedInOrTokenError,
     SearchError,
-    SearchSuccess
+    SearchSuccess,
+    Success,
+    WrongSearchTerm
 }
 
 data class ResponseMessage(
@@ -29,12 +33,12 @@ data class ResponseAuthUser(
 )
 
 data class ResponseGates(
-    var message: String = "",
+    var code: ResponseCodes? = null,
     var ansiblexes: MutableList<Ansiblex> = mutableListOf()
 )
 
 data class ResponseGatesUpdated(
-    var message: String = "",
+    var code: ResponseCodes? = null,
     var allianceId: Int? = null,
     var updated: Date? = null
 )
@@ -43,11 +47,13 @@ data class ResponseSystems(
     var systems: MutableList<String> = mutableListOf()
 )
 
-data class ResponseRouteFind(
-    var message: String = "",
-    var route: List<EveRoute.Waypoint> = listOf()
+data class ResponseRouteLocation(
+    var code: ResponseCodes? = null,
+    var solarSystemId: Int? = null,
+    var solarSystemName: String? = null
 )
 
-data class ResponseRouteSet(
-    var message: String = ""
+data class ResponseRouteFind(
+    var code: ResponseCodes? = null,
+    var route: List<EveRoute.Waypoint> = listOf()
 )

@@ -13,7 +13,7 @@ import {
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseRouteFind, ResponseRouteSet, Waypoint } from '../response';
+import { ResponseMessage, ResponseRouteFind, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
 import RouteList from '../components/RouteList';
 import NavModal from '../components/NavModal';
@@ -158,7 +158,11 @@ class Home extends React.Component<Props, HomeState> {
     const url = `${this.context.domain}/api/route/find/${this.state.routeFrom}/${this.state.routeTo}`;
     axios.get<ResponseRouteFind>(url).then(response => {
       if (response.data.route.length === 0) {
-        app.setState({ routeFindResultMessage: app.t('home.no-route-found') });
+        if (response.data.code) {
+          app.setState({ routeFindResultMessage: app.t(`responseCode.${response.data.code}`) });
+        } else {
+          app.setState({ routeFindResultMessage: app.t('home.no-route-found') });
+        }
       } else {
         app.esiRoute = [];
         let dotlanHref = 'https://evemaps.dotlan.net/route/';
@@ -190,12 +194,12 @@ class Home extends React.Component<Props, HomeState> {
     const app = this;
     app.setState({buttonRouteSetDisabled: true});
     app.setState({ routeSetResult: '' });
-    axios.post<ResponseRouteSet>(
+    axios.post<ResponseMessage>(
       `${this.context.domain}/api/route/set`,
       JSON.stringify(this.esiRoute),
       { headers: { 'Content-Type': 'application/json' } },
     ).then(response => {
-        app.setState({ routeSetResult: response.data.message });
+        app.setState({ routeSetResult: app.t(`responseCode.${response.data.code}`, {message: response.data.param}) });
     }).catch(() => {
       app.setState({ routeSetResult: app.t('app.error') });
     }).then(() => {

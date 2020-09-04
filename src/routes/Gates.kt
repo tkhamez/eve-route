@@ -22,7 +22,7 @@ fun Route.gates(config: Config) {
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
         if (allianceId == null) {
-            response.message = "Failed to retrieve alliance of character."
+            response.code = ResponseCodes.AuthAllianceFail
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
@@ -86,7 +86,7 @@ fun Route.gates(config: Config) {
 
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
         if (allianceId == null) {
-            response.message = "Failed to retrieve alliance of character."
+            response.code = ResponseCodes.AuthAllianceFail
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@get
         }

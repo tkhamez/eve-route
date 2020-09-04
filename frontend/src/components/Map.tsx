@@ -69,7 +69,7 @@ export default function Map() {
       axios.get<MapData>('/map.json').then(result => {
         setMapData(result.data);
       }).catch((e) => {
-        console.log(e);
+        console.log(e); // TODO show error
       });
   }, []); // only executed once!
 

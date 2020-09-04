@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseSystems } from '../response';
+import { ResponseRouteLocation, ResponseSystems } from '../response';
 
 const useStyles = makeStyles((theme) => ({
   wrap: {
@@ -61,6 +61,23 @@ export default function Search(props: Props) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (props.fieldId !== "start-system") {
+      return;
+    }
+    axios.get<ResponseRouteLocation>(`${globalData.domain}/api/route/location`).then(r => {
+      if (r.data.code) {
+        console.log(r.data.code);
+      } else if (r.data.solarSystemName) {
+        setInputValue(r.data.solarSystemName);
+        props.onChange(r.data.solarSystemName);
+      }
+    }).catch(() => {
+      // TODO show error?
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalData.domain, props.fieldId, props.onChange]); // do *not* use "props" here or there will be an endless loop
+
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (searchTerm === '') {
         setSystems([]);
@@ -70,16 +87,25 @@ export default function Search(props: Props) {
 
       (async () => {
         setLoading(true);
-        const response = await axios.get<ResponseSystems>(`${globalData.domain}/api/systems/find/${searchTerm}`);
+        let response = null;
+        try {
+          response = await axios.get<ResponseSystems>(`${globalData.domain}/api/systems/find/${searchTerm}`);
+        } catch (error) {
+          // do nothing
+        }
         setLoading(false);
-        setSystems(response.data.systems);
         setOpen(true);
+        if (response) {
+          setSystems(response.data.systems);
+        } else {
+          setSystems([t('app.error')]);
+        }
       })();
 
     }, 300);
 
     return () => clearTimeout(delayDebounceFn)
-  }, [globalData.domain, searchTerm]);
+  }, [globalData.domain, searchTerm, t]);
 
   const onChange = (value: string) => {
     setInputValue(value);

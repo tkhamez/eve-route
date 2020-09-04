@@ -13,15 +13,37 @@ import io.ktor.routing.post
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import net.tkhamez.everoute.*
+import net.tkhamez.everoute.Graph
 import net.tkhamez.everoute.data.*
 
 fun Route.route(config: Config) {
+    get("/api/route/location") {
+        val response = ResponseRouteLocation()
+
+        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
+        val accessToken = EsiToken(config, call).get()
+        if (characterId == null || accessToken == null) {
+            response.code = ResponseCodes.NotLoggedInOrTokenError
+            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
+        val httpRequest = HttpRequest(config, call.application.environment.log)
+        val location = httpRequest.get<EsiLocation>("latest/characters/$characterId/location/", accessToken)
+        response.solarSystemId = location?.solar_system_id
+        if (response.solarSystemId != null) {
+            response.solarSystemName = Graph().findSystem(response.solarSystemId!!)?.name
+        }
+
+        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+    }
+
     get("/api/route/find/{from}/{to}") {
         val response = ResponseRouteFind()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
         if (allianceId == null) {
-            response.message = "Failed to retrieve alliance of character or ESI token."
+            response.code = ResponseCodes.AuthAllianceOrTokenFail
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
@@ -39,11 +61,11 @@ fun Route.route(config: Config) {
         // This is not needed, but can make the route better visible in the in-game map
         val setAnsiblexExitSystemAsWaypoint = false
 
-        val response = ResponseRouteSet()
+        val response = ResponseMessage()
 
         val accessToken = EsiToken(config, call).get()
         if (accessToken == null) {
-            response.message = "Not logged in or failed to retrieve ESI token."
+            response.code = ResponseCodes.NotLoggedInOrTokenError
             call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
             return@post
         }
@@ -75,11 +97,11 @@ fun Route.route(config: Config) {
             params += "&add_to_beginning=false&clear_other_waypoints=$clear"
             val result = httpRequest.post<HttpResponse>(path + params, null, accessToken)
             if (result?.status != HttpStatusCode.NoContent) {
-                response.message = "Error: ${result?.status}"
+                response.param = result?.status.toString()
             }
         }
 
-        response.message = if (response.message.isEmpty()) "Success." else response.message
+        response.code = if (response.param == null) ResponseCodes.Success else ResponseCodes.Error
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
 }

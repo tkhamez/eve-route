@@ -23,6 +23,10 @@ data class EsiRefreshToken(
     val expires_in: Int
 )
 
+data class EsiLocation(
+    var solar_system_id: Int
+)
+
 data class EsiSearchStructure(val structure: List<Long> = emptyList())
 
 data class EsiStructure(

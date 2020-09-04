@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Grid, IconButton, Modal, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import SyncIcon from '@material-ui/icons/Sync';
@@ -64,7 +64,7 @@ export default function NavModal(props: Props) {
           <Box display="flex" justifyContent="left">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('HowThisWorks')}>
-              <HelpOutlineIcon fontSize="small" style={{marginRight: "4px"}} />
+              <HelpOutlineIcon fontSize="small" style={{marginRight: "3px"}} />
               {t('navModal.how-this-works-limitations')}
             </Button>
           </Box>
@@ -73,12 +73,12 @@ export default function NavModal(props: Props) {
           <Box display="flex" justifyContent="right">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('UpdateGates')}>
-              <SyncIcon fontSize="small" style={{marginRight: "2px"}} />
+              <SyncIcon fontSize="small" style={{marginRight: "3px"}} />
               {t('navModal.update-gates')}
             </Button>
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('Wormholes')}>
-              <AddIcon fontSize="small" />
+              <AddCircleOutlineIcon fontSize="small" style={{marginRight: "3px"}} />
               {t('navModal.add-wormhole-connections')}
             </Button>
           </Box>

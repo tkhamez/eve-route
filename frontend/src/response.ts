@@ -6,7 +6,7 @@
  * Contains a translation key from the "responseCode" group.
  */
 export type ResponseMessage = {
-  code: string,
+  code: string|null,
   param: string|null,
 }
 
@@ -17,12 +17,12 @@ export type ResponseAuthUser = {
 }
 
 export type ResponseGates = {
-  message: string,
+  code: string|null,
   ansiblexes: Array<Ansiblex>,
 }
 
 export type ResponseGatesUpdated = {
-  message: string,
+  code: string|null,
   allianceId: bigint|null,
   updated: Date|null,
 }
@@ -32,12 +32,14 @@ export type ResponseSystems = {
 }
 
 export type ResponseRouteFind = {
-  message: string,
+  code: string|null,
   route: Array<Waypoint>,
 }
 
-export type ResponseRouteSet = {
-  message: string,
+export type ResponseRouteLocation = {
+  code: string|null,
+  solarSystemId: bigint|null,
+  solarSystemName: string|null,
 }
 
 export type Ansiblex = {
