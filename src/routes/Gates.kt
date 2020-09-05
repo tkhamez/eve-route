@@ -71,12 +71,12 @@ fun Route.gates(config: Config) {
             response.code = ResponseCodes.SearchSuccess
             response.param = esiSearchStructure.structure.size.toString()
 
+            // Set update date now to prevent a second parallel update.
+            mongo.allianceUpdate(Alliance(allianceId, Date()))
+
             // fetch all gates in the background
             launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log) }
         }
-
-        // Set update date now to prevent a second parallel update.
-        mongo.allianceUpdate(Alliance(allianceId, Date()))
 
         call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
     }
