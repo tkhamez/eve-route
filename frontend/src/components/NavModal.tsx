@@ -12,8 +12,14 @@ import Wormholes from '../modals/Wormholes';
 
 const useStyles = makeStyles((theme) => ({
   topButton: {
+    display: "inline",
     margin: theme.spacing(0, 1),
     textTransform: 'none',
+  },
+  topButtonIcon: {
+    position: "relative",
+    top: "5px",
+    marginRight: "3px",
   },
   modal: {
     top: '30px',
@@ -60,25 +66,25 @@ export default function NavModal(props: Props) {
   return (
     <div>
       <Grid container spacing={2} className={props.classesCard}>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <Box display="flex" justifyContent="left">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('HowThisWorks')}>
-              <HelpOutlineIcon fontSize="small" style={{marginRight: "3px"}} />
+              <HelpOutlineIcon fontSize="small" className={classes.topButtonIcon} />
               {t('navModal.how-this-works-limitations')}
             </Button>
           </Box>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={7}>
           <Box display="flex" justifyContent="right">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('UpdateGates')}>
-              <SyncIcon fontSize="small" style={{marginRight: "3px"}} />
+              <SyncIcon fontSize="small" className={classes.topButtonIcon} />
               {t('navModal.update-gates')}
             </Button>
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('Wormholes')}>
-              <AddCircleOutlineIcon fontSize="small" style={{marginRight: "3px"}} />
+              <AddCircleOutlineIcon fontSize="small" className={classes.topButtonIcon} />
               {t('navModal.add-wormhole-connections')}
             </Button>
           </Box>
@@ -87,7 +93,7 @@ export default function NavModal(props: Props) {
       <Modal open={open} onClose={handleClose}>
         <div className={classes.modal}>
           <Grid container style={{borderBottom: "1px solid black"}}>
-            <Grid item xs={6}>
+            <Grid item xs={10}>
               <Box display="flex" justifyContent="left">
                 <Typography>
                   {content === 'HowThisWorks' && t('navModal.how-this-works-limitations')}
@@ -96,7 +102,7 @@ export default function NavModal(props: Props) {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={2}>
               <Box display="flex" justifyContent="right">
                 <IconButton size="small" className={classes.closeButton} onClick={handleClose}>
                   <CloseRoundedIcon/>
