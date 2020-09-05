@@ -65,5 +65,8 @@
   "routeList": {
     "route": "Route",
     "dotlan": "Show on <1>DOTLAN EveMaps</1>"
+  },
+  "map": {
+    "svg-error": "Your browser does not support SVG"
   }
 }
