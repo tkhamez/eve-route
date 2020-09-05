@@ -6,7 +6,6 @@ import {
   Button,
   createStyles,
   Grid,
-  Link,
   Theme,
   Typography
 } from '@material-ui/core';
@@ -97,20 +96,13 @@ class Home extends React.Component<Props, HomeState> {
           </Grid>
 
           <Grid item sm={4} xs={12}>
-            {this.state.routeFindResultWaypoints.length > 0 &&
-              <RouteList waypoints={this.state.routeFindResultWaypoints} />
-            }
+            <RouteList waypoints={this.state.routeFindResultWaypoints}
+                       message={this.state.routeFindResultMessage}
+                       dotlan={this.state.dotlanHref}
+            />
           </Grid>
           <Grid item sm={8} xs={12}>
-            {this.state.routeFindResultMessage}
-            {this.state.dotlanHref &&
-              <span>
-                <br />
-                <Link href={this.state.dotlanHref} target="_blank" rel="noopener noreferrer">{t('home.dotlan')}</Link>
-                <br />
-              </span>
-            }
-            <Map />
+            <Map waypoints={this.state.routeFindResultWaypoints} />
           </Grid>
         </Grid>
 

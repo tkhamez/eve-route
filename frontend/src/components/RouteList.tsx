@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import { Trans, useTranslation } from 'react-i18next';
+import { Link, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
@@ -20,6 +20,8 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   waypoints: Array<Waypoint>,
+  message: string,
+  dotlan: string,
 }
 
 export default function RouteList(props: Props) {
@@ -28,7 +30,19 @@ export default function RouteList(props: Props) {
 
   return (
       <List dense={true} className={classes.list}>
-        <ListItem>{t('home.route')}</ListItem>
+        <ListItem>
+          <strong>{t('routeList.route')}</strong>
+          {props.dotlan &&
+            <small style={{marginLeft: "auto"}}>
+              <Trans i18nKey="routeList.dotlan">
+                %<Link href={props.dotlan} target="_blank" rel="noopener noreferrer">%</Link>%
+              </Trans>
+            </small>
+          }
+        </ListItem>
+        {props.message &&
+          <ListItem>{props.message}</ListItem>
+        }
         {props.waypoints.map((value, index) => {
           const last = index + 1 === props.waypoints.length;
           return (

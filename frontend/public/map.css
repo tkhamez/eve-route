@@ -10,7 +10,15 @@
 }
 
 .connection {
-    stroke: lightblue;
+    stroke: grey;
     stroke-width: 3;
     stroke-linecap: round;
+}
+.route {
+    stroke: khaki;
+    stroke-width: 8;
+    stroke-linecap: round;
+}
+.route.ansiblex {
+    stroke: aqua;
 }

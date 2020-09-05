@@ -42,10 +42,7 @@
     "end-system": "End system",
     "find-route": "Find route",
     "set-route": "Set route",
-
-    "no-route-found": "No route found.",
-    "route": "Route",
-    "dotlan": "DOTLAN EveMaps"
+    "no-route-found": "No route found."
   },
   "navModal": {
     "how-this-works-limitations": "How this works and Limitations",
@@ -64,5 +61,9 @@
   },
   "systemInput": {
     "clear": "Clear"
+  },
+  "routeList": {
+    "route": "Route",
+    "dotlan": "Show on <1>DOTLAN EveMaps</1>"
   }
 }

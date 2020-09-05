@@ -52,12 +52,12 @@ export type Waypoint = {
   systemId: bigint,
   systemName: string,
   systemSecurity: number,
-  connectionType: RouteType["Stargate"]|RouteType['Ansiblex']|null,
+  connectionType: RouteType['Stargate']|RouteType['Ansiblex']|null,
   ansiblexId: number|null,
   ansiblexName: string|null,
 }
 
-export type RouteType = {
-  Stargate: "Stargate",
-  Ansiblex: "Ansiblex",
+type RouteType = {
+  Stargate: 'Stargate',
+  Ansiblex: 'Ansiblex',
 }
