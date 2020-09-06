@@ -63,7 +63,7 @@ export default function Map(props: Props) {
     const systems = SVG.getElement('systems');
     const connections = SVG.getElement('connections');
 
-    const systemRadius = 5;
+    const systemRadius = 3;
     SVG.setViewBox(mapData, systemRadius);
     SVG.makeDraggable();
     SVG.setupMouseZoom();
@@ -253,23 +253,14 @@ const SVG = (() => {
       let startY = 0;
 
       function startDrag(evt: any) { // MouseEvent|TouchEvent
-        let target;
-        if (evt.type === 'touchmove') {
-          target = document.elementFromPoint(evt.touches[0].clientX, evt.touches[0].clientY) as Element;
-        } else {
-          target = evt.target as Element;
-        }
-        if (target.classList.contains('draggable')) {
-          const coordinates = getMousePosition(evt);
-          startX = coordinates.x;
-          startY = coordinates.y;
-          dragging = true;
-        }
+        const coordinates = getMousePosition(evt);
+        startX = coordinates.x;
+        startY = coordinates.y;
+        dragging = true;
       }
 
       function drag(evt: any) { // MouseEvent|TouchEvent
         if (dragging) {
-          evt.preventDefault();
           const coordinates = getMousePosition(evt);
           svg.pan(coordinates.x - startX, coordinates.y - startY);
           startX = coordinates.x;
@@ -308,9 +299,9 @@ const SVG = (() => {
       svgElement.addEventListener('wheel', (evt: WheelEvent) => {
         evt.preventDefault();
         if (evt.deltaY > 0) {
-          svg.zoom(evt.deltaY / 3 * 1.1);
+          svg.zoom(evt.deltaY / 3 * 0.8);
         } else {
-          svg.zoom(evt.deltaY / -3 * 0.9);
+          svg.zoom(evt.deltaY / -3 * 1.2);
         }
       });
     },

@@ -48,7 +48,7 @@ class EsiToken(private val config: Config, private val call: ApplicationCall) {
         val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
         var token: EsiRefreshToken? = null
-        if (expiresOn.time - now.timeInMillis <= 60 * 1000) {
+        if (expiresOn.time - now.timeInMillis <= 180 * 1000) { // refresh 3 minutes before it expires
             token = refreshToken(esiToken.refreshToken)
         }
 

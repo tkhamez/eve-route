@@ -57,7 +57,8 @@
     "esi-search-help": "Search for: »",
     "input-required": "Missing required input.",
     "submit": "Submit",
-    "show-gates": "Show Gates"
+    "show-gates": "Show Gates",
+    "num-gates": "{{number}} gates:"
   },
   "systemInput": {
     "clear": "Clear"

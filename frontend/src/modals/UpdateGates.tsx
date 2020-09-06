@@ -105,7 +105,11 @@ export default function HowThisWorks() {
                 onClick={fetchGates}>{t('updateGates.show-gates')}</Button>
         {' '}
         {gatesResult.length > 0 &&
-          <Button size={"small"} variant="outlined" onClick={() => setGatesResult([])}><CloseIcon /></Button>
+          <span>
+            <Button size={"small"} variant="outlined" onClick={() => setGatesResult([])}><CloseIcon /></Button>
+            {' '}
+            {t('updateGates.num-gates', {number: gatesResult.length})}
+          </span>
         }
         <ul>
           {gatesResult.map((value, index) => {

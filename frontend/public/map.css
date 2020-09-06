@@ -19,8 +19,8 @@
 }
 
 .connection {
-    stroke: grey;
-    stroke-width: 1;
+    stroke: lightgrey;
+    stroke-width: 0.5;
     stroke-linecap: round;
 }
 .route {
