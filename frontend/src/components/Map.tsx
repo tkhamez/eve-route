@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0.9,
   },
   icon: {
+    fontSize: '2rem',
     '&:hover': {
       color: 'lightgrey',
     }
@@ -241,13 +242,23 @@ const SVG = (() => {
       svgElement.addEventListener('mouseup', endDrag);
       svgElement.addEventListener('mouseleave', endDrag);
 
+      svgElement.addEventListener('touchstart', startDrag);
+      svgElement.addEventListener('touchmove', drag);
+      svgElement.addEventListener('touchend', endDrag);
+      svgElement.addEventListener('touchcancel', endDrag);
+
       const svg = this;
       let dragging = false;
       let startX = 0;
       let startY = 0;
 
-      function startDrag(evt: MouseEvent) {
-        const target = evt.target as Element;
+      function startDrag(evt: any) { // MouseEvent|TouchEvent
+        let target;
+        if (evt.type === 'touchmove') {
+          target = document.elementFromPoint(evt.touches[0].clientX, evt.touches[0].clientY) as Element;
+        } else {
+          target = evt.target as Element;
+        }
         if (target.classList.contains('draggable')) {
           const coordinates = getMousePosition(evt);
           startX = coordinates.x;
@@ -256,7 +267,7 @@ const SVG = (() => {
         }
       }
 
-      function drag(evt: MouseEvent) {
+      function drag(evt: any) { // MouseEvent|TouchEvent
         if (dragging) {
           evt.preventDefault();
           const coordinates = getMousePosition(evt);
@@ -273,11 +284,20 @@ const SVG = (() => {
       /**
        * see http://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
        */
-      function getMousePosition(evt: MouseEvent) {
+      function getMousePosition(evt: any) { // MouseEvent|TouchEvent
+        let clientX, clientY;
+        if (evt.type === 'touchmove' || evt.type === 'touchstart') {
+          clientX = evt.touches[0].clientX;
+          clientY = evt.touches[0].clientY;
+        } else {
+          clientX = evt.clientX;
+          clientY = evt.clientY;
+        }
+
         const CTM = svgElement.getScreenCTM() as DOMMatrix;
         return {
-          x: (evt.clientX - CTM.e) / CTM.a,
-          y: (evt.clientY - CTM.f) / CTM.d
+          x: (clientX - CTM.e) / CTM.a,
+          y: (clientY - CTM.f) / CTM.d
         };
       }
     },
