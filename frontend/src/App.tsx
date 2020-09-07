@@ -30,23 +30,32 @@ interface Props extends WithTranslation {
 }
 
 type AppState = {
-  isLoggedIn: Boolean|null,
+  user: {
+    name: string,
+    alliance: string,
+  },
 }
 
 class App extends React.Component<Props, AppState> {
-  private readonly globalData: any;
+  private readonly domain: string;
 
   render() {
     const { classes } = this.props;
 
+    const globalData = {
+      domain: this.domain,
+      user: this.state.user,
+      logoutUser: this.logout
+    };
+
     return (
-      <GlobalDataContext.Provider value={this.globalData}>
+      <GlobalDataContext.Provider value={globalData}>
         <div className={classes.root}>
           <Header />
 
           <Container component="main" maxWidth="md">
-            { this.state.isLoggedIn === false && <Login /> }
-            { this.state.isLoggedIn           && <Home /> }
+            { this.state.user.name === '' && <Login /> }
+            { this.state.user.name        && <Home /> }
           </Container>
 
           <footer className={classes.footer}>
@@ -60,31 +69,41 @@ class App extends React.Component<Props, AppState> {
   constructor(props: Props) {
     super(props);
 
-    this.globalData = {};
-
     this.state = {
-      isLoggedIn: null,
+      user: {
+        name: '',
+        alliance: '',
+      },
     };
 
-    this.globalData.domain = '';
+    this.domain = '';
     if (window.location.port === '3000') { // frontend dev port
-      this.globalData.domain = `http://${window.location.hostname}:8080`; // backend dev port
+      this.domain = `http://${window.location.hostname}:8080`; // backend dev port
     }
+
+    this.logout = this.logout.bind(this);
 
     axios.defaults.withCredentials = true;
   }
 
   componentDidMount() {
-    const app = this;
-    axios.get<ResponseAuthUser>(this.globalData.domain+'/api/auth/user').then(response => {
-      app.globalData.user = {
+    axios.get<ResponseAuthUser>(this.domain+'/api/auth/user').then(response => {
+      this.setState({ user: {
         name: response.data.characterName,
-        alliance: response.data.allianceId || '(unknown alliance)',
-      };
-      app.setState({ isLoggedIn: true }); // change state *after* the user data is set
+        alliance: response.data.allianceId.toString(),
+      } });
     }).catch(() => { // 403
-      app.setState({ isLoggedIn: false });
+      // do nothing
     });
+  }
+
+  logout() {
+    axios.get(`${this.domain}/api/auth/logout`).then(() => {
+      this.setState({ user: {
+        name: '',
+        alliance: '',
+      } });
+    }).catch()
   }
 }
 

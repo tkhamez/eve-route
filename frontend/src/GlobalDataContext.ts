@@ -6,4 +6,5 @@ export const GlobalDataContext = React.createContext({
         name: '',
         alliance: '',
     },
+    logoutUser: function() {},
 });

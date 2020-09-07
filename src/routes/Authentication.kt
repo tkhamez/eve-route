@@ -84,7 +84,7 @@ fun Route.authentication(config: Config) {
             data = ResponseAuthUser(
                 session.esiVerify.CharacterID,
                 session.esiVerify.CharacterName,
-                session.esiAffiliation?.alliance_id
+                if (session.esiAffiliation !== null) session.esiAffiliation.alliance_id else 0
             )
         }
         call.respondText(gson.toJson(data), contentType = ContentType.Application.Json)
@@ -93,6 +93,6 @@ fun Route.authentication(config: Config) {
     get("/api/auth/logout") {
         val session = call.sessions.get<Session>() ?: Session()
         call.sessions.set(session.copy(esiToken = null, esiVerify = null))
-        call.respondRedirect("/")
+        call.respondText("")
     }
 }

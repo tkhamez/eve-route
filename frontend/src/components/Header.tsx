@@ -49,11 +49,10 @@ export default function Header() {
           <Toolbar className={classes.toolbar} variant="dense">
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>
 
-            { globalData.user &&
+            { globalData.user.name &&
               <span>
                 {globalData.user.name}, {globalData.user.alliance}
-                <Button href={`${globalData.domain}/api/auth/logout`} color="secondary" variant="outlined"
-                        className={classes.link}>
+                <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.link}>
                   {t('header.logout')}
                 </Button>
               </span>

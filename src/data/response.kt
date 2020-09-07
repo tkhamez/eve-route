@@ -32,7 +32,7 @@ data class ResponseMessage(
 data class ResponseAuthUser(
     val characterId: Int,
     val characterName: String,
-    val allianceId: Int?
+    val allianceId: Int
 )
 
 data class ResponseGates(
