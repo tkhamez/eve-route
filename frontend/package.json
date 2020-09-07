@@ -14,6 +14,7 @@
     "@types/react-dom": "^16.9.8",
     "axios": "^0.19.2",
     "fontsource-roboto": "^3.0.3",
+    "fontsource-saira": "^3.0.9",
     "i18next": "^19.7.0",
     "i18next-http-backend": "^1.0.18",
     "react": "^16.13.1",

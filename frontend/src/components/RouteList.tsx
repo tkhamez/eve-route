@@ -32,7 +32,7 @@ export default function RouteList(props: Props) {
   return (
       <List dense={true} className={classes.list}>
         <ListItem>
-          <strong>{t('routeList.route')}</strong>
+          <strong>{t('routeList.route')}</strong>&nbsp;
           {props.dotlan &&
             <small style={{marginLeft: "auto"}}>
               <Trans i18nKey="routeList.dotlan">

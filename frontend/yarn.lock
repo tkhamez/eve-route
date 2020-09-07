@@ -4748,6 +4748,11 @@ fontsource-roboto@^3.0.3:
   resolved "https://registry.yarnpkg.com/fontsource-roboto/-/fontsource-roboto-3.0.3.tgz#99c312babeabce22b3e933b3edf2951d4508f4f7"
   integrity sha512-kfsC9qAP6XhwnSDAhg2lhWeaUJfLGXZh7GcLxFiz/4lXdkV2pVhWv2Xp9ES3b3BHdc9UuPrWXXLOphzHIStcOw==
 
+fontsource-saira@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/fontsource-saira/-/fontsource-saira-3.0.9.tgz#0b79512246cae6c333bc9fcc195bf3581c78f2dd"
+  integrity sha512-PIc++LLq/SuxXnis0upO1BziMJrID5QZiSb5NJ1BS8sBET8kFyU25gT/n4NSDBzC8p+uHIDnfL13ZfuN/tMcAQ==
+
 for-in@^0.1.3:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-0.1.8.tgz#d8773908e31256109952b1fdb9b3fa867d2775e1"

@@ -1,5 +1,9 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import "fontsource-saira/300-normal.css"
+import "fontsource-saira/400-normal.css"
+import "fontsource-saira/500-normal.css"
+import "fontsource-saira/700-normal.css"
 import "fontsource-roboto/300-normal.css"
 import "fontsource-roboto/400-normal.css"
 import "fontsource-roboto/500-normal.css"

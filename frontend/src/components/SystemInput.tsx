@@ -111,7 +111,8 @@ export default forwardRef((props: Props, ref: any) => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn)
-  }, [globalData.domain, searchTerm, t]);
+    // eslint-disable-next-line
+  }, [globalData.domain, searchTerm]); // do not add "t" or a language change can trigger a search
 
   const onChange = (value: string) => {
     setInputValue(value);

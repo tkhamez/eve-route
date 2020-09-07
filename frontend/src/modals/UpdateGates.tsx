@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -25,13 +25,7 @@ export default function UpdateGates() {
   const [searchResult, setSearchResult] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
-  useEffect(() => {
-    if (gatesUpdated === '') {
-      fetchGatesUpdated();
-    }
-  });
-
-  const fetchGatesUpdated = () => {
+  const fetchGatesUpdated = useCallback(() => {
     axios.get<ResponseGatesUpdated>(`${globalData.domain}/api/gates/last-update`).then(response => {
       if (response.data.code) {
         setGatesUpdated(t(`responseCode.${response.data.code}`));
@@ -41,7 +35,7 @@ export default function UpdateGates() {
     }).catch(() => { // 403
       // do nothing (necessary or react dev tools will complain)
     });
-  };
+  }, [globalData.domain, t]);
 
   const fetchGates = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.currentTarget;
@@ -73,12 +67,19 @@ export default function UpdateGates() {
     setSubmitDisabled(true);
     axios.get<ResponseMessage>(`${globalData.domain}/api/gates/search/${searchTerm}`).then(response => {
       setSearchResult(t(`responseCode.${response.data.code}`, {number: response.data.param}));
+      fetchGatesUpdated();
     }).catch(() => {
       setSearchResult(t('app.error'));
     }).then(() => {
       setSubmitDisabled(false);
     });
   };
+
+  useEffect(() => {
+    if (gatesUpdated === '') {
+      fetchGatesUpdated();
+    }
+  }, [fetchGatesUpdated, gatesUpdated]);
 
   return (
     <div>
