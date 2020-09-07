@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
   toolbarTitle: {
     flexGrow: 1,
   },
-  link: {
-    margin: theme.spacing(1, 1.5),
+  logout: {
+    margin: theme.spacing(0, 1.5),
   },
 }));
 
@@ -50,12 +50,12 @@ export default function Header() {
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>
 
             { globalData.user.name &&
-              <span>
+              <div>
                 {globalData.user.name}, {globalData.user.alliance}
-                <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.link}>
+                <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.logout}>
                   {t('header.logout')}
                 </Button>
-              </span>
+              </div>
             }
 
             <LanguageSwitcher />
