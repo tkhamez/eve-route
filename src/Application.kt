@@ -71,7 +71,7 @@ fun Application.module() {
     }
 
     install(Sessions) {
-        val storage = if (config.callback.contains("localhost:8080")) {
+        val storage = if (config.callback.contains(":8080")) {
             directorySessionStorage(File(System.getProperty("java.io.tmpdir") + "/.eve-route-sessions"), cached = true)
         } else {
             SessionStorageMemory()
