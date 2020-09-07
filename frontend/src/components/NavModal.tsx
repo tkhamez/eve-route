@@ -8,7 +8,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import SyncIcon from '@material-ui/icons/Sync';
 import HowThisWorks from '../modals/HowThisWorks';
 import UpdateGates from '../modals/UpdateGates';
-import Wormholes from '../modals/Wormholes';
+import AddConnection from '../modals/AddConnection';
 
 const useStyles = makeStyles((theme) => ({
   topButton: {
@@ -44,11 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Props = {
-  classesCard: any,
-}
-
-export default function NavModal(props: Props) {
+export default function NavModal() {
   const { t } = useTranslation();
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -65,7 +61,7 @@ export default function NavModal(props: Props) {
 
   return (
     <div>
-      <Grid container spacing={2} className={props.classesCard}>
+      <Grid container spacing={2} className='card'>
         <Grid item xs={5}>
           <Box display="flex" justifyContent="left">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
@@ -83,9 +79,9 @@ export default function NavModal(props: Props) {
               {t('navModal.update-gates')}
             </Button>
             <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('Wormholes')}>
+                    onClick={() => handleOpen('AddConnection')}>
               <AddCircleOutlineIcon fontSize="small" className={classes.topButtonIcon} />
-              {t('navModal.add-wormhole-connections')}
+              {t('navModal.add-connection')}
             </Button>
           </Box>
         </Grid>
@@ -98,7 +94,7 @@ export default function NavModal(props: Props) {
                 <Typography>
                   {content === 'HowThisWorks' && t('navModal.how-this-works-limitations')}
                   {content === 'UpdateGates' && t('navModal.update-gates')}
-                  {content === 'Wormholes' && t('navModal.add-wormhole-connections')}
+                  {content === 'AddConnection' && t('navModal.add-connection')}
                 </Typography>
               </Box>
             </Grid>
@@ -113,7 +109,7 @@ export default function NavModal(props: Props) {
           <div className={classes.body}>
             {content === 'HowThisWorks' && <HowThisWorks />}
             {content === 'UpdateGates' && <UpdateGates />}
-            {content === 'Wormholes' && <Wormholes />}
+            {content === 'AddConnection' && <AddConnection />}
           </div>
         </div>
       </Modal>

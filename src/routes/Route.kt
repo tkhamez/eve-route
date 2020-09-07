@@ -1,6 +1,5 @@
 package net.tkhamez.everoute.routes
 
-import com.google.gson.Gson
 import io.ktor.application.call
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
@@ -23,8 +22,8 @@ fun Route.route(config: Config) {
         val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
         val accessToken = EsiToken(config, call).get()
         if (characterId == null || accessToken == null) {
-            response.code = ResponseCodes.NotLoggedInOrTokenError
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
@@ -35,26 +34,30 @@ fun Route.route(config: Config) {
             response.solarSystemName = Graph().findSystem(response.solarSystemId!!)?.name
         }
 
-        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
     get("/api/route/find/{from}/{to}") {
         val response = ResponseRouteFind()
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
+        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
 
-        if (allianceId == null) {
-            response.code = ResponseCodes.AuthAllianceOrTokenFail
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        if (allianceId == null || characterId == null) {
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
-        val gates = Mongo(config.db).gatesGet(allianceId)
-        response.route = EveRoute(gates).find(
+        val mongo = Mongo(config.db)
+        val gates = mongo.gatesGet(allianceId)
+        mongo.temporaryConnectionsDeleteAllExpired()
+        val tempConnections = mongo.temporaryConnectionsGet(characterId)
+        response.route = EveRoute(gates, tempConnections).find(
             call.parameters["from"].toString().trim(),
             call.parameters["to"].toString().trim()
         )
 
-        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
     post("/api/route/set") {
@@ -65,14 +68,14 @@ fun Route.route(config: Config) {
 
         val accessToken = EsiToken(config, call).get()
         if (accessToken == null) {
-            response.code = ResponseCodes.NotLoggedInOrTokenError
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@post
         }
 
         val httpRequest = HttpRequest(config, call.application.environment.log)
         val body = call.receiveText()
-        val waypoints = Gson().fromJson(body, Array<EveRoute.Waypoint>::class.java)
+        val waypoints = gson.fromJson(body, Array<EveRoute.Waypoint>::class.java)
         var incomingAnsiblex = false
         for ((index, value) in waypoints.withIndex()) {
             if (
@@ -102,6 +105,6 @@ fun Route.route(config: Config) {
         }
 
         response.code = if (response.param == null) ResponseCodes.Success else ResponseCodes.Error
-        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 }

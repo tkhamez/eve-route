@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGatesUpdated, ResponseGates, ResponseMessage } from '../response';
-import { makeStyles } from "@material-ui/core/styles";
+import { dateFormat } from "../date";
 
 const useStyles = makeStyles(() => ({
   submit: {
@@ -14,18 +15,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function HowThisWorks() {
+export default function UpdateGates() {
   const { t } = useTranslation();
   const classes = useStyles();
   const globalData = useContext(GlobalDataContext);
-  const [gatesUpdated, setGatesUpdated] = useState<Date|null>(null);
+  const [gatesUpdated, setGatesUpdated] = useState('');
   const [gatesResult, setGatesResult] = useState<Array<string>>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
   useEffect(() => {
-    if (gatesUpdated == null) {
+    if (gatesUpdated === '') {
       fetchGatesUpdated();
     }
   });
@@ -34,8 +35,8 @@ export default function HowThisWorks() {
     axios.get<ResponseGatesUpdated>(`${globalData.domain}/api/gates/last-update`).then(response => {
       if (response.data.code) {
         setGatesUpdated(t(`responseCode.${response.data.code}`));
-      } else {
-        setGatesUpdated(response.data.updated);
+      } else if (response.data.updated) {
+        setGatesUpdated(dateFormat(response.data.updated));
       }
     }).catch(() => { // 403
       // do nothing (necessary or react dev tools will complain)

@@ -22,4 +22,13 @@ class Graph {
         }
         return null
     }
+
+    fun findSystem(systemName: String): System? {
+        for (system in getSystems().systems) {
+            if (system.name == systemName) {
+                return system
+            }
+        }
+        return null
+    }
 }

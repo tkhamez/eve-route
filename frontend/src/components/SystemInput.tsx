@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -50,7 +50,7 @@ type Props = {
   onChange: Function,
 }
 
-export default function Search(props: Props) {
+export default forwardRef((props: Props, ref: any) => {
   const { t } = useTranslation();
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
@@ -59,6 +59,12 @@ export default function Search(props: Props) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    clearInput() {
+      onChange('');
+    }
+  }));
 
   useEffect(() => {
     if (props.fieldId !== "start-system") {
@@ -72,7 +78,7 @@ export default function Search(props: Props) {
         props.onChange(r.data.solarSystemName);
       }
     }).catch(() => {
-      // TODO show error?
+      console.log('Failed to fetch location of character.');
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalData.domain, props.fieldId, props.onChange]); // do *not* use "props" here or there will be an endless loop
@@ -177,4 +183,4 @@ export default function Search(props: Props) {
       }
     </div>
   )
-}
+})

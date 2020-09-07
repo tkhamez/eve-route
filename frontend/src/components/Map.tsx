@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+import axios from 'axios';
 import { MapData } from '../types';
-import { Waypoint } from '../response';
+import { RouteType, Waypoint } from '../response';
 
 const useStyles = makeStyles((theme) => ({
   map: {
@@ -47,8 +47,8 @@ export default function Map(props: Props) {
   useEffect(() => {
       axios.get<MapData>('/map.json').then(result => {
         setMapData(result.data);
-      }).catch((e) => {
-        console.log(e); // TODO show error message?
+      }).catch(() => {
+        console.log('Failed to load map data.');
       });
   }, []); // only executed once!
 
@@ -115,7 +115,7 @@ export default function Map(props: Props) {
     let routeMaxX = Number.MIN_SAFE_INTEGER;
     let routeMinY = Number.MAX_SAFE_INTEGER;
     let routeMaxY = Number.MIN_SAFE_INTEGER;
-    let connection: Array<{ x: number, y: number, type: string|null }> = [];
+    let connection: Array<{ x: number, y: number, type: RouteType|null }> = [];
     const routeData: Array<typeof connection> = [];
     props.waypoints.forEach(waypoint => {
       mapData.systems.forEach(system => {
@@ -147,8 +147,10 @@ export default function Map(props: Props) {
     // add route
     routeData.forEach(connection => {
       let classes = 'route';
-      if (connection[0].type === 'Ansiblex') {
+      if (connection[0].type === RouteType.Ansiblex) {
         classes += ' ansiblex';
+      } else if (connection[0].type === RouteType.Temporary) {
+        classes += ' temporary';
       }
       SVG.addLine(route, connection[0].x, connection[0].y, connection[1].x, connection[1].y, classes);
     });

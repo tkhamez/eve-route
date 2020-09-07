@@ -5,10 +5,11 @@
   },
   "responseCode": {
     "AlreadyUpdated": "Gates were already updated within the last hour.",
-    "AuthAllianceFail": "Failed to retrieve alliance of character.",
-    "AuthAllianceOrTokenFail": "Failed to retrieve alliance of character or ESI token.",
+    "AuthError": "Authentication or ESI token error.",
+    "ConnectionStored": "Connection successfully stored.",
     "Error": "Error: {{message}}",
-    "NotLoggedInOrTokenError": "Not logged in or failed to retrieve ESI token.",
+    "FailedToStoreData": "Failed to store data.",
+    "MissingInput": "Missing input.",
     "SearchError": "An error occurred during the ESI search.",
     "SearchSuccess": [
       "The search returned {{number}} results. ",
@@ -16,6 +17,7 @@
       "You can close this window."
     ],
     "Success": "Success.",
+    "SystemNotFound": "System(s) not found.",
     "WrongSearchTerm": "Wrong search term."
   },
   "header": {
@@ -49,7 +51,21 @@
     "how-this-works": "How this works",
     "limitations": "Limitations",
     "update-gates": "Update Gates",
-    "add-wormhole-connections": "Add Connections"
+    "add-connection": "Add Connection"
+  },
+  "addConnection":  {
+    "from": "From",
+    "to": "To",
+    "choose-systems": [
+      "Choose systems for a wormhole connection or missing Ansiblexes. ",
+      "The connection is temporarily added for your character only and removed after 2 days."
+    ],
+    "your-temporary-connections": "Your connections",
+    "expires": "Expires",
+    "delete": "Delete"
+  },
+  "howThisWorks": {
+
   },
   "updateGates": {
     "last-update": "Last update:",
@@ -65,7 +81,8 @@
   },
   "routeList": {
     "route": "Route",
-    "dotlan": "Show on <1>DOTLAN EveMaps</1>"
+    "dotlan": "Show on <1>DOTLAN EveMaps</1>",
+    "temporary-connection": "Temporary connection"
   },
   "map": {
     "svg-error": "Your browser does not support SVG"

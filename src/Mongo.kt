@@ -2,7 +2,9 @@ package net.tkhamez.everoute
 
 import net.tkhamez.everoute.data.Alliance
 import net.tkhamez.everoute.data.Ansiblex
+import net.tkhamez.everoute.data.TemporaryConnection
 import org.litote.kmongo.*
+import java.util.*
 
 class Mongo(uri: String) {
     private val dbName = uri.substring(uri.lastIndexOf('/') + 1)
@@ -35,6 +37,46 @@ class Mongo(uri: String) {
         gatesToDelete.forEach {
             col.deleteOne(Ansiblex::id eq it.id)
         }
+    }
+
+    fun temporaryConnectionsGet(characterId: Int): List<TemporaryConnection> {
+        val col = database.getCollection<TemporaryConnection>("temporary-connection")
+
+        val existingConnections = mutableListOf<TemporaryConnection>()
+        col.find(TemporaryConnection::characterId eq characterId).forEach {
+            existingConnections.add(it)
+        }
+
+        return existingConnections
+    }
+
+    fun temporaryConnectionStore(tempConnection: TemporaryConnection) {
+        val col = database.getCollection<TemporaryConnection>("temporary-connection")
+
+        val existingConnection = col.findOne(
+            TemporaryConnection::system1Id eq tempConnection.system1Id,
+            TemporaryConnection::system2Id eq tempConnection.system2Id
+        )
+
+        if (existingConnection == null) {
+            col.insertOne(tempConnection)
+        }
+    }
+
+    fun temporaryConnectionsDeleteAllExpired() {
+        val col = database.getCollection<TemporaryConnection>("temporary-connection")
+
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendar.add(Calendar.DAY_OF_YEAR, -2)
+        col.deleteMany(TemporaryConnection::created lt calendar.time)
+    }
+
+    fun temporaryConnectionDelete(system1Id: Int, system2Id: Int) {
+        val col = database.getCollection<TemporaryConnection>("temporary-connection")
+        col.deleteOne(
+            TemporaryConnection::system1Id eq system1Id,
+            TemporaryConnection::system2Id eq system2Id
+        )
     }
 
     fun allianceGet(allianceId: Int): Alliance? {

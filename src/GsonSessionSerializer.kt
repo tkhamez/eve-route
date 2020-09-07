@@ -6,7 +6,7 @@ import net.tkhamez.everoute.data.Session
 
 class GsonSessionSerializer(
     private val type: java.lang.reflect.Type,
-    private val gson: Gson = Gson(),
+    private val gson: Gson = net.tkhamez.everoute.gson,
     configure: Gson.() -> Unit = {}
 ): SessionSerializer<Session> {
     init {

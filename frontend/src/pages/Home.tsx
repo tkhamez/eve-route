@@ -6,24 +6,19 @@ import {
   Button,
   createStyles,
   Grid,
-  Theme,
   Typography
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseMessage, ResponseRouteFind, Waypoint } from '../response';
+import { ResponseMessage, ResponseRouteFind, Waypoint, RouteType } from '../response';
 import SystemInput from '../components/SystemInput';
 import RouteList from '../components/RouteList';
 import NavModal from '../components/NavModal';
 import Map from '../components/Map';
 
-const styles = (theme: Theme) => createStyles({
-  card: {
-    backgroundColor: theme.palette.background.default,
-    margin: theme.spacing(2, 0),
-    borderRadius: '4px',
-  },
+const styles = () => createStyles({
+
 });
 
 interface Props extends WithTranslation {
@@ -50,16 +45,13 @@ class Home extends React.Component<Props, HomeState> {
 
   render() {
     const { t } = this.props;
-    const { classes } = this.props;
 
     return (
-      <div style={{ width: 'calc(100% - 16px)' }}> {
-        /* Grid with spacing>0 is bigger than the parent, this fixes that for spacing=2,
-         see also https://github.com/mui-org/material-ui/issues/7466 */}
+      <div className='grid-spacing-2-wrapper'>
 
-        <NavModal classesCard={classes.card}/>
+        <NavModal />
 
-        <Grid container spacing={2} className={classes.card}>
+        <Grid container spacing={2} className='card'>
           <Grid item xs={12}>
             <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
           </Grid>
@@ -165,9 +157,9 @@ class Home extends React.Component<Props, HomeState> {
             ansiblexId: response.data.route[i].ansiblexId || null,
           });
           dotlanHref += response.data.route[i].systemName.replace(' ', '_');
-          if (response.data.route[i].connectionType === 'Stargate') {
+          if (response.data.route[i].connectionType === RouteType.Stargate) {
             dotlanHref += ':';
-          } else if (response.data.route[i].connectionType === 'Ansiblex') {
+          } else { // Ansiblex or Temporary
             dotlanHref += '::';
           } // else = end system
         }

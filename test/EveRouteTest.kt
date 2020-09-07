@@ -7,7 +7,7 @@ class EveRouteTest {
 
     @Test
     fun testFind() {
-        val route = EveRoute(listOf()).find("jita", "amarr")
+        val route = EveRoute(listOf(), listOf()).find("jita", "amarr")
         assertEquals(10, route.size)
     }
 }

@@ -11,18 +11,21 @@ import java.util.Date
 
 enum class ResponseCodes {
     AlreadyUpdated,
-    AuthAllianceFail,
-    AuthAllianceOrTokenFail,
+    AuthError,
+    ConnectionStored,
     Error,
-    NotLoggedInOrTokenError,
+    FailedToStoreData,
+    MissingInput,
     SearchError,
     SearchSuccess,
     Success,
+    SystemNotFound,
     WrongSearchTerm
 }
 
 data class ResponseMessage(
     var code: ResponseCodes? = null,
+    var success: Boolean? = null,
     var param: String? = null
 )
 
@@ -41,6 +44,11 @@ data class ResponseGatesUpdated(
     var code: ResponseCodes? = null,
     var allianceId: Int? = null,
     var updated: Date? = null
+)
+
+data class ResponseTemporaryConnections(
+    var code: ResponseCodes? = null,
+    var temporaryConnections: MutableList<TemporaryConnection> = mutableListOf()
 )
 
 data class ResponseSystems(

@@ -1,6 +1,5 @@
 package net.tkhamez.everoute.routes
 
-import com.google.gson.Gson
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.auth.OAuthAccessTokenResponse
@@ -22,6 +21,7 @@ import io.ktor.sessions.set
 import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.gson
 
 fun Route.authentication(config: Config) {
 
@@ -87,7 +87,7 @@ fun Route.authentication(config: Config) {
                 session.esiAffiliation?.alliance_id
             )
         }
-        call.respondText(Gson().toJson(data), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(data), contentType = ContentType.Application.Json)
     }
 
     get("/api/auth/logout") {

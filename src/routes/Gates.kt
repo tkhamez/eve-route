@@ -1,6 +1,5 @@
 package net.tkhamez.everoute.routes
 
-import com.google.gson.Gson
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
@@ -13,6 +12,7 @@ import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.Mongo
 import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.gson
 import org.slf4j.Logger
 import java.util.*
 
@@ -22,14 +22,14 @@ fun Route.gates(config: Config) {
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
 
         if (allianceId == null) {
-            response.code = ResponseCodes.AuthAllianceFail
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
         Mongo(config.db).gatesGet(allianceId).forEach { response.ansiblexes.add(it) }
 
-        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
     get("/api/gates/search/{term}") {
@@ -39,7 +39,7 @@ fun Route.gates(config: Config) {
         val searchTerm = call.parameters["term"].toString().trim()
         if (searchTerm != "»") {
             response.code = ResponseCodes.WrongSearchTerm
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
@@ -47,8 +47,8 @@ fun Route.gates(config: Config) {
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
         val accessToken = EsiToken(config, call).get()
         if (accessToken == null || characterId == null || allianceId == null) {
-            response.code = ResponseCodes.AuthAllianceOrTokenFail
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
@@ -56,7 +56,7 @@ fun Route.gates(config: Config) {
         val alliance = mongo.allianceGet(allianceId)
         if (alliance?.updated != null && alliance.updated.time.plus((60 * 60 * 1000)) > Date().time) {
             response.code = ResponseCodes.AlreadyUpdated
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
@@ -78,7 +78,7 @@ fun Route.gates(config: Config) {
             launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log) }
         }
 
-        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
     get("/api/gates/last-update") {
@@ -86,8 +86,8 @@ fun Route.gates(config: Config) {
 
         val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
         if (allianceId == null) {
-            response.code = ResponseCodes.AuthAllianceFail
-            call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@get
         }
 
@@ -96,7 +96,7 @@ fun Route.gates(config: Config) {
         response.allianceId = alliance?.id
         response.updated = alliance?.updated
 
-        call.respondText(Gson().toJson(response), contentType = ContentType.Application.Json)
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 }
 

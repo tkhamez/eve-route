@@ -4,8 +4,9 @@ import { Link, List, ListItem, ListItemIcon, ListItemText, Typography } from '@m
 import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
 import FiberManualRecordOutlinedIcon from '@material-ui/icons/FiberManualRecordOutlined';
+import SlowMotionVideoTwoToneIcon from '@material-ui/icons/SlowMotionVideoTwoTone';
 import { makeStyles } from '@material-ui/core/styles';
-import { Waypoint } from '../response';
+import { RouteType, Waypoint } from '../response';
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -47,10 +48,15 @@ export default function RouteList(props: Props) {
           const last = index + 1 === props.waypoints.length;
           return (
             <ListItem key={index}>
-              {! last && value.ansiblexId &&
+              {! last && value.connectionType === RouteType.Temporary &&
+                <ListItemIcon className={classes.listIcon}>
+                  <SlowMotionVideoTwoToneIcon style={{transform: "rotate(90deg)", color: "darkgrey"}} />
+                </ListItemIcon>
+              }
+              {! last && value.connectionType === RouteType.Ansiblex &&
                 <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleTwoToneIcon /></ListItemIcon>
               }
-              {! last && ! value.ansiblexId &&
+              {! last && value.connectionType === RouteType.Stargate &&
                 <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleOutlinedIcon/></ListItemIcon>
               }
               {last &&
@@ -65,7 +71,10 @@ export default function RouteList(props: Props) {
                     </Typography>
                   </React.Fragment>
                 }
-                secondary={<small>{value.ansiblexName}</small>}
+                secondary={<small>{
+                  value.connectionType === RouteType.Ansiblex ? value.ansiblexName :
+                    (value.connectionType === RouteType.Temporary ? t('routeList.temporary-connection') : '')
+                }</small>}
               />
             </ListItem>
           )

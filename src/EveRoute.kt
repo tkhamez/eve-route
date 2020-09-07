@@ -1,19 +1,25 @@
 package net.tkhamez.everoute
 
+import net.tkhamez.everoute.data.TemporaryConnection
 import net.tkhamez.everoute.data.Ansiblex
 import net.tkhamez.everoute.data.Graph
 import net.tkhamez.everoute.data.System
 import java.util.*
 import kotlin.collections.HashSet
 
-class EveRoute(ansiblexes: List<Ansiblex>) {
+class EveRoute(ansiblexes: List<Ansiblex>, temporaryConnections: List<TemporaryConnection>) {
     /**
      * Graph with ESI data of all systems with edges.
      */
     private val graph: Graph = net.tkhamez.everoute.Graph().getSystems()
 
     /**
-     * Helper variable to keep a reference to all nodes, accessible by their system ID.
+     * Helper variable with all systems, including wormholes.
+     */
+    private val allSystems: MutableMap<Int, System> = mutableMapOf()
+
+    /**
+     * Helper variable to keep a reference to all graph nodes, accessible by their system ID.
      */
     private val allNodes: MutableMap<Int, Node<System>> = mutableMapOf()
 
@@ -22,12 +28,18 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
      */
     private val allAnsiblexes: MutableMap<Int, Ansiblex> = mutableMapOf()
 
+    /**
+     * Helper variable that keeps a reference to all temporary connections, accessible by their system ID.
+     */
+    private val allTemporaryConnections: MutableMap<Int, TemporaryConnection> = mutableMapOf()
+
     val centralNode: Node<System>?
 
     init {
         // build node connections
         centralNode = buildNodes(graph)
         addGates(ansiblexes)
+        addTempConnections(temporaryConnections)
     }
 
     fun find(from: String, to: String): List<Waypoint> {
@@ -82,19 +94,8 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
      * Creates and connects all nodes
      */
     private fun buildNodes(graph: Graph): Node<System>? {
-        val allSystems: MutableMap<Int, System> = mutableMapOf()
         graph.systems.forEach {
             allSystems[it.id] = it
-        }
-
-        fun getNode(systemId: Int): Node<System>? {
-            if (allNodes[systemId] == null) {
-                val sourceSystem = allSystems[systemId]
-                if (sourceSystem != null) {
-                    allNodes[systemId] = Node(sourceSystem)
-                }
-            }
-            return allNodes[systemId]
         }
 
         var center: Node<System>? = null
@@ -132,6 +133,30 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
         }
     }
 
+    private fun addTempConnections(temporaryConnections: List<TemporaryConnection>) {
+        temporaryConnections.forEach { connection ->
+            allTemporaryConnections[connection.system1Id] = connection
+            allTemporaryConnections[connection.system2Id] = connection
+
+            // get/create and connect nodes
+            val startSystemNode = getNode(connection.system1Id)
+            val endSystemNode = getNode(connection.system2Id)
+            if (startSystemNode != null && endSystemNode != null) { // should never be null
+                startSystemNode.connect(endSystemNode, Waypoint.Type.Temporary)
+            }
+        }
+    }
+
+    private fun getNode(systemId: Int): Node<System>? {
+        if (allNodes[systemId] == null) {
+            val sourceSystem = allSystems[systemId]
+            if (sourceSystem != null) {
+                allNodes[systemId] = Node(sourceSystem)
+            }
+        }
+        return allNodes[systemId]
+    }
+
     private fun findSystem(systemName: String): System? {
         for (system in graph.systems) {
             if (system.name.toLowerCase() == systemName.toLowerCase()) {
@@ -158,7 +183,7 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
                 return currentConnection
             } else {
                 currentConnection.node.getConnections().forEach { connection ->
-                if (connection.node !== start && connection.node.predecessor == null) {
+                    if (connection.node !== start && connection.node.predecessor == null) {
                         connection.node.predecessor = currentConnection
                     }
                     queue.add(connection)
@@ -207,6 +232,6 @@ class EveRoute(ansiblexes: List<Ansiblex>) {
         val ansiblexId: Long?,
         val ansiblexName: String?
     ) {
-        enum class Type { Stargate, Ansiblex }
+        enum class Type { Stargate, Ansiblex, Temporary }
     }
 }

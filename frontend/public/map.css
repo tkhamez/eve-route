@@ -24,11 +24,16 @@
     stroke-linecap: round;
 }
 .route {
-    stroke: khaki;
+    stroke: yellow;
     stroke-width: 7;
     stroke-linecap: round;
     stroke-opacity: 0.7;
 }
 .route.ansiblex {
-    stroke: aqua;
+    stroke: royalblue;
+}
+.route.temporary {
+    stroke: darkorange;
+    stroke-dasharray: 12;
+    color: grey;
 }

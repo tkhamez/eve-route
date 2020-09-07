@@ -125,5 +125,6 @@ fun Application.module() {
         gates(config)
         route(config)
         systems()
+        connection(config)
     }
 }

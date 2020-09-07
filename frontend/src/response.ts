@@ -7,6 +7,7 @@
  */
 export type ResponseMessage = {
   code: string|null,
+  success: boolean|null,
   param: string|null,
 }
 
@@ -24,7 +25,12 @@ export type ResponseGates = {
 export type ResponseGatesUpdated = {
   code: string|null,
   allianceId: bigint|null,
-  updated: Date|null,
+  updated: string|null, // yyyy-MM-dd'T'HH:mm:ss'Z'
+}
+
+export type ResponseTemporaryConnections = {
+  code: string|null,
+  temporaryConnections: Array<TemporaryConnection>,
 }
 
 export type ResponseSystems = {
@@ -52,12 +58,22 @@ export type Waypoint = {
   systemId: bigint,
   systemName: string,
   systemSecurity: number,
-  connectionType: RouteType['Stargate']|RouteType['Ansiblex']|null,
+  connectionType: RouteType|null,
   ansiblexId: number|null,
   ansiblexName: string|null,
 }
 
-type RouteType = {
-  Stargate: 'Stargate',
-  Ansiblex: 'Ansiblex',
+export enum RouteType {
+  Stargate = 'Stargate',
+  Ansiblex = 'Ansiblex',
+  Temporary = 'Temporary',
+}
+
+export type TemporaryConnection = {
+  system1Id: bigint,
+  system1Name: string,
+  system2Id: bigint,
+  system2Name: string,
+  characterId: bigint,
+  created: string // yyyy-MM-dd'T'HH:mm:ss'Z'
 }

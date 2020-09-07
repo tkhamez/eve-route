@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import './App.css';
 import { ResponseAuthUser } from "./response";
 
 const styles = (theme: Theme) => createStyles({
