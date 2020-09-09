@@ -35,7 +35,7 @@ Requires [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
 cd frontend
 ```
 
-Dev: build map and start server:
+Dev: build map data and start server:
 ```shell script
 npx ts-node src/scripts/map.ts
 yarn start
@@ -46,14 +46,9 @@ Prod: build (files are copied to the backend into resources/public):
 yarn build
 ```
 
-### Generate Graph from ESI Data
-
-Generate `resources/graph.json`:
-```shell script
-./gradlew buildGraph
-```
-
 ### Backend
+
+Requires JDK 11+.
 
 Make sure the necessary environment variables are set, e.g.:
 ```shell script
@@ -72,6 +67,13 @@ export EVE_ROUTE_ESI_DATASOURCE=tranquility
 ```
 
 The CORS domain setting includes http and https.
+
+#### Generate Graph from ESI Data
+
+Generate `resources/graph.json`:
+```shell script
+./gradlew buildGraph
+```
 
 #### Dev
 
