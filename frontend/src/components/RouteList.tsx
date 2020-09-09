@@ -22,21 +22,33 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   waypoints: Array<Waypoint>,
   message: string,
-  dotlan: string,
 }
 
 export default function RouteList(props: Props) {
   const { t } = useTranslation();
   const classes = useStyles();
 
+  let dotlanHref = 'https://evemaps.dotlan.net/route/';
+  for (const waypoint of props.waypoints) {
+    if (waypoint.wormhole) {
+      continue;
+    }
+    dotlanHref += waypoint.systemName.replace(' ', '_');
+    if (waypoint.connectionType === RouteType.Stargate) {
+      dotlanHref += ':';
+    } else { // Ansiblex or Temporary
+      dotlanHref += '::';
+    } // else = end system
+  }
+
   return (
       <List dense={true} className={classes.list}>
         <ListItem>
           <strong>{t('routeList.route')}</strong>&nbsp;
-          {props.dotlan &&
+          {dotlanHref &&
             <small style={{marginLeft: "auto"}}>
               <Trans i18nKey="routeList.dotlan">
-                %<Link href={props.dotlan} target="_blank" rel="noopener noreferrer">%</Link>%
+                %<Link href={dotlanHref} target="_blank" rel="noopener noreferrer">%</Link>%
               </Trans>
             </small>
           }
@@ -72,7 +84,8 @@ export default function RouteList(props: Props) {
                   </React.Fragment>
                 }
                 secondary={<small>{
-                  value.connectionType === RouteType.Ansiblex ? value.ansiblexName :
+                  value.connectionType === RouteType.Ansiblex ?
+                    (value.ansiblexName ? value.ansiblexName : t('routeList.unknown-ansiblex')):
                     (value.connectionType === RouteType.Temporary ? t('routeList.temporary-connection') : '')
                 }</small>}
               />

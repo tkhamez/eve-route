@@ -61,9 +61,6 @@ fun Route.route(config: Config) {
     }
 
     post("/api/route/set") {
-        // This is not needed, but can make the route better visible in the in-game map
-        val setAnsiblexExitSystemAsWaypoint = false
-
         val response = ResponseMessage()
 
         val accessToken = EsiToken(config, call).get()
@@ -76,17 +73,23 @@ fun Route.route(config: Config) {
         val httpRequest = HttpRequest(config, call.application.environment.log)
         val body = call.receiveText()
         val waypoints = gson.fromJson(body, Array<EveRoute.Waypoint>::class.java)
-        var incomingAnsiblex = false
+        var incomingTemporary = false
+        var startSystemSet = false
         for ((index, value) in waypoints.withIndex()) {
             if (
-                index != 0 && // not start system
-                index + 1 < waypoints.size && // not end system
-                value.ansiblexId == null && // not an ansiblex
-                (! setAnsiblexExitSystemAsWaypoint || ! incomingAnsiblex)
+                value.wormhole // can't set waypoint to a wormhole
+                ||
+                (
+                    startSystemSet && // not start system
+                    index + 1 < waypoints.size && // not end system
+                    value.ansiblexId == null && // not an ansiblex
+                    value.connectionType != EveRoute.Waypoint.Type.Temporary && // not a temporary connection
+                    ! incomingTemporary // previous system was not a temporary connection
+                )
             ) {
                 continue
             }
-            incomingAnsiblex = value.ansiblexId != null
+            incomingTemporary = value.connectionType == EveRoute.Waypoint.Type.Temporary
 
             // Ansiblex ID = -1: there is a connection but ESI returned only the other gate
             val id = if (value.ansiblexId != null && value.ansiblexId > 0) {
@@ -96,12 +99,13 @@ fun Route.route(config: Config) {
             }
             val path = "latest/ui/autopilot/waypoint/?datasource=${config.esiDatasource}"
             var params = "&destination_id=${id}" // system, station or structure’s id
-            val clear = if (index > 0) "false" else "true"
+            val clear = if (startSystemSet) "false" else "true"
             params += "&add_to_beginning=false&clear_other_waypoints=$clear"
             val result = httpRequest.post<HttpResponse>(path + params, null, accessToken)
             if (result?.status != HttpStatusCode.NoContent) {
                 response.param = result?.status.toString()
             }
+            startSystemSet = true
         }
 
         response.code = if (response.param == null) ResponseCodes.Success else ResponseCodes.Error

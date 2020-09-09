@@ -69,19 +69,19 @@ class EveRoute(ansiblexes: List<Ansiblex>, temporaryConnections: List<TemporaryC
                 null
             }
             var ansiblexId = ansiblex?.id
-            var ansiblexName = ansiblex?.name
             if (previousConnection?.type == Waypoint.Type.Ansiblex && ansiblex == null) {
                 // ESI returned only one Ansiblex from a pair - the one going the other direction
                 ansiblexId = -1
-                ansiblexName = "(Unknown Ansiblex)"
             }
+            val id = currentConnection.node.getValue().id
             path.add(Waypoint(
                 systemId = currentConnection.node.getValue().id,
                 systemName = currentConnection.node.getValue().name,
+                wormhole = id in 31000000..32000000, // see https://docs.esi.evetech.net/docs/id_ranges.html
                 systemSecurity = currentConnection.node.getValue().security,
                 connectionType = previousConnection?.type,
                 ansiblexId = ansiblexId,
-                ansiblexName = ansiblexName
+                ansiblexName = ansiblex?.name
             ))
             previousConnection = currentConnection
             currentConnection = currentConnection.node.predecessor
@@ -227,6 +227,7 @@ class EveRoute(ansiblexes: List<Ansiblex>, temporaryConnections: List<TemporaryC
     data class Waypoint(
         val systemId: Int,
         val systemName: String,
+        val wormhole: Boolean,
         val systemSecurity: Double,
         val connectionType: Type?, // the type of the outgoing connection, null for the end system
         val ansiblexId: Long?,

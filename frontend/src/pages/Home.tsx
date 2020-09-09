@@ -11,7 +11,7 @@ import {
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseMessage, ResponseRouteFind, Waypoint, RouteType } from '../response';
+import { ResponseMessage, ResponseRouteFind, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
 import RouteList from '../components/RouteList';
 import NavModal from '../components/NavModal';
@@ -33,7 +33,6 @@ type HomeState = {
   buttonRouteSetDisabled: boolean,
   routeFindResultMessage: string,
   routeFindResultWaypoints: Array<Waypoint>,
-  dotlanHref: string,
   routeSetResult: string,
 }
 
@@ -90,7 +89,6 @@ class Home extends React.Component<Props, HomeState> {
           <Grid item sm={4} xs={12}>
             <RouteList waypoints={this.state.routeFindResultWaypoints}
                        message={this.state.routeFindResultMessage}
-                       dotlan={this.state.dotlanHref}
             />
           </Grid>
           <Grid item sm={8} xs={12}>
@@ -113,7 +111,6 @@ class Home extends React.Component<Props, HomeState> {
       buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
       routeFindResultWaypoints: [],
-      dotlanHref: '',
       routeSetResult: '',
     };
 
@@ -137,7 +134,6 @@ class Home extends React.Component<Props, HomeState> {
     app.setState({buttonRouteSetDisabled: true});
     app.setState({ routeFindResultMessage: '' });
     app.setState({ routeFindResultWaypoints: [] });
-    app.setState({ dotlanHref: '' });
     app.setState({ routeSetResult: '' });
     const url = `${this.context.domain}/api/route/find/${this.state.routeFrom}/${this.state.routeTo}`;
     axios.get<ResponseRouteFind>(url).then(response => {
@@ -148,23 +144,8 @@ class Home extends React.Component<Props, HomeState> {
           app.setState({ routeFindResultMessage: app.t('home.no-route-found') });
         }
       } else {
-        app.esiRoute = [];
-        let dotlanHref = 'https://evemaps.dotlan.net/route/';
-        for (let i = 0; i < response.data.route.length; i++) {
-          app.esiRoute.push({
-            systemId: response.data.route[i].systemId,
-            systemName: response.data.route[i].systemName, // for debugging
-            ansiblexId: response.data.route[i].ansiblexId || null,
-          });
-          dotlanHref += response.data.route[i].systemName.replace(' ', '_');
-          if (response.data.route[i].connectionType === RouteType.Stargate) {
-            dotlanHref += ':';
-          } else { // Ansiblex or Temporary
-            dotlanHref += '::';
-          } // else = end system
-        }
+        app.esiRoute = response.data.route;
         app.setState({ routeFindResultWaypoints: response.data.route });
-        app.setState({ dotlanHref: dotlanHref });
         app.setState({buttonRouteSetDisabled: app.esiRoute.length <= 1});
       }
     }).catch(() => {

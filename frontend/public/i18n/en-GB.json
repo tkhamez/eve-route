@@ -39,7 +39,7 @@
     "log-in": "Log in with EVE Online"
   },
   "home": {
-    "select-systems": "Please enter your start and end system:",
+    "select-systems": "Enter your start and end system:",
     "start-system": "Start system",
     "end-system": "End system",
     "find-route": "Find route",
@@ -47,9 +47,8 @@
     "no-route-found": "No route found."
   },
   "navModal": {
-    "how-this-works-limitations": "How this works and Limitations",
+    "how-this-works-limitations": "How this works, Limitations",
     "how-this-works": "How this works",
-    "limitations": "Limitations",
     "update-gates": "Update Gates",
     "add-connection": "Add Connection"
   },
@@ -82,6 +81,7 @@
   "routeList": {
     "route": "Route",
     "dotlan": "Show on <1>DOTLAN EveMaps</1>",
+    "unknown-ansiblex": "Unknown Ansiblex",
     "temporary-connection": "Temporary connection"
   },
   "map": {

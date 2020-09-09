@@ -57,6 +57,7 @@ export type Ansiblex = {
 export type Waypoint = {
   systemId: bigint,
   systemName: string,
+  wormhole: boolean,
   systemSecurity: number,
   connectionType: RouteType|null,
   ansiblexId: number|null,
