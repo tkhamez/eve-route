@@ -12,9 +12,9 @@ export type ResponseMessage = {
 }
 
 export type ResponseAuthUser = {
-  characterId: bigint,
-  characterName: string,
-  allianceId: bigint,
+  name: string,
+  allianceName: string,
+  allianceTicker: string,
 }
 
 export type ResponseGates = {

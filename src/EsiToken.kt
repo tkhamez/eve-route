@@ -21,7 +21,8 @@ class EsiToken(private val config: Config, private val call: ApplicationCall) {
     data class Data(
         val refreshToken: String,
         var accessToken: String,
-        var expiresOn: String
+        var expiresOn: String,
+        var scopes: String
     )
 
     /**

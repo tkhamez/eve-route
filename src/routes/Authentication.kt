@@ -35,7 +35,7 @@ fun Route.authentication(config: Config) {
         )
         if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1) {
             val session = call.sessions.get<Session>()
-            if (session?.esiVerify == null) {
+            if (session?.eveCharacter == null) {
                 call.respond(HttpStatusCode.Forbidden, "")
                 return@intercept finish()
             }
@@ -47,30 +47,31 @@ fun Route.authentication(config: Config) {
             handle {
                 val httpRequest = HttpRequest(config, call.application.environment.log)
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
+
+                var esiVerify: EsiVerify? = null
                 if (principal != null) {
-                    val esiVerify = httpRequest.request<EsiVerify>(
+                    esiVerify = httpRequest.request<EsiVerify>(
                         config.verifyUrl,
                         HttpMethod.Get,
                         null,
                         principal.accessToken
                     )
-                    if (esiVerify != null) {
-                        val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
-                            "latest/characters/affiliation/?datasource=${config.esiDatasource}",
-                            "[${esiVerify.CharacterID}]"
-                        )
-                        val session = call.sessions.get<Session>() ?: Session()
-                        call.sessions.set(session.copy(
-                            esiToken = EsiToken.Data(
-                                accessToken = principal.accessToken,
-                                refreshToken = principal.refreshToken.toString(),
-                                expiresOn = esiVerify.ExpiresOn
-                            ),
-                            esiVerify = esiVerify,
-                            esiAffiliation = esiAffiliation?.get(0)
-                        ))
-                    }
                 }
+
+                val character = getCharacter(esiVerify, config, httpRequest)
+                if (character != null && esiVerify != null && principal != null) {
+                    val session = call.sessions.get<Session>() ?: Session()
+                    call.sessions.set(session.copy(
+                        esiToken = EsiToken.Data(
+                            accessToken = principal.accessToken,
+                            refreshToken = principal.refreshToken.toString(),
+                            expiresOn = esiVerify.ExpiresOn,
+                            scopes = esiVerify.Scopes
+                        ),
+                        eveCharacter = character
+                    ))
+                }
+
                 call.respondRedirect("/")
             }
         }
@@ -79,11 +80,11 @@ fun Route.authentication(config: Config) {
     get("/api/auth/user") {
         val session = call.sessions.get<Session>()
         var data: ResponseAuthUser? = null
-        if (session?.esiVerify?.CharacterID != null) {
+        if (session?.eveCharacter != null) {
             data = ResponseAuthUser(
-                session.esiVerify.CharacterID,
-                session.esiVerify.CharacterName,
-                if (session.esiAffiliation !== null) session.esiAffiliation.alliance_id else 0
+                session.eveCharacter.name,
+                session.eveCharacter.allianceName,
+                session.eveCharacter.allianceTicker,
             )
         }
         call.respondText(gson.toJson(data), contentType = ContentType.Application.Json)
@@ -91,7 +92,38 @@ fun Route.authentication(config: Config) {
 
     get("/api/auth/logout") {
         val session = call.sessions.get<Session>() ?: Session()
-        call.sessions.set(session.copy(esiToken = null, esiVerify = null))
+        call.sessions.set(session.copy(esiToken = null, eveCharacter = null))
         call.respondText("")
     }
+}
+
+private suspend fun getCharacter(esiVerify: EsiVerify?, config: Config, httpRequest: HttpRequest): EveCharacter? {
+    var eveCharacter: EveCharacter? = null
+
+    if (esiVerify != null) {
+        val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
+            "latest/characters/affiliation/?datasource=${config.esiDatasource}",
+            "[${esiVerify.CharacterID}]"
+        )
+        val allianceId = esiAffiliation?.get(0)?.alliance_id
+
+        if (allianceId != null) {
+            val alliance = httpRequest.get<EsiAlliance>(
+                "latest/alliances/$allianceId/?datasource=${config.esiDatasource}",
+                "[${esiVerify.CharacterID}]"
+            )
+
+            if (alliance != null) {
+                eveCharacter = EveCharacter(
+                    esiVerify.CharacterID,
+                    esiVerify.CharacterName,
+                    allianceId,
+                    alliance.name,
+                    alliance.ticker
+                )
+            }
+        }
+    }
+
+    return eveCharacter
 }

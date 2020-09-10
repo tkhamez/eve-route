@@ -19,7 +19,7 @@ import java.util.*
 fun Route.gates(config: Config) {
         get("/api/gates/fetch") {
         val response = ResponseGates()
-        val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
+        val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
 
         if (allianceId == null) {
             response.code = ResponseCodes.AuthError
@@ -43,8 +43,8 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
-        val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
+        val characterId = call.sessions.get<Session>()?.eveCharacter?.id
+        val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
         val accessToken = EsiToken(config, call).get()
         if (accessToken == null || characterId == null || allianceId == null) {
             response.code = ResponseCodes.AuthError
@@ -84,7 +84,7 @@ fun Route.gates(config: Config) {
     get("/api/gates/last-update") {
         val response = ResponseGatesUpdated()
 
-        val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
+        val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
         if (allianceId == null) {
             response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)

@@ -32,7 +32,8 @@ interface Props extends WithTranslation {
 type AppState = {
   user: {
     name: string,
-    alliance: string,
+    allianceName: string,
+    allianceTicker: string,
   },
 }
 
@@ -72,7 +73,8 @@ class App extends React.Component<Props, AppState> {
     this.state = {
       user: {
         name: '',
-        alliance: '',
+        allianceName: '',
+        allianceTicker: '',
       },
     };
 
@@ -101,10 +103,7 @@ class App extends React.Component<Props, AppState> {
 
   fetchUser() {
     axios.get<ResponseAuthUser>(this.domain+'/api/auth/user').then(response => {
-      this.setState({ user: {
-          name: response.data.characterName,
-          alliance: response.data.allianceId.toString(),
-        } });
+      this.setState({ user: response.data });
     }).catch(() => { // 403
       this.logoutUser();
     });
@@ -113,7 +112,8 @@ class App extends React.Component<Props, AppState> {
   logoutUser() {
     this.setState({ user: {
         name: '',
-        alliance: '',
+        allianceName: '',
+        allianceTicker: '',
       } });
   }
 }

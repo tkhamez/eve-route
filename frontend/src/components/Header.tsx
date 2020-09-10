@@ -51,7 +51,9 @@ export default function Header() {
 
             { globalData.user.name &&
               <div>
-                {globalData.user.name}, {globalData.user.alliance}
+                [<span title={globalData.user.allianceName}>{globalData.user.allianceTicker}</span>]
+                {' '}
+                {globalData.user.name}
                 <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.logout}>
                   {t('header.logout')}
                 </Button>

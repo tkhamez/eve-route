@@ -19,7 +19,7 @@ fun Route.route(config: Config) {
     get("/api/route/location") {
         val response = ResponseRouteLocation()
 
-        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
+        val characterId = call.sessions.get<Session>()?.eveCharacter?.id
         val accessToken = EsiToken(config, call).get()
         if (characterId == null || accessToken == null) {
             response.code = ResponseCodes.AuthError
@@ -39,8 +39,8 @@ fun Route.route(config: Config) {
 
     get("/api/route/find/{from}/{to}") {
         val response = ResponseRouteFind()
-        val allianceId = call.sessions.get<Session>()?.esiAffiliation?.alliance_id
-        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
+        val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
+        val characterId = call.sessions.get<Session>()?.eveCharacter?.id
 
         if (allianceId == null || characterId == null) {
             response.code = ResponseCodes.AuthError

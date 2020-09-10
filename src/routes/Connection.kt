@@ -17,7 +17,7 @@ fun Route.connection(config: Config) {
     post("/api/connection/add") {
         val response = ResponseMessage(success = false)
 
-        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
+        val characterId = call.sessions.get<Session>()?.eveCharacter?.id
         if (characterId == null) { // should not happen because of auth intercept
             response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
@@ -68,7 +68,7 @@ fun Route.connection(config: Config) {
     get("/api/connection/get-all") {
         val response = ResponseTemporaryConnections()
 
-        val characterId = call.sessions.get<Session>()?.esiVerify?.CharacterID
+        val characterId = call.sessions.get<Session>()?.eveCharacter?.id
         if (characterId == null) { // should not happen because of auth intercept
             response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)

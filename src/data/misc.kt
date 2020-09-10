@@ -21,6 +21,13 @@ data class Config(
 
 data class Session(
     val esiToken: EsiToken.Data? = null,
-    val esiVerify: EsiVerify? = null,
-    val esiAffiliation: EsiAffiliation? = null
+    val eveCharacter: EveCharacter? = null,
+)
+
+data class EveCharacter(
+    val id: Int,
+    val name: String,
+    val allianceId: Int,
+    val allianceName: String,
+    val allianceTicker: String,
 )

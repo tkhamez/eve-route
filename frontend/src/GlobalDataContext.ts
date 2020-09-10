@@ -4,7 +4,8 @@ export const GlobalDataContext = React.createContext({
     domain: '',
     user: {
         name: '',
-        alliance: '',
+        allianceName: '',
+        allianceTicker: '',
     },
     logoutUser: function() {},
 });
