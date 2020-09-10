@@ -45,7 +45,7 @@ export default function RouteList(props: Props) {
       <List dense={true} className={classes.list}>
         <ListItem>
           <strong>{t('routeList.route')}</strong>&nbsp;
-          {dotlanHref &&
+          {props.waypoints.length > 0 &&
             <small style={{marginLeft: "auto"}}>
               <Trans i18nKey="routeList.dotlan">
                 %<Link href={dotlanHref} target="_blank" rel="noopener noreferrer">%</Link>%
