@@ -82,28 +82,39 @@ class App extends React.Component<Props, AppState> {
     }
 
     this.logout = this.logout.bind(this);
+    this.fetchUser = this.fetchUser.bind(this);
+    this.logoutUser = this.logoutUser.bind(this);
 
     axios.defaults.withCredentials = true;
   }
 
   componentDidMount() {
-    axios.get<ResponseAuthUser>(this.domain+'/api/auth/user').then(response => {
-      this.setState({ user: {
-        name: response.data.characterName,
-        alliance: response.data.allianceId.toString(),
-      } });
-    }).catch(() => { // 403
-      // do nothing
-    });
+    setInterval(this.fetchUser, 1000 * 60 * 10); // every 10 minutes
+    this.fetchUser();
   }
 
   logout() {
     axios.get(`${this.domain}/api/auth/logout`).then(() => {
+      this.logoutUser();
+    }).catch()
+  }
+
+  fetchUser() {
+    axios.get<ResponseAuthUser>(this.domain+'/api/auth/user').then(response => {
       this.setState({ user: {
+          name: response.data.characterName,
+          alliance: response.data.allianceId.toString(),
+        } });
+    }).catch(() => { // 403
+      this.logoutUser();
+    });
+  }
+
+  logoutUser() {
+    this.setState({ user: {
         name: '',
         alliance: '',
       } });
-    }).catch()
   }
 }
 
