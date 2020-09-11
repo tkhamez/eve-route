@@ -6,7 +6,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import SyncIcon from '@material-ui/icons/Sync';
-import HowThisWorks from '../modals/HowThisWorks';
+import HowItWorks from '../modals/HowItWorks';
 import UpdateGates from '../modals/UpdateGates';
 import AddConnection from '../modals/AddConnection';
 
@@ -65,9 +65,9 @@ export default function NavModal() {
         <Grid item xs={5}>
           <Box display="flex" justifyContent="left">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('HowThisWorks')}>
+                    onClick={() => handleOpen('HowItWorks')}>
               <HelpOutlineIcon fontSize="small" className={classes.topButtonIcon} />
-              {t('navModal.how-this-works-limitations')}
+              {t('navModal.how-it-works')}
             </Button>
           </Box>
         </Grid>
@@ -92,7 +92,7 @@ export default function NavModal() {
             <Grid item xs={10}>
               <Box display="flex" justifyContent="left">
                 <Typography>
-                  {content === 'HowThisWorks' && t('navModal.how-this-works-limitations')}
+                  {content === 'HowItWorks' && t('navModal.how-it-works')}
                   {content === 'UpdateGates' && t('navModal.update-gates')}
                   {content === 'AddConnection' && t('navModal.add-connection')}
                 </Typography>
@@ -107,7 +107,7 @@ export default function NavModal() {
             </Grid>
           </Grid>
           <div className={classes.body}>
-            {content === 'HowThisWorks' && <HowThisWorks />}
+            {content === 'HowItWorks' && <HowItWorks />}
             {content === 'UpdateGates' && <UpdateGates />}
             {content === 'AddConnection' && <AddConnection />}
           </div>

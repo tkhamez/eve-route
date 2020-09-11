@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function HowThisWorks() {
+export default function HowItWorks() {
   return (
     <div>
       Lorem Ipsum ...

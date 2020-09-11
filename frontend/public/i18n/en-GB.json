@@ -47,8 +47,7 @@
     "no-route-found": "No route found."
   },
   "navModal": {
-    "how-this-works-limitations": "How this works, Limitations",
-    "how-this-works": "How this works",
+    "how-it-works": "How it works",
     "update-gates": "Update Gates",
     "add-connection": "Add Connection"
   },
@@ -63,7 +62,7 @@
     "expires": "Expires",
     "delete": "Delete"
   },
-  "howThisWorks": {
+  "howItWorks": {
 
   },
   "updateGates": {
