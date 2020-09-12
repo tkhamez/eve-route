@@ -43,7 +43,7 @@ fun Route.connection(config: Config) {
             return@post
         }
 
-        val connection = TemporaryConnection(system1.id, system1.name, system2.id, system2.name, characterId, Date())
+        val connection = MongoTemporaryConnection(system1.id, system1.name, system2.id, system2.name, characterId, Date())
         try {
             Mongo(config.db).temporaryConnectionStore(connection)
         } catch (e: MongoException) {

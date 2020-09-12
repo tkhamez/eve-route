@@ -6,7 +6,7 @@
 
 package net.tkhamez.everoute.data
 
-import net.tkhamez.everoute.EveRoute
+import net.tkhamez.everoute.Route
 import java.util.Date
 
 enum class ResponseCodes {
@@ -37,7 +37,15 @@ data class ResponseAuthUser(
 
 data class ResponseGates(
     var code: ResponseCodes? = null,
-    var ansiblexes: MutableList<Ansiblex> = mutableListOf()
+    var ansiblexes: MutableList<MongoAnsiblex> = mutableListOf()
+)
+
+data class ResponseSystems(
+    var systems: MutableList<System> = mutableListOf()
+)
+
+data class ResponseConnectedSystems(
+    var connections: MutableList<ConnectedSystems> = mutableListOf()
 )
 
 data class ResponseGatesUpdated(
@@ -48,10 +56,10 @@ data class ResponseGatesUpdated(
 
 data class ResponseTemporaryConnections(
     var code: ResponseCodes? = null,
-    var temporaryConnections: MutableList<TemporaryConnection> = mutableListOf()
+    var temporaryConnections: MutableList<MongoTemporaryConnection> = mutableListOf()
 )
 
-data class ResponseSystems(
+data class ResponseSystemNames(
     var systems: MutableList<String> = mutableListOf()
 )
 
@@ -63,5 +71,5 @@ data class ResponseRouteLocation(
 
 data class ResponseRouteFind(
     var code: ResponseCodes? = null,
-    var route: List<EveRoute.Waypoint> = listOf()
+    var route: List<Route.Waypoint> = listOf()
 )

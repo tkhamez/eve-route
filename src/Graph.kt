@@ -2,7 +2,7 @@ package net.tkhamez.everoute
 
 import com.google.gson.Gson
 import net.tkhamez.everoute.data.Graph
-import net.tkhamez.everoute.data.System
+import net.tkhamez.everoute.data.GraphSystem
 import java.io.File
 
 class Graph {
@@ -14,7 +14,7 @@ class Graph {
         return Gson().fromJson(graphJson, Graph::class.java)
     }
 
-    fun findSystem(systemId: Int): System? {
+    fun findSystem(systemId: Int): GraphSystem? {
         for (system in getSystems().systems) {
             if (system.id == systemId) {
                 return system
@@ -23,7 +23,7 @@ class Graph {
         return null
     }
 
-    fun findSystem(systemName: String): System? {
+    fun findSystem(systemName: String): GraphSystem? {
         for (system in getSystems().systems) {
             if (system.name == systemName) {
                 return system

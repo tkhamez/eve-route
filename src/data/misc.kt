@@ -22,6 +22,8 @@ data class Config(
 data class Session(
     val esiToken: EsiToken.Data? = null,
     val eveCharacter: EveCharacter? = null,
+    val avoidedSystems: MutableSet<Int>? = null,
+    val removedConnections: MutableSet<ConnectedSystems>? = null,
 )
 
 data class EveCharacter(
@@ -30,4 +32,14 @@ data class EveCharacter(
     val allianceId: Int,
     val allianceName: String,
     val allianceTicker: String,
+)
+
+data class System(
+    val id: Int,
+    val name: String,
+)
+
+data class ConnectedSystems(
+    val system1: String,
+    val system2: String,
 )

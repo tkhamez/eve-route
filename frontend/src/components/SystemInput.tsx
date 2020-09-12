@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseRouteLocation, ResponseSystems } from '../response';
+import { ResponseRouteLocation, ResponseSystemNames } from '../response';
 
 const useStyles = makeStyles((theme) => ({
   wrap: {
@@ -95,7 +95,7 @@ export default forwardRef((props: Props, ref: any) => {
         setLoading(true);
         let response = null;
         try {
-          response = await axios.get<ResponseSystems>(`${globalData.domain}/api/systems/find/${searchTerm}`);
+          response = await axios.get<ResponseSystemNames>(`${globalData.domain}/api/systems/find/${searchTerm}`);
         } catch (error) {
           // do nothing
         }

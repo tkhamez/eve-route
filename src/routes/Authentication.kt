@@ -91,8 +91,7 @@ fun Route.authentication(config: Config) {
     }
 
     get("/api/auth/logout") {
-        val session = call.sessions.get<Session>() ?: Session()
-        call.sessions.set(session.copy(esiToken = null, eveCharacter = null))
+        call.sessions.set(Session())
         call.respondText("")
     }
 }

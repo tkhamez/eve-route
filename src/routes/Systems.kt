@@ -22,10 +22,10 @@ fun Route.systems() {
     }
 }
 
-private fun getResponse(search: String): ResponseSystems {
+private fun getResponse(search: String): ResponseSystemNames {
     val graph = Graph().getSystems()
 
-    val response = ResponseSystems()
+    val response = ResponseSystemNames()
     graph.systems.forEach {
         if (search == "" || it.name.toLowerCase().contains(search.toLowerCase())) {
             response.systems.add(it.name)

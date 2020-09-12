@@ -2,8 +2,8 @@ package net.tkhamez.everoute.scripts
 
 import com.google.gson.Gson
 import net.tkhamez.everoute.data.Graph
-import net.tkhamez.everoute.data.Position
-import net.tkhamez.everoute.data.System as DataSystem
+import net.tkhamez.everoute.data.GraphPosition
+import net.tkhamez.everoute.data.GraphSystem
 import java.io.File
 import kotlin.math.round
 
@@ -39,7 +39,7 @@ fun readData(): Graph {
             } else {
                 round(system.securityStatus * 10) / 10
             }
-            graph.systems.add(DataSystem(system.id, system.name, security, system.position))
+            graph.systems.add(GraphSystem(system.id, system.name, security, system.position))
         }
 
         val stargateJson = File(dataPath + "stargates/" + region.name + "-stargates.json").readText()
@@ -69,5 +69,5 @@ fun writeJsonFile(graph: Graph) {
 
 data class Destination(val systemId: Int)
 data class Stargate(val systemId: Int, val destination: Destination)
-data class System(val id: Int, val name: String, val securityStatus: Double, val position: Position)
+data class System(val id: Int, val name: String, val securityStatus: Double, val position: GraphPosition)
 data class Region(val name: String)

@@ -98,7 +98,7 @@ class App extends React.Component<Props, AppState> {
   logout() {
     axios.get(`${this.domain}/api/auth/logout`).then(() => {
       this.logoutUser();
-    }).catch()
+    }).catch(() => {})
   }
 
   fetchUser() {

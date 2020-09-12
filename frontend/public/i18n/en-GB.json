@@ -44,6 +44,10 @@
     "end-system": "End system",
     "find-route": "Find route",
     "set-route": "Set route",
+    "check-in-game": [
+      "Please note that an Ansiblex gate can be offline. ",
+      "If this is the case, you can exclude it manually from the route."
+    ],
     "no-route-found": "No route found."
   },
   "navModal": {
@@ -79,9 +83,14 @@
   },
   "routeList": {
     "route": "Route",
+    "avoided-systems": "Avoided systems",
+    "removed-connections": "Removed connections",
+    "reset": "Reset",
     "dotlan": "Show on <1>DOTLAN EveMaps</1>",
     "unknown-ansiblex": "Unknown Ansiblex",
-    "temporary-connection": "Temporary connection"
+    "temporary-connection": "Temporary connection",
+    "avoid-system": "avoid system",
+    "remove-connection": "remove connection"
   },
   "map": {
     "svg-error": "Your browser does not support SVG"

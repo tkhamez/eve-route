@@ -85,10 +85,14 @@ class Home extends React.Component<Props, HomeState> {
               </Typography>
             </Box>
           </Grid>
+          <Grid item xs={12}>
+            <Typography variant="body2" align="center">{t('home.check-in-game')}</Typography>
+          </Grid>
 
           <Grid item sm={4} xs={12}>
             <RouteList waypoints={this.state.routeFindResultWaypoints}
                        message={this.state.routeFindResultMessage}
+                       recalculateRoute={this.recalculateRoute}
             />
           </Grid>
           <Grid item sm={8} xs={12}>
@@ -114,6 +118,7 @@ class Home extends React.Component<Props, HomeState> {
       routeSetResult: '',
     };
 
+    this.recalculateRoute = this.recalculateRoute.bind(this);
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
   }
@@ -128,7 +133,13 @@ class Home extends React.Component<Props, HomeState> {
     this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== '' && value !== '')});
   };
 
-  async routeFind() {
+  recalculateRoute() {
+    if (! this.state.buttonRouteFindDisabled) {
+      this.routeFind();
+    }
+  };
+
+  routeFind() {
     const app = this;
     app.setState({buttonRouteFindDisabled: true});
     app.setState({buttonRouteSetDisabled: true});

@@ -22,6 +22,14 @@ export type ResponseGates = {
   ansiblexes: Array<Ansiblex>,
 }
 
+export type ResponseSystems = {
+  systems: Array<System>,
+}
+
+export type ResponseConnectedSystems = {
+  connections: Array<ConnectedSystems>,
+}
+
 export type ResponseGatesUpdated = {
   code: string|null,
   allianceId: bigint|null,
@@ -33,7 +41,7 @@ export type ResponseTemporaryConnections = {
   temporaryConnections: Array<TemporaryConnection>,
 }
 
-export type ResponseSystems = {
+export type ResponseSystemNames = {
   systems: Array<string>,
 }
 
@@ -57,6 +65,7 @@ export type Ansiblex = {
 export type Waypoint = {
   systemId: bigint,
   systemName: string,
+  targetSystem: string,
   wormhole: boolean,
   systemSecurity: number,
   connectionType: RouteType|null,
@@ -77,4 +86,14 @@ export type TemporaryConnection = {
   system2Name: string,
   characterId: bigint,
   created: string // yyyy-MM-dd'T'HH:mm:ss'Z'
+}
+
+export type System = {
+  id: bigint,
+  name: string,
+}
+
+export type ConnectedSystems = {
+  system1: string,
+  system2: string,
 }

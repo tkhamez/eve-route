@@ -6,13 +6,13 @@ package net.tkhamez.everoute.data
 
 import java.util.Date
 
-data class Ansiblex(
+data class MongoAnsiblex(
     val id: Long,
     val name: String,
     val solarSystemId: Int
 )
 
-data class TemporaryConnection(
+data class MongoTemporaryConnection(
     val system1Id: Int,
     val system1Name: String,
     val system2Id: Int,
@@ -21,7 +21,7 @@ data class TemporaryConnection(
     val created: Date
 )
 
-data class Alliance(
+data class MongoAlliance(
     val id: Int,
     val updated: Date
 )
