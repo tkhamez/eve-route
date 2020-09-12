@@ -12,3 +12,25 @@
     border-radius: 4px;
     background-color: #303030; /* theme.palette.background.default */
 }
+
+*[data-title] {
+    position: relative;
+}
+*[data-title]:hover::after,
+*[data-title]:focus::after {
+    content: attr(data-title);
+
+    position: absolute;
+    left: 0;
+    bottom: -30px;
+    width: auto;
+    white-space: nowrap;
+    z-index: 2;
+
+    background-color: #222;
+    color: #fff;
+    border-radius: 3px;
+    box-shadow: 1px 1px 5px 0 rgba(0,0,0,0.4);
+    font-size: 0.875rem;
+    padding: 3px 5px;
+}

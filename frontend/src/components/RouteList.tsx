@@ -23,15 +23,16 @@ const useStyles = makeStyles((theme) => ({
   },
   listItem: {
     alignItems: 'start',
-    marginTop: 0,
-    marginBottom: 0,
   },
   listIcon: {
     minWidth: 0,
-    marginTop: '5px',
     marginRight: '4px',
   },
   listText: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  listTextContent: {
     display: 'flex',
     alignItems: 'start',
   },
@@ -45,14 +46,13 @@ const useStyles = makeStyles((theme) => ({
   actionButton: {
     position: 'relative',
     top: '-1px',
-    opacity: 0.7,
   },
   primaryActionButton: {
-    color: '#f50057',
+    color: '#bf1350', // f50057 * 0,7
   },
   secondaryActionButton: {
     top: '-2px',
-    color: 'darkorange',
+    color: '#c67613', // darkorange * 0.7
   },
 }));
 
@@ -68,6 +68,7 @@ export default function RouteList(props: Props) {
   const classes = useStyles();
   const [avoidedSystems, setAvoidedSystems] = useState<System[]>([]);
   const [removedConnections, setRemovedConnections] = useState<ConnectedSystems[]>([]);
+  const [resetDisabled, setResetDisabled] = useState(true);
 
   // build Dotlan link
   let dotlanHref = 'https://evemaps.dotlan.net/route/';
@@ -130,7 +131,12 @@ export default function RouteList(props: Props) {
   useEffect(() => {
     loadAvoidedSystems();
     loadRemovedConnections();
-  }, [loadAvoidedSystems, loadRemovedConnections]);
+    if (removedConnections.length > 0 || avoidedSystems.length > 0) {
+      setResetDisabled(false);
+    } else {
+      setResetDisabled(true);
+    }
+  }, [avoidedSystems.length, loadAvoidedSystems, loadRemovedConnections, removedConnections.length]);
 
   return (
       <List dense={true} className={classes.list}>
@@ -148,8 +154,8 @@ export default function RouteList(props: Props) {
           <ListItem>{props.message}</ListItem>
         }
         <ListItem className={classes.avoidedRemoved}>
-          <IconButton aria-label={t('routeList.reset')} title={t('routeList.reset')} size="small"
-                      onClick={resetAvoidedAndRemoved}>
+          <IconButton aria-label={t('routeList.reset')} data-title={t('routeList.reset')} size="small"
+                      onClick={resetAvoidedAndRemoved} color={"primary"} disabled={resetDisabled}>
             <RotateLeftSharpIcon />
           </IconButton>
           <small>
@@ -188,12 +194,12 @@ export default function RouteList(props: Props) {
               {last &&
                 <ListItemIcon className={classes.listIcon}><AdjustOutlinedIcon /></ListItemIcon>
               }
-              <ListItemText
+              <ListItemText className={classes.listText}
                 primary={
-                  <span className={classes.listText}>
+                  <span className={classes.listTextContent}>
                     <IconButton className={`${classes.actionButton} ${classes.primaryActionButton}`}
                                 aria-label={t('routeList.avoid-system')}
-                                title={t('routeList.avoid-system')}
+                                data-title={t('routeList.avoid-system')}
                                 size="small" onClick={() => avoidSystem(value.systemId)}>
                       <RemoveCircleOutlineIcon fontSize="inherit"/>
                     </IconButton>
@@ -209,7 +215,7 @@ export default function RouteList(props: Props) {
                       <span className={classes.secondary}>
                         <IconButton className={`${classes.actionButton} ${classes.secondaryActionButton}`}
                                     aria-label={t('routeList.remove-connection')}
-                                    title={t('routeList.remove-connection')}
+                                    data-title={t('routeList.remove-connection')}
                                     size="small"
                                     onClick={() => removeConnection(value.systemName, value.targetSystem)}>
                           <HighlightOffSharpIcon fontSize="inherit" />

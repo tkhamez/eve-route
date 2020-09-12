@@ -51,7 +51,8 @@ export default function Header() {
 
             { globalData.user.name &&
               <div>
-                [<span title={globalData.user.allianceName}>{globalData.user.allianceTicker}</span>]
+                [<span data-title={globalData.user.allianceName} aria-label={globalData.user.allianceName}>
+                  {globalData.user.allianceTicker}</span>]
                 {' '}
                 {globalData.user.name}
                 <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.logout}>

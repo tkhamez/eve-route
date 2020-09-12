@@ -48,6 +48,7 @@ type Props = {
   fieldId: string,
   fieldName: string,
   onChange: Function,
+  findRoute?: Function,
 }
 
 export default forwardRef((props: Props, ref: any) => {
@@ -65,6 +66,22 @@ export default forwardRef((props: Props, ref: any) => {
       onChange('');
     }
   }));
+
+  useEffect(() => {
+    const handleClick = (evt: MouseEvent) => {
+      const target: any = evt.target;
+      const element = document.getElementById(`${props.fieldId}-wrap`);
+      if (element && ! element.contains(target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClick, false);
+
+    return function cleanup() {
+      document.removeEventListener('mousedown', handleClick, false);
+    };
+  }, [props.fieldId]);
 
   useEffect(() => {
     if (props.fieldId !== "start-system") {
@@ -120,11 +137,20 @@ export default forwardRef((props: Props, ref: any) => {
     props.onChange(value);
   };
 
+  const onKeyPress = (evt: React.KeyboardEvent) => {
+    if (evt.key === 'Enter' && props.findRoute) {
+      props.findRoute();
+    }
+  };
+
   const selectSystem = (e: React.MouseEvent) => {
     const system = e.currentTarget.textContent || '';
     setOpen(false);
     setInputValue(system);
     props.onChange(system);
+
+    // @ts-ignore
+    textInput.current.focus();
   };
 
   const clearInput = () => {
@@ -138,17 +164,18 @@ export default forwardRef((props: Props, ref: any) => {
   let textInput = useRef(null);
 
   return (
-    <div className={classes.wrap}>
+    <div className={classes.wrap} id={`${props.fieldId}-wrap`}>
       <TextField
         inputRef={textInput}
         variant="outlined"
         className={classes.textField}
         label={props.fieldName}
         id={props.fieldId}
-        type="search"
+        type="text"
         autoComplete="off"
         value={inputValue}
         onChange={e => onChange(e.target.value)}
+        onKeyPress={onKeyPress}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

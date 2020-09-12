@@ -159,13 +159,8 @@ class Route(
         var removed = false
         for (removedConnection in removedConnections) {
             if (
-                (
-                        removedConnection.system1 == startSystemName &&
-                                removedConnection.system2 == endSystemName
-                        ) || (
-                        removedConnection.system1 == endSystemName &&
-                                removedConnection.system2 == startSystemName
-                        )
+                (removedConnection.system1 == startSystemName && removedConnection.system2 == endSystemName) ||
+                (removedConnection.system1 == endSystemName && removedConnection.system2 == startSystemName)
             ) {
                 removed = true
                 break
@@ -240,13 +235,11 @@ class Route(
         }
 
         fun connect(node: Node<T>, type: Waypoint.Type) {
-            require(!(this === node)) {
-                "Can't connect node to itself"
+            if (this !== node) {
+                // This does *not* add the same node twice, even if the connection object is different
+                connections.add(Connection(node, type))
+                node.connections.add(Connection(this, type))
             }
-
-            // This does *not* add the same node twice, even if the connection object is different
-            connections.add(Connection(node, type))
-            node.connections.add(Connection(this, type))
         }
     }
 

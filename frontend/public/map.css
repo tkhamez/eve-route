@@ -2,7 +2,6 @@
 .draggable {
     cursor: move;
     fill: transparent;
-    touch-action: none;
 }
 
 .system {

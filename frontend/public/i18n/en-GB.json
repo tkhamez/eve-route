@@ -89,8 +89,8 @@
     "dotlan": "Show on <1>DOTLAN EveMaps</1>",
     "unknown-ansiblex": "Unknown Ansiblex",
     "temporary-connection": "Temporary connection",
-    "avoid-system": "avoid system",
-    "remove-connection": "remove connection"
+    "avoid-system": "Avoid system",
+    "remove-connection": "Remove connection"
   },
   "map": {
     "svg-error": "Your browser does not support SVG"

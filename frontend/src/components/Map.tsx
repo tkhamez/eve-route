@@ -210,8 +210,8 @@ const SVG = (() => {
   const center = { x: 0, y: 0 };
 
   return {
-    getActiveElement(): SVGGraphicsElement {
-      return getDocument().activeElement;
+    getSvgElement(): SVGGraphicsElement {
+      return getDocument().documentElement;
     },
 
     getElement(id: string): Element {
@@ -228,7 +228,7 @@ const SVG = (() => {
       center.x = viewBox.x + (viewBox.width / 2);
       center.y = viewBox.y + (viewBox.height / 2);
 
-      this.getActiveElement().setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+      this.getSvgElement().setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
 
       const draggable = this.getElement('draggable');
       draggable.setAttribute('x', viewBox.x.toString());
@@ -238,14 +238,14 @@ const SVG = (() => {
     },
 
     makeDraggable() {
-      const svgElement = this.getActiveElement();
+      const svgElement = this.getSvgElement();
       svgElement.addEventListener('mousedown', startDrag);
       svgElement.addEventListener('mousemove', drag);
       svgElement.addEventListener('mouseup', endDrag);
       svgElement.addEventListener('mouseleave', endDrag);
 
       svgElement.addEventListener('touchstart', startDrag);
-      svgElement.addEventListener('touchmove', drag);
+      svgElement.addEventListener('touchmove', drag, { passive: false });
       svgElement.addEventListener('touchend', endDrag);
       svgElement.addEventListener('touchcancel', endDrag);
 
@@ -263,6 +263,7 @@ const SVG = (() => {
 
       function drag(evt: any) { // MouseEvent|TouchEvent
         if (dragging) {
+          evt.preventDefault(); // for touch only
           const coordinates = getMousePosition(evt);
           svg.pan(coordinates.x - startX, coordinates.y - startY);
           startX = coordinates.x;
@@ -297,15 +298,14 @@ const SVG = (() => {
 
     setupMouseZoom() {
       const svg = this;
-      const svgElement = this.getActiveElement();
-      svgElement.addEventListener('wheel', (evt: WheelEvent) => {
+      this.getSvgElement().addEventListener('wheel', (evt: WheelEvent) => {
         evt.preventDefault();
         if (evt.deltaY > 0) {
-          svg.zoom(evt.deltaY / 3 * 0.8);
+          svg.zoom(0.8);
         } else {
-          svg.zoom(evt.deltaY / -3 * 1.2);
+          svg.zoom(1.2);
         }
-      });
+      }, { passive: false });
     },
 
     addLine(parent: Element, x1: number, y1: number, x2: number, y2: number, classes: string) {

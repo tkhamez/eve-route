@@ -23,7 +23,11 @@ import { dateAddDays, dateFormat } from "../date";
 const useStyles = makeStyles(() => ({
   wrap: {
     minHeight: '410px',
-  }
+
+    // mobile firefox has a strange bar at the bottom that is above the content,
+    // this adds enough space to make all of the content visible
+    paddingBottom: '35px',
+  },
 }));
 
 export default function AddConnection() {

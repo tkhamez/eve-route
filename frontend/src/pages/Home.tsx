@@ -57,17 +57,19 @@ class Home extends React.Component<Props, HomeState> {
 
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged} />
+              <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}
+                           findRoute={this.calculateRoute} />
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged} />
+              <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged}
+                           findRoute={this.calculateRoute} />
             </Box>
           </Grid>
 
           <Grid item xs={6}>
-            <Box display="flex" justifyContent="right">
+            <Box display="flex" justifyContent="flex-end">
               <Button variant="contained" color="primary" onClick={this.routeFind}
                       disabled={this.state.buttonRouteFindDisabled}>
                 {t('home.find-route')}
@@ -75,7 +77,7 @@ class Home extends React.Component<Props, HomeState> {
             </Box>
           </Grid>
           <Grid item xs={6}>
-            <Box display="flex" justifyContent="left">
+            <Box display="flex" justifyContent="flex-start">
               <Typography>
                 <Button variant="contained" color="primary" onClick={this.routeSet}
                         disabled={this.state.buttonRouteSetDisabled}>
@@ -92,7 +94,7 @@ class Home extends React.Component<Props, HomeState> {
           <Grid item sm={4} xs={12}>
             <RouteList waypoints={this.state.routeFindResultWaypoints}
                        message={this.state.routeFindResultMessage}
-                       recalculateRoute={this.recalculateRoute}
+                       recalculateRoute={this.calculateRoute}
             />
           </Grid>
           <Grid item sm={8} xs={12}>
@@ -118,7 +120,7 @@ class Home extends React.Component<Props, HomeState> {
       routeSetResult: '',
     };
 
-    this.recalculateRoute = this.recalculateRoute.bind(this);
+    this.calculateRoute = this.calculateRoute.bind(this);
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
   }
@@ -133,7 +135,7 @@ class Home extends React.Component<Props, HomeState> {
     this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== '' && value !== '')});
   };
 
-  recalculateRoute() {
+  calculateRoute() {
     if (! this.state.buttonRouteFindDisabled) {
       this.routeFind();
     }

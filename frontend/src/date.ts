@@ -1,6 +1,10 @@
 
 export const dateFormat = (isoString: string): string => {
-  return new Date(isoString).toISOString().replace('T', ' ').replace('.000Z', '') +  ' UTC';
+  return new Date(isoString)
+    .toISOString().replace('T', ' ')
+    .replace('.000Z', '')
+    .slice(0, -3) +
+    ' UTC';
 };
 
 export const dateAddDays = (isoString: string, days: number): string => {

@@ -63,7 +63,7 @@ export default function NavModal() {
     <div>
       <Grid container spacing={2} className='card'>
         <Grid item xs={5}>
-          <Box display="flex" justifyContent="left">
+          <Box display="flex" justifyContent="flex-start">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('HowItWorks')}>
               <HelpOutlineIcon fontSize="small" className={classes.topButtonIcon} />
@@ -72,7 +72,7 @@ export default function NavModal() {
           </Box>
         </Grid>
         <Grid item xs={7}>
-          <Box display="flex" justifyContent="right">
+          <Box display="flex" justifyContent="flex-end">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('UpdateGates')}>
               <SyncIcon fontSize="small" className={classes.topButtonIcon} />
@@ -90,7 +90,7 @@ export default function NavModal() {
         <div className={classes.modal}>
           <Grid container style={{borderBottom: "1px solid black"}}>
             <Grid item xs={10}>
-              <Box display="flex" justifyContent="left">
+              <Box display="flex" justifyContent="flex-start">
                 <Typography>
                   {content === 'HowItWorks' && t('navModal.how-it-works')}
                   {content === 'UpdateGates' && t('navModal.update-gates')}
@@ -99,7 +99,7 @@ export default function NavModal() {
               </Box>
             </Grid>
             <Grid item xs={2}>
-              <Box display="flex" justifyContent="right">
+              <Box display="flex" justifyContent="flex-end">
                 <IconButton size="small" className={classes.closeButton} onClick={handleClose}>
                   <CloseRoundedIcon/>
                 </IconButton>
