@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     backgroundColor: theme.palette.grey[900],
     borderRadius: '4px',
-    fontSize: 0,
   },
   icons: {
     position: 'absolute',
@@ -40,17 +39,21 @@ export default function Map(props: Props) {
   const classes = useStyles();
   const [mapData, setMapData] = useState<MapData>();
   const [svgLoaded, setSvgLoaded] = useState(false);
+  const [mapError, setMapError] = useState('');
 
   /**
    * Load JSON.
    */
   useEffect(() => {
-      axios.get<MapData>('/map.json').then(result => {
-        setMapData(result.data);
-      }).catch(() => {
-        console.log('Failed to load map data.');
-      });
-  }, []); // only executed once!
+    if (mapData) {
+      return;
+    }
+    axios.get<MapData>('/map.json').then(result => {
+      setMapData(result.data);
+    }).catch(() => {
+      setMapError(t('map.json-error'));
+    });
+  }, [mapData, t]);
 
   /**
    * Configure map and add data.
@@ -171,6 +174,7 @@ export default function Map(props: Props) {
         <RotateLeftIcon className={classes.icon} onClick={() => SVG.reset()} />
       </div>
       <object id="map" type="image/svg+xml" data="/map.svg" onLoad={svgOnLoad}>{t('map.svg-error')}</object>
+      <div>{mapError}</div>
     </div>
   )
 }

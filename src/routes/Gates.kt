@@ -119,12 +119,10 @@ private suspend fun fetchAndStoreGates(
             accessToken
         )
         if (gate == null) {
-            // TODO try again
             failed.add(id)
             continue
         }
         if (gate.type_id == 35841) {
-            log.info("Fetched $id")
             fetched ++
             val ansiblex = MongoAnsiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id)
             gates.add(ansiblex)
@@ -134,5 +132,8 @@ private suspend fun fetchAndStoreGates(
 
     mongo.gatesRemoveOther(gates, allianceId)
 
-    log.info("Fetched and stored $fetched Ansiblexes, ${failed.size} requests failed.")
+    log.info("Fetched and stored $fetched Ansiblexes.")
+    if (failed.size > 0) {
+        log.error("Failed to fetch ${failed.size} structures.")
+    }
 }

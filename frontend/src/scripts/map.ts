@@ -2,7 +2,7 @@ import { MapData } from "../types";
 const fs = require('fs');
 
 fs.writeFileSync('public/map.json', JSON.stringify(readJson()));
-console.log('Wrote public/map.json.');
+console.info('Wrote public/map.json.');
 
 function readJson() {
   const data: MapData = {

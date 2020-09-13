@@ -16,7 +16,7 @@ import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Suspense fallback="loading">
+    <Suspense fallback="">
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <App />

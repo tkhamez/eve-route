@@ -13,7 +13,6 @@ enum class ResponseCodes {
     AlreadyUpdated,
     AuthError,
     ConnectionStored,
-    Error,
     FailedToStoreData,
     LoginEsiErrorAlliance,
     LoginEsiErrorVerify,
@@ -23,7 +22,8 @@ enum class ResponseCodes {
     MissingInput,
     SearchError,
     SearchSuccess,
-    Success,
+    SetWaypointsSuccess,
+    SetWaypointsFailure,
     SystemNotFound,
     WrongSearchTerm,
 }

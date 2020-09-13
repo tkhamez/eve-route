@@ -5,6 +5,10 @@
     width: calc(100% - 16px);
     margin-top: 8px;
     margin-bottom: 8px;
+
+    /* mobile firefox has a strange bar at the bottom that is above the content,
+       this adds enough space to make all of the content visible */
+    padding-bottom: 35px;
 }
 
 .MuiGrid-container.card {

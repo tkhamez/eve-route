@@ -30,6 +30,7 @@ interface Props extends WithTranslation {
 }
 
 type AppState = {
+  loaded: boolean,
   user: {
     name: string,
     allianceName: string,
@@ -55,8 +56,8 @@ class App extends React.Component<Props, AppState> {
           <Header />
 
           <Container component="main" maxWidth="md">
-            { this.state.user.name === '' && <Login /> }
-            { this.state.user.name        && <Home /> }
+            { this.state.loaded && this.state.user.name === '' && <Login /> }
+            { this.state.loaded && this.state.user.name        && <Home /> }
           </Container>
 
           <footer className={classes.footer}>
@@ -71,6 +72,7 @@ class App extends React.Component<Props, AppState> {
     super(props);
 
     this.state = {
+      loaded: false,
       user: {
         name: '',
         allianceName: '',
@@ -103,18 +105,24 @@ class App extends React.Component<Props, AppState> {
 
   fetchUser() {
     axios.get<ResponseAuthUser>(this.domain+'/api/auth/user').then(response => {
-      this.setState({ user: response.data });
+      this.setState({
+        loaded: true,
+        user: response.data,
+      });
     }).catch(() => { // 403
       this.logoutUser();
     });
   }
 
   logoutUser() {
-    this.setState({ user: {
+    this.setState({
+      loaded: true,
+      user: {
         name: '',
         allianceName: '',
         allianceTicker: '',
-      } });
+      }
+    });
   }
 }
 

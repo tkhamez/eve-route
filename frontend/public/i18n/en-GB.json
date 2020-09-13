@@ -7,7 +7,6 @@
     "AlreadyUpdated": "Gates were already updated within the last hour.",
     "AuthError": "Authentication or ESI token error.",
     "ConnectionStored": "Connection successfully stored.",
-    "Error": "Error: {{message}}",
     "FailedToStoreData": "Failed to store data.",
     "LoginEsiErrorAlliance": "Failed to fetch alliance, please try again",
     "LoginEsiErrorVerify": "Failed to verify character, please try again.",
@@ -15,13 +14,14 @@
     "LoginSsoFailed": "EVE SSO login failed, please try again.",
     "LoginWrongAlliance": "This character is not a member of one of the allowed alliances.",
     "MissingInput": "Missing input.",
-    "SearchError": "An error occurred during the ESI search.",
+    "SearchError": "An error occurred during the ESI search. Did you authorize the required ESI scopes during login?",
     "SearchSuccess": [
       "The search returned {{number}} results. ",
       "The Ansiblex data is now updated in the background, this may take a minute. ",
       "You can close this window."
     ],
-    "Success": "Success.",
+    "SetWaypointsSuccess": "Waypoints successfully set.",
+    "SetWaypointsFailure": "Failed to set waypoints.",
     "SystemNotFound": "System(s) not found.",
     "WrongSearchTerm": "Wrong search term."
   },
@@ -33,8 +33,7 @@
     "zh-CN": "中文"
   },
   "footer": {
-    "github": "EVE Route on <1>GitHub</1>.",
-    "donate": "Donate ISK to the <1>author</1>.",
+    "donate": "Donate ISK if you like it",
     "ccp": [
       "\"EVE\", \"EVE Online\", \"CCP\" and all related logos and images are ",
       "trademarks or registered trademarks of <1>CCP hf</1>."
@@ -52,8 +51,8 @@
     "find-route-description": "This function does not require any ESI scopes.",
     "write-route": "Write Route",
     "write-route-description": "Set route in the game, requires: esi-ui.write_waypoint.v1",
-    "auto-location": "Auto Location",
-    "auto-location-description":
+    "read-location": "Read Location",
+    "read-location-description":
       "Set the start system to your current location, requires: esi-location.read_location.v1",
     "update-gates": "Update Gates",
     "update-gates-description": [
@@ -83,7 +82,7 @@
     "to": "To",
     "choose-systems": [
       "Choose systems for a wormhole connection or missing Ansiblexes. ",
-      "The connection is temporarily added for your character only and removed after 2 days."
+      "The connection is temporarily added <1>for your character only</1> and removed after 2 days."
     ],
     "your-temporary-connections": "Your connections",
     "expires": "Expires",
@@ -93,6 +92,11 @@
 
   },
   "updateGates": {
+    "intro": [
+      "Ansiblex jump Gates can be found by normal characters only with the ESI search. ",
+      "Unfortunately CCP does not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
+      "But a manually initiated search <3>seems to be ok</3>."
+    ],
     "last-update": "Last update:",
     "esi-search-label": "ESI search",
     "esi-search-help": "Search for: »",
@@ -116,6 +120,7 @@
     "remove-connection": "Remove connection"
   },
   "map": {
-    "svg-error": "Your browser does not support SVG"
+    "svg-error": "Your browser does not support SVG",
+    "json-error": "Failed to load map data."
   }
 }

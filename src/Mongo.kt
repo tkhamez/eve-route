@@ -80,12 +80,12 @@ class Mongo(uri: String) {
     }
 
     fun allianceGet(allianceId: Int): MongoAlliance? {
-        val col = database.getCollection<MongoAlliance>()
+        val col = database.getCollection<MongoAlliance>("alliance")
         return col.findOne(MongoAlliance::id eq allianceId)
     }
 
     fun allianceUpdate(alliance: MongoAlliance) {
-        val col = database.getCollection<MongoAlliance>()
+        val col = database.getCollection<MongoAlliance>("alliance")
         val existingAlliance = col.findOne(MongoAlliance::id eq alliance.id)
         if (existingAlliance == null) {
             col.insertOne(alliance)

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppBar, Button, Container, Slide, Toolbar, Typography, useScrollTrigger } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import LanguageSwitcher from './LanguageSwitcher';
 import { GlobalDataContext } from '../GlobalDataContext';
 
@@ -47,6 +48,7 @@ export default function Header() {
       <AppBar position="sticky" color="default" elevation={8} className={classes.appBar}>
         <Container maxWidth="md">
           <Toolbar className={classes.toolbar} variant="dense">
+            <LocationOnOutlinedIcon style={{color: '#90caf9', fontSize: '1.75rem', marginRight: '4px'}}/>
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>
 
             { globalData.user.name &&

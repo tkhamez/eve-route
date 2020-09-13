@@ -62,7 +62,7 @@ fun Route.connection(config: Config) {
             call.parameters["system1Id"].toString().toInt(),
             call.parameters["system2Id"].toString().toInt()
         )
-        call.respondText(gson.toJson(null), contentType = ContentType.Application.Json)
+        call.respondText("", contentType = ContentType.Application.Json)
     }
 
     get("/api/connection/get-all") {

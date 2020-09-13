@@ -167,7 +167,10 @@ fun Route.route(config: Config) {
             startSystemSet = true
         }
 
-        response.code = if (response.param == null) ResponseCodes.Success else ResponseCodes.Error
+        response.code = if (response.param == null)
+            ResponseCodes.SetWaypointsSuccess
+        else
+            ResponseCodes.SetWaypointsFailure
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 }

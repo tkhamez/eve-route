@@ -94,9 +94,8 @@ export default forwardRef((props: Props, ref: any) => {
         setInputValue(r.data.solarSystemName);
         props.onChange(r.data.solarSystemName);
       }
-    }).catch(() => {
-      console.log('Failed to fetch location of character.');
-    });
+    }).catch(() => {});
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalData.domain, props.fieldId, props.onChange]); // do *not* use "props" here or there will be an endless loop
 
@@ -199,7 +198,7 @@ export default forwardRef((props: Props, ref: any) => {
         <Box boxShadow={2} className={classes.box}>
           <List>
             {systems.map((value, index) => {
-              if (index > 200) { // TODO better way to prevent lag? react-window?
+              if (index > 200) {
                 return '';
               }
               return (

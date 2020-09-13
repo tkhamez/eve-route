@@ -1,6 +1,23 @@
 # EVE Route
 
-A route planner for [EVE Online](https://www.eveonline.com/).
+A route planner for [EVE Online](https://www.eveonline.com/) that supports Ansiblex jump gates and wormhole connections.
+
+https://eve-route.herokuapp.com
+
+<!-- toc -->
+
+- [Setup](#setup)
+  * [EVE App](#eve-app)
+  * [Database](#database)
+- [Build and Run](#build-and-run)
+  * [Frontend](#frontend)
+  * [Backend](#backend)
+- [Deploy to Heroku](#deploy-to-heroku)
+- [Contact](#contact)
+- [Donations](#donations)
+- [Copyright Notice](#copyright-notice)
+
+<!-- tocstop -->
 
 ## Setup
 
@@ -25,11 +42,11 @@ docker-compose up
 
 GUI: http://localhost:8081
 
-## Run and Build
+## Build and Run
 
 ### Frontend
 
-Requires [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
+Requires [Node.js](https://nodejs.org/) 12 and [Yarn](https://yarnpkg.com/).
 
 ```shell script
 cd frontend
@@ -48,7 +65,7 @@ yarn build
 
 ### Backend
 
-Requires JDK 11+.
+Requires [JDK](https://openjdk.java.net/) 11+.
 
 Make sure the necessary environment variables are set, e.g.:
 ```shell script
@@ -128,19 +145,18 @@ heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/gradle
 ```
 
-## Final Notes
+## Contact
 
-### Contact
+If you have questions or feedback, you can join the EVE Route [Discord Server](https://discord.gg/EjzHx8p) 
+or contact me via [Tweetfleet Slack](https://tweetfleet.slack.com) @Tian 
+([invitations](https://slack.eveisesi.space/)).
 
-If you have any questions or feedback, you can contact Tian Khamez on [Tweetfleet Slack](https://tweetfleet.slack.com) 
-(get invites [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)) or on Discord Tian#0172.
-
-### Donations
+## Donations
 
 If you like this software, you can thank me by sending ISK to the character 
 [Tian Khamez](https://evewho.com/character/96061222).
 
-### Copyright Notice
+## Copyright Notice
 
 EVE Route is licensed under the [MIT license](LICENSE).
 

@@ -1,26 +1,18 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Trans, useTranslation } from 'react-i18next';
+import { Button, Grid, IconButton, Link, TextField, Typography } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGatesUpdated, ResponseGates, ResponseMessage } from '../response';
 import { dateFormat } from "../date";
-
-const useStyles = makeStyles(() => ({
-  submit: {
-    position: "relative",
-    top: "17px",
-  },
-}));
+import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 
 export default function UpdateGates() {
   const { t } = useTranslation();
-  const classes = useStyles();
   const globalData = useContext(GlobalDataContext);
   const [gatesUpdated, setGatesUpdated] = useState('');
-  const [gatesResult, setGatesResult] = useState<Array<string>>([]);
+  const [gatesResult, setGatesResult] = useState<Array<string>|null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -32,15 +24,13 @@ export default function UpdateGates() {
       } else if (response.data.updated) {
         setGatesUpdated(dateFormat(response.data.updated));
       }
-    }).catch(() => { // 403
-      // do nothing (necessary or react dev tools will complain)
-    });
+    }).catch(() => {});
   }, [globalData.domain, t]);
 
   const fetchGates = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.currentTarget;
     button.disabled = true;
-    setGatesResult([]);
+    setGatesResult(null);
     axios.get<ResponseGates>(`${globalData.domain}/api/gates/fetch`).then(response => {
       let gates = [];
       if (response.data.code) {
@@ -82,43 +72,57 @@ export default function UpdateGates() {
   }, [fetchGatesUpdated, gatesUpdated]);
 
   return (
-    <div>
-      <p>{t('updateGates.last-update')} {gatesUpdated}</p>
-      <div>
-        <TextField
-          required
-          variant="filled"
-          label={t('updateGates.esi-search-label')}
-          helperText={t('updateGates.esi-search-help')}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-        {' '}
-        <Button className={classes.submit} variant="contained"  disabled={submitDisabled}
-                onClick={search}>{t('updateGates.submit')}</Button>
-      </div>
-      <div>
-        {searchResult}
-        &nbsp; {/* show an empty line initially */}
-      </div>
-      <br/>
-      <br/>
-      <div>
-        <Button size={"small"} variant="contained" disableElevation
-                onClick={fetchGates}>{t('updateGates.show-gates')}</Button>
-        {' '}
-        {gatesResult.length > 0 &&
+    <div className="grid-spacing-2-wrapper">
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Typography variant="body2">
+            <Trans i18nKey="updateGates.intro">
+              %
+              <Link href="https://developers.eveonline.com/blog/article/the-esi-api-is-a-shared-resource-do-not-abuse-it"
+                    target="_blank" rel="noopener noreferrer">%</Link>
+              %<Link href="https://github.com/esi/esi-issues/issues/1185"
+                     target="_blank" rel="noopener noreferrer">%</Link>%
+            </Trans>
+          </Typography>
+          <br/>
+          <Typography variant="body2">{t('updateGates.last-update')} {gatesUpdated}</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            variant="filled"
+            label={t('updateGates.esi-search-label')}
+            helperText={t('updateGates.esi-search-help')}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{verticalAlign: 'baseline'}}
+          />
+          {' '}
+          <Button variant="contained"  disabled={submitDisabled}
+                  onClick={search}>{t('updateGates.submit')}</Button>
+
+          <div>{searchResult}</div>
+        </Grid>
+        <Grid item xs={12}>
+          <br/>
+          <Button size={"small"} variant="contained" disableElevation
+                  onClick={fetchGates}>{t('updateGates.show-gates')}</Button>
+          {' '}
+          {gatesResult !== null &&
           <span>
-            <Button size={"small"} variant="outlined" onClick={() => setGatesResult([])}><CloseIcon /></Button>
+            <IconButton size="small" onClick={() => setGatesResult(null)}><CloseIcon /></IconButton>
             {' '}
             {t('updateGates.num-gates', {number: gatesResult.length})}
           </span>
-        }
-        <ul>
-          {gatesResult.map((value, index) => {
-            return <li key={index}>{value}<br/></li>
-          })}
-        </ul>
-      </div>
+          }
+          {gatesResult !== null &&
+            <ul>
+              {gatesResult.map((value, index) => {
+                return <li key={index}>{value}<br/></li>
+              })}
+            </ul>
+          }
+        </Grid>
+      </Grid>
     </div>
   )
 }

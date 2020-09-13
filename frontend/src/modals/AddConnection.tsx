@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import SystemInput from '../components/SystemInput';
 import {
   Box,
@@ -23,10 +23,6 @@ import { dateAddDays, dateFormat } from "../date";
 const useStyles = makeStyles(() => ({
   wrap: {
     minHeight: '410px',
-
-    // mobile firefox has a strange bar at the bottom that is above the content,
-    // this adds enough space to make all of the content visible
-    paddingBottom: '35px',
   },
 }));
 
@@ -92,12 +88,9 @@ export default function AddConnection() {
   };
 
   const remove = (id1: bigint, id2: bigint) => {
-    axios.delete(`${globalData.domain}/api/connection/delete/${id1}/${id2}`).then((r) => {
-      console.log(r);
+    axios.delete(`${globalData.domain}/api/connection/delete/${id1}/${id2}`).then(() => {
       fetch();
-    }).catch((e) => {
-      console.log(e);
-    })
+    }).catch(() => {})
   };
 
   useEffect(() => {
@@ -106,9 +99,9 @@ export default function AddConnection() {
 
   return (
     <div className={`grid-spacing-2-wrapper ${classes.wrap}`}>
-      <Grid container spacing={2} >
+      <Grid container spacing={2}>
         <Grid item xs={12}>
-          {t('addConnection.choose-systems')}
+          <Trans i18nKey="addConnection.choose-systems">%<em>%</em>%</Trans>
         </Grid>
         <Grid item xs={6}>
           <Box display="flex" justifyContent="center">

@@ -28,7 +28,7 @@ const Login = () => {
   const [loginResult, setLoginResult] = useState("");
   const [checkBoxes, setCheckBoxes] = React.useState({
     writeRoute: true,
-    autoLocation: false,
+    autoLocation: true,
     updateGates: false,
   });
   const [features, setFeatures] = React.useState("");
@@ -38,8 +38,7 @@ const Login = () => {
       if (r.data.code) {
         setLoginResult(t(`responseCode.${r.data.code}`));
       }
-    }).catch(() => {
-    });
+    }).catch(() => {});
   }, [globalData.domain, t]);
 
   useEffect(() => {
@@ -61,6 +60,8 @@ const Login = () => {
 
             <Typography className={classes.row} variant="h6">{t('login.description')}</Typography>
 
+            { loginResult && <Typography className={classes.row1} color={"error"}>{loginResult}</Typography>}
+
             <Typography className={classes.row1}>{t('login.choose-features')}</Typography>
             <FormGroup>
               <FormControlLabel disabled control={<Checkbox checked />} label={t('login.find-route')} />
@@ -77,9 +78,9 @@ const Login = () => {
               <FormControlLabel
                 control={<Checkbox checked={checkBoxes.autoLocation} name="autoLocation"
                                    onChange={handleChange} color="primary"/>}
-                label={t('login.auto-location')} />
+                label={t('login.read-location')} />
               <Typography className={classes.row3} variant={"caption"}>
-                {t('login.auto-location-description')}
+                {t('login.read-location-description')}
               </Typography>
 
               <FormControlLabel
@@ -96,7 +97,6 @@ const Login = () => {
                   rel="noopener noreferrer">
               <img src="/eve-sso-login-black-large.png" alt={t('login.log-in')} title={t('login.log-in')}/>
             </Link>
-            { loginResult && <Typography className={classes.row2} color={"error"}>{loginResult}</Typography>}
             <Typography className={classes.row2} variant="body2">{t('login.login-restriction')}</Typography>
 
           </Box>
