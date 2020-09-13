@@ -31,7 +31,8 @@ fun Route.authentication(config: Config) {
     intercept(ApplicationCallPipeline.Features) {
         val path = call.request.path()
         val publicRoutes = listOf(
-            "/api/auth/login"
+            "/api/auth/login",
+            "/api/auth/result",
         )
         if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1) {
             val session = call.sessions.get<Session>()
@@ -45,22 +46,32 @@ fun Route.authentication(config: Config) {
     authenticate("eve-oauth") {
         route("/api/auth/login") {
             handle {
+                val session = call.sessions.get<Session>() ?: Session()
                 val httpRequest = HttpRequest(config, call.application.environment.log)
-                val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
 
-                var esiVerify: EsiVerify? = null
-                if (principal != null) {
-                    esiVerify = httpRequest.request<EsiVerify>(
-                        config.verifyUrl,
-                        HttpMethod.Get,
-                        null,
-                        principal.accessToken
-                    )
+                val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
+                if (principal == null) {
+                    call.sessions.set(session.copy(loginResult = ResponseCodes.SsoLoginFailed))
+                    call.respondRedirect("/")
+                    return@handle
+                }
+
+                val esiVerify = httpRequest.request<EsiVerify>(
+                    config.verifyUrl,
+                    HttpMethod.Get,
+                    null,
+                    principal.accessToken
+                )
+                if (esiVerify == null) {
+                    call.sessions.set(session.copy(loginResult = ResponseCodes.EsiErrorVerify))
+                    call.respondRedirect("/")
+                    return@handle
                 }
 
                 val character = getCharacter(esiVerify, config, httpRequest)
-                if (character != null && esiVerify != null && principal != null) {
-                    val session = call.sessions.get<Session>() ?: Session()
+                if (character == null) {
+                    call.sessions.set(session.copy(loginResult = getCharacterResult))
+                } else {
                     call.sessions.set(session.copy(
                         esiToken = EsiToken.Data(
                             accessToken = principal.accessToken,
@@ -75,6 +86,15 @@ fun Route.authentication(config: Config) {
                 call.respondRedirect("/")
             }
         }
+    }
+
+    get("/api/auth/result") {
+        val session = call.sessions.get<Session>()
+        val response = ResponseMessage(code = session?.loginResult)
+        if (session != null) {
+            call.sessions.set(session.copy(loginResult = null))
+        }
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
     get("/api/auth/user") {
@@ -96,31 +116,38 @@ fun Route.authentication(config: Config) {
     }
 }
 
-private suspend fun getCharacter(esiVerify: EsiVerify?, config: Config, httpRequest: HttpRequest): EveCharacter? {
+private var getCharacterResult: ResponseCodes? = null
+
+private suspend fun getCharacter(esiVerify: EsiVerify, config: Config, httpRequest: HttpRequest): EveCharacter? {
     var eveCharacter: EveCharacter? = null
 
-    if (esiVerify != null) {
-        val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
-            "latest/characters/affiliation/?datasource=${config.esiDatasource}",
+    val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
+        "latest/characters/affiliation/?datasource=${config.esiDatasource}",
+        "[${esiVerify.CharacterID}]"
+    )
+    val allianceId = esiAffiliation?.get(0)?.alliance_id
+
+
+    if (allianceId == null) {
+        getCharacterResult = ResponseCodes.EsiErrorAlliance
+    } else if (allianceId == 0) {
+        getCharacterResult = ResponseCodes.NoAlliance
+    } else if (config.alliances.isNotEmpty() && ! config.alliances.contains(allianceId.toString())) {
+        getCharacterResult = ResponseCodes.WrongAlliance
+    } else {
+        val alliance = httpRequest.get<EsiAlliance>(
+            "latest/alliances/$allianceId/?datasource=${config.esiDatasource}",
             "[${esiVerify.CharacterID}]"
         )
-        val allianceId = esiAffiliation?.get(0)?.alliance_id
 
-        if (allianceId != null) {
-            val alliance = httpRequest.get<EsiAlliance>(
-                "latest/alliances/$allianceId/?datasource=${config.esiDatasource}",
-                "[${esiVerify.CharacterID}]"
+        if (alliance != null) {
+            eveCharacter = EveCharacter(
+                esiVerify.CharacterID,
+                esiVerify.CharacterName,
+                allianceId,
+                alliance.name,
+                alliance.ticker
             )
-
-            if (alliance != null) {
-                eveCharacter = EveCharacter(
-                    esiVerify.CharacterID,
-                    esiVerify.CharacterName,
-                    allianceId,
-                    alliance.name,
-                    alliance.ticker
-                )
-            }
         }
     }
 

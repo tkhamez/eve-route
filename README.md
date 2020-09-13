@@ -59,6 +59,7 @@ export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
 
 # the following are optional:
 export EVE_ROUTE_CORS_DOMAIN=localhost:3000
+export EVE_ROUTE_ALLIANCE_ALLOWLIST=99003214,99010079
 export EVE_ROUTE_OAUTH_AUTHORIZE=https://login.eveonline.com/v2/oauth/authorize
 export EVE_ROUTE_OAUTH_TOKEN=https://login.eveonline.com/v2/oauth/token
 export EVE_ROUTE_OAUTH_VERIFY=https://login.eveonline.com/oauth/verify

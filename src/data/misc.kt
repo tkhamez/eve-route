@@ -16,10 +16,12 @@ data class Config(
     val verifyUrl: String,
     val esiDomain: String,
     val esiDatasource: String,
-    val cors: String
+    val cors: String,
+    val alliances: String,
 )
 
 data class Session(
+    val loginResult: ResponseCodes? = null,
     val esiToken: EsiToken.Data? = null,
     val eveCharacter: EveCharacter? = null,
     val avoidedSystems: MutableSet<Int>? = null,

@@ -50,7 +50,8 @@ fun Application.module() {
         environment.config.property("app.verifyUrl").getString(),
         environment.config.property("app.esiDomain").getString(),
         environment.config.property("app.esiDatasource").getString(),
-        environment.config.property("app.corsDomain").getString()
+        environment.config.property("app.corsDomain").getString(),
+        environment.config.property("app.allianceAllowlist").getString(),
     )
 
     // Remove all those DEBUG messages from the console

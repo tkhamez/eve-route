@@ -14,13 +14,18 @@ enum class ResponseCodes {
     AuthError,
     ConnectionStored,
     Error,
+    EsiErrorVerify,
+    EsiErrorAlliance,
     FailedToStoreData,
     MissingInput,
+    NoAlliance,
     SearchError,
     SearchSuccess,
+    SsoLoginFailed,
     Success,
     SystemNotFound,
-    WrongSearchTerm
+    WrongAlliance,
+    WrongSearchTerm,
 }
 
 data class ResponseMessage(
