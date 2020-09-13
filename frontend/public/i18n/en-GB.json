@@ -8,21 +8,21 @@
     "AuthError": "Authentication or ESI token error.",
     "ConnectionStored": "Connection successfully stored.",
     "Error": "Error: {{message}}",
-    "EsiErrorVerify": "Login failed: Failed to verify character, please try again.",
-    "EsiErrorAlliance": "Login failed: Failed to fetch alliance, please try again",
     "FailedToStoreData": "Failed to store data.",
+    "LoginEsiErrorAlliance": "Failed to fetch alliance, please try again",
+    "LoginEsiErrorVerify": "Failed to verify character, please try again.",
+    "LoginNoAlliance": "This character is not a member of any alliance.",
+    "LoginSsoFailed": "EVE SSO login failed, please try again.",
+    "LoginWrongAlliance": "This character is not a member of one of the allowed alliances.",
     "MissingInput": "Missing input.",
-    "NoAlliance": "Login failed: This character is not a member of any alliance.",
     "SearchError": "An error occurred during the ESI search.",
     "SearchSuccess": [
       "The search returned {{number}} results. ",
       "The Ansiblex data is now updated in the background, this may take a minute. ",
       "You can close this window."
     ],
-    "SsoLoginFailed": "Login failed: EVE SSO login failed, please try again.",
     "Success": "Success.",
     "SystemNotFound": "System(s) not found.",
-    "WrongAlliance": "Login failed: This character is not a member of one of the allowed alliances.",
     "WrongSearchTerm": "Wrong search term."
   },
   "header": {
@@ -42,7 +42,24 @@
   },
   "login": {
     "log-in": "Log in with EVE Online",
-    "description": "A route planner for EVE Online that supports Ansiblex jump gates and wormhole connections."
+    "description": "A route planner for EVE Online that supports Ansiblex jump gates and wormhole connections.",
+    "login-restriction": [
+      "Login is only possible for characters who are members of an alliance. ",
+      "It is also possible that the login is restricted to certain alliances."
+    ],
+    "choose-features": "Choose features:",
+    "find-route": "Find Route",
+    "find-route-description": "This function does not require any ESI scopes.",
+    "write-route": "Write Route",
+    "write-route-description": "Set route in the game, requires: esi-ui.write_waypoint.v1",
+    "auto-location": "Auto Location",
+    "auto-location-description":
+      "Set the start system to your current location, requires: esi-location.read_location.v1",
+    "update-gates": "Update Gates",
+    "update-gates-description": [
+      "Update Ansiblex jump gates for your alliance, requires: ",
+      "esi-search.search_structures.v1, esi-universe.read_structures.v1"
+    ]
   },
   "home": {
     "select-systems": "Enter your start and end system:",

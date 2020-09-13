@@ -8,21 +8,22 @@ import io.ktor.auth.authentication
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.*
 import io.ktor.request.path
 import io.ktor.response.respond
 import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.route
+import io.ktor.routing.*
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
 import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
+import net.tkhamez.everoute.Login
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.gson
 
+@KtorExperimentalLocationsAPI
 fun Route.authentication(config: Config) {
 
     /**
@@ -32,6 +33,14 @@ fun Route.authentication(config: Config) {
         val path = call.request.path()
         val publicRoutes = listOf(
             "/api/auth/login",
+            "/api/auth/login/000",
+            "/api/auth/login/100",
+            "/api/auth/login/010",
+            "/api/auth/login/001",
+            "/api/auth/login/110",
+            "/api/auth/login/101",
+            "/api/auth/login/011",
+            "/api/auth/login/111",
             "/api/auth/result",
         )
         if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1) {
@@ -44,6 +53,12 @@ fun Route.authentication(config: Config) {
     }
 
     authenticate("eve-oauth") {
+        // URL before redirect to EVE
+        location<Login> {
+            handle {}
+        }
+
+        // Callback URL
         route("/api/auth/login") {
             handle {
                 val session = call.sessions.get<Session>() ?: Session()
@@ -51,7 +66,7 @@ fun Route.authentication(config: Config) {
 
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
                 if (principal == null) {
-                    call.sessions.set(session.copy(loginResult = ResponseCodes.SsoLoginFailed))
+                    call.sessions.set(session.copy(loginResult = ResponseCodes.LoginSsoFailed))
                     call.respondRedirect("/")
                     return@handle
                 }
@@ -63,7 +78,7 @@ fun Route.authentication(config: Config) {
                     principal.accessToken
                 )
                 if (esiVerify == null) {
-                    call.sessions.set(session.copy(loginResult = ResponseCodes.EsiErrorVerify))
+                    call.sessions.set(session.copy(loginResult = ResponseCodes.LoginEsiErrorVerify))
                     call.respondRedirect("/")
                     return@handle
                 }
@@ -127,13 +142,12 @@ private suspend fun getCharacter(esiVerify: EsiVerify, config: Config, httpReque
     )
     val allianceId = esiAffiliation?.get(0)?.alliance_id
 
-
     if (allianceId == null) {
-        getCharacterResult = ResponseCodes.EsiErrorAlliance
+        getCharacterResult = ResponseCodes.LoginEsiErrorAlliance
     } else if (allianceId == 0) {
-        getCharacterResult = ResponseCodes.NoAlliance
+        getCharacterResult = ResponseCodes.LoginNoAlliance
     } else if (config.alliances.isNotEmpty() && ! config.alliances.contains(allianceId.toString())) {
-        getCharacterResult = ResponseCodes.WrongAlliance
+        getCharacterResult = ResponseCodes.LoginWrongAlliance
     } else {
         val alliance = httpRequest.get<EsiAlliance>(
             "latest/alliances/$allianceId/?datasource=${config.esiDatasource}",

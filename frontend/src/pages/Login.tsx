@@ -1,17 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Grid, Link, Typography } from '@material-ui/core';
+import { Box, Checkbox, FormGroup, FormControlLabel, Grid, Link, Typography } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core/styles";
 import { GlobalDataContext } from "../GlobalDataContext";
 import axios from "axios";
 import { ResponseMessage } from "../response";
-import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
   row: {
     margin: "15px 0",
   },
+  row1: {
+    margin: "15px 0 0",
+  },
   row2: {
     margin: "0 0 15px",
+  },
+  row3: {
+    margin: "-5px 0 5px",
   },
 }));
 
@@ -20,6 +26,12 @@ const Login = () => {
   const classes = useStyles();
   const globalData = useContext(GlobalDataContext);
   const [loginResult, setLoginResult] = useState("");
+  const [checkBoxes, setCheckBoxes] = React.useState({
+    writeRoute: true,
+    autoLocation: false,
+    updateGates: false,
+  });
+  const [features, setFeatures] = React.useState("");
 
   useEffect(() => {
     axios.get<ResponseMessage>(`${globalData.domain}/api/auth/result`).then(r => {
@@ -30,18 +42,62 @@ const Login = () => {
     });
   }, [globalData.domain, t]);
 
+  useEffect(() => {
+    let value = checkBoxes.writeRoute ? '1' : '0';
+    value += checkBoxes.autoLocation ? '1' : '0';
+    value += checkBoxes.updateGates ? '1' : '0';
+    setFeatures(value);
+  }, [checkBoxes]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckBoxes({ ...checkBoxes, [event.target.name]: event.target.checked });
+  };
+
   return (
     <div className='grid-spacing-2-wrapper'>
       <Grid container spacing={2} className='card'>
         <Grid item xs={12}>
           <Box display="flex" flexDirection="column" alignItems="center">
 
-            <Typography className={classes.row}>{t('login.description')}</Typography>
+            <Typography className={classes.row} variant="h6">{t('login.description')}</Typography>
 
-            <Link  className={classes.row} href={globalData.domain+'/api/auth/login'} rel="noopener noreferrer">
+            <Typography className={classes.row1}>{t('login.choose-features')}</Typography>
+            <FormGroup>
+              <FormControlLabel disabled control={<Checkbox checked />} label={t('login.find-route')} />
+              <Typography className={classes.row3} variant={"caption"}>{t('login.find-route-description')}</Typography>
+
+              <FormControlLabel
+                control={<Checkbox checked={checkBoxes.writeRoute} name="writeRoute"
+                                   onChange={handleChange} color="primary"/>}
+                label={t('login.write-route')} />
+              <Typography className={classes.row3} variant={"caption"}>
+                {t('login.write-route-description')}
+              </Typography>
+
+              <FormControlLabel
+                control={<Checkbox checked={checkBoxes.autoLocation} name="autoLocation"
+                                   onChange={handleChange} color="primary"/>}
+                label={t('login.auto-location')} />
+              <Typography className={classes.row3} variant={"caption"}>
+                {t('login.auto-location-description')}
+              </Typography>
+
+              <FormControlLabel
+                control={<Checkbox checked={checkBoxes.updateGates} name="updateGates"
+                                   onChange={handleChange} color="primary"/>}
+                label={t('login.update-gates')} />
+              <Typography className={classes.row3} variant={"caption"}>
+                {t('login.update-gates-description')}
+              </Typography>
+            </FormGroup>
+
+            <Link className={classes.row}
+                  href={`${globalData.domain}/api/auth/login/${features}`}
+                  rel="noopener noreferrer">
               <img src="/eve-sso-login-black-large.png" alt={t('login.log-in')} title={t('login.log-in')}/>
             </Link>
             { loginResult && <Typography className={classes.row2} color={"error"}>{loginResult}</Typography>}
+            <Typography className={classes.row2} variant="body2">{t('login.login-restriction')}</Typography>
 
           </Box>
         </Grid>

@@ -9,6 +9,7 @@ import io.ktor.routing.*
 import io.ktor.http.*
 //import io.ktor.content.*
 import io.ktor.http.content.*
+import io.ktor.locations.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+@KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun main() {
     embeddedServer(
@@ -34,9 +36,13 @@ fun main() {
     ).start(true)
 }
 
+@KtorExperimentalLocationsAPI
+@Location("/api/auth/login/{features?}") class Login(val features: String = "")
+
 //@Suppress("unused") // Referenced in application.conf
 //@kotlin.jvm.JvmOverloads
 //fun Application.module(testing: Boolean = false) {
+@KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun Application.module() {
 
@@ -84,7 +90,31 @@ fun Application.module() {
         }
     }
 
+    install(Locations)
+
     install(Authentication) {
+        val scopes = mapOf(
+            "100" to listOf("esi-ui.write_waypoint.v1"),
+            "010" to listOf("esi-location.read_location.v1"),
+            "001" to listOf("esi-search.search_structures.v1", "esi-universe.read_structures.v1"),
+            "110" to listOf(
+                "esi-ui.write_waypoint.v1",
+                "esi-location.read_location.v1"
+            ),
+            "101" to listOf(
+                "esi-ui.write_waypoint.v1",
+                "esi-search.search_structures.v1", "esi-universe.read_structures.v1"
+            ),
+            "011" to listOf(
+                "esi-location.read_location.v1",
+                "esi-search.search_structures.v1", "esi-universe.read_structures.v1"
+            ),
+            "111" to listOf(
+                "esi-ui.write_waypoint.v1",
+                "esi-location.read_location.v1",
+                "esi-search.search_structures.v1", "esi-universe.read_structures.v1",
+            ),
+        )
         oauth("eve-oauth") {
             client = httpClient
             providerLookup = {
@@ -95,12 +125,8 @@ fun Application.module() {
                     requestMethod = HttpMethod.Post,
                     clientId = config.clientId,
                     clientSecret = config.clientSecret,
-                    defaultScopes = listOf(
-                        "esi-location.read_location.v1",
-                        "esi-search.search_structures.v1",
-                        "esi-universe.read_structures.v1",
-                        "esi-ui.write_waypoint.v1"
-                    )
+                    defaultScopes = scopes[application.locations.resolve<Login>(Login::class, this).features] ?:
+                                    listOf()
                 )
             }
             urlProvider = {
