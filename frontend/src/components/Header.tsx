@@ -46,7 +46,7 @@ export default function Header() {
   return (
     <HideOnScroll>
       <AppBar position="sticky" color="default" elevation={8} className={classes.appBar}>
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Toolbar className={classes.toolbar} variant="dense">
             <LocationOnOutlinedIcon style={{color: '#90caf9', fontSize: '1.75rem', marginRight: '4px'}}/>
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>

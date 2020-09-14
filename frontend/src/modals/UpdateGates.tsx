@@ -6,7 +6,6 @@ import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseGatesUpdated, ResponseGates, ResponseMessage } from '../response';
 import { dateFormat } from "../date";
-import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 
 export default function UpdateGates() {
   const { t } = useTranslation();

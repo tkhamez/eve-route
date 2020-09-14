@@ -207,12 +207,15 @@ const SVG = (() => {
     y: 0.0, // = minY
     width: 0.0,
     height: 0.0,
+    panX: 0,
+    panY: 0,
   };
 
   const max = { x: 0, y: 0 };
 
   const center = { x: 0, y: 0 };
 
+  // noinspection JSSuspiciousNameCombination
   return {
     getSvgElement(): SVGGraphicsElement {
       return getDocument().documentElement;
@@ -227,6 +230,15 @@ const SVG = (() => {
       viewBox.y = mapData.min.y - systemRadius;
       viewBox.width = mapData.max.x + (mapData.min.x * -1) + (systemRadius*2);
       viewBox.height = mapData.max.y + (mapData.min.y * -1) + (systemRadius*2);
+      if (viewBox.width > viewBox.height) {
+        viewBox.panY = (viewBox.width - viewBox.height) / 2;
+        // noinspection JSSuspiciousNameCombination
+        viewBox.height = viewBox.width;
+      } else {
+        viewBox.panX = (viewBox.height - viewBox.width) / 2;
+        // noinspection JSSuspiciousNameCombination
+        viewBox.width = viewBox.height;
+      }
       max.x = viewBox.x + viewBox.width;
       max.y = viewBox.y + viewBox.height;
       center.x = viewBox.x + (viewBox.width / 2);
@@ -346,7 +358,8 @@ const SVG = (() => {
 
     reset() {
       transformMatrix = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0];
-      applyMatrix();
+      SVG.pan(viewBox.panX, viewBox.panY);
+      // pan applies matrix
     },
 
     zoomIn(minX: number, maxX: number, minY: number, maxY: number) {

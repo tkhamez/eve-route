@@ -60,7 +60,11 @@ const Login = () => {
 
             <Typography className={classes.row} variant="h6">{t('login.description')}</Typography>
 
-            { loginResult && <Typography className={classes.row1} color={"error"}>{loginResult}</Typography>}
+            { loginResult &&
+              <Typography className={classes.row1} color={"error"}>
+                <strong>{loginResult}</strong>
+              </Typography>
+            }
 
             <Typography className={classes.row1}>{t('login.choose-features')}</Typography>
             <FormGroup>

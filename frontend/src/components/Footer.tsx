@@ -6,7 +6,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 export default function Footer() {
   const { t } = useTranslation();
   return (
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Typography variant="body2" color="textSecondary" align="center">
           Created by <Link color="textPrimary" href="https://evewho.com/character/96061222" target="_blank" rel="noopener noreferrer">Tian Khamez</Link>
           {' '}|{' '}

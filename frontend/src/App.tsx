@@ -55,7 +55,7 @@ class App extends React.Component<Props, AppState> {
         <div className={classes.root}>
           <Header />
 
-          <Container component="main" maxWidth="md">
+          <Container component="main" maxWidth="lg">
             { this.state.loaded && this.state.user.name === '' && <Login /> }
             { this.state.loaded && this.state.user.name        && <Home /> }
           </Container>
