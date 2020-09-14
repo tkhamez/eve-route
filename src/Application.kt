@@ -78,11 +78,10 @@ fun Application.module() {
     }
 
     install(Sessions) {
-        val storage = if (config.callback.contains(":8080")) {
-            directorySessionStorage(File(System.getProperty("java.io.tmpdir") + "/.eve-route-sessions"), cached = true)
-        } else {
-            SessionStorageMemory()
-        }
+        val storage = directorySessionStorage(
+            File(System.getProperty("java.io.tmpdir") + "/.eve-route-sessions"),
+            cached = true
+        )
         cookie<Session>("EVE_ROUTE_SESSION", storage) {
             cookie.extensions["SameSite"] = "lax"
             cookie.path = "/"
