@@ -71,7 +71,7 @@ export default function UpdateGates() {
   }, [fetchGatesUpdated, gatesUpdated]);
 
   return (
-    <div className="grid-spacing-2-wrapper">
+    <div className="grid-spacing-2-wrapper modal">
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="body2">

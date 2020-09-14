@@ -92,9 +92,11 @@ export default function NavModal() {
             <Grid item xs={10}>
               <Box display="flex" justifyContent="flex-start">
                 <Typography>
-                  {content === 'HowItWorks' && t('navModal.how-it-works')}
-                  {content === 'UpdateGates' && t('navModal.update-gates')}
-                  {content === 'AddConnection' && t('navModal.add-connection')}
+                  <strong>
+                    {content === 'HowItWorks' && t('navModal.how-it-works')}
+                    {content === 'UpdateGates' && t('navModal.update-gates')}
+                    {content === 'AddConnection' && t('navModal.add-connection')}
+                  </strong>
                 </Typography>
               </Box>
             </Grid>

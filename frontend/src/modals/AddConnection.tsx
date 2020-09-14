@@ -98,7 +98,7 @@ export default function AddConnection() {
   }, [fetch]);
 
   return (
-    <div className={`grid-spacing-2-wrapper ${classes.wrap}`}>
+    <div className={`grid-spacing-2-wrapper modal ${classes.wrap}`}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Trans i18nKey="addConnection.choose-systems">%<em>%</em>%</Trans>

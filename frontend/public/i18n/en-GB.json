@@ -89,7 +89,33 @@
     "delete": "Delete"
   },
   "howItWorks": {
-
+    "gates-alliance": [
+      "The application stores one set of Ansiblex gates per EVE alliance. ",
+      "So it is assumed that everyone in the same alliance can use the same gates. ",
+      "This may not be true of course, but should be good enough for most use cases."
+    ],
+    "esi-results": [
+      "The EVE API (ESI) returns Ansiblex gates for which the character has \"docking access\" (deposit fuel). ",
+      "So it is possible that not all gates are returned that the character can use. ",
+      "See also <1>this Ticket</1>."
+    ],
+    "unknown-gates": [
+      "Since the API does not always return all the gates it should return, it is assumed that if there is a ",
+      "gate from system A to B, there is also a usable gate from system B to A. ",
+      "These gates are labeled \"Unknown Ansiblex\". ",
+      "Of course it is not possible to set a waypoint for an unknown gate, instead it is set to the system ",
+      "where the gate should be."
+    ],
+    "wormholes": [
+      "If the route contains wormholes (temporary connection), they cannot be displayed on the map and are ",
+      "simply skipped. ",
+      "For the in-game route, a waypoint is set for the system where the wormhole is located. ",
+      "The wormhole system itself cannot be set as a waypoint."
+    ],
+    "several-routes": [
+      "Sometimes there are several routes with the same number of jumps. ",
+      "In this case the application will randomly return one of them."
+    ]
   },
   "updateGates": {
     "intro": [

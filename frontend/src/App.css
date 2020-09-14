@@ -5,7 +5,9 @@
     width: calc(100% - 16px);
     margin-top: 8px;
     margin-bottom: 8px;
+}
 
+.grid-spacing-2-wrapper.modal {
     /* mobile firefox has a strange bar at the bottom that is above the content,
        this adds enough space to make all of the content visible */
     padding-bottom: 35px;
