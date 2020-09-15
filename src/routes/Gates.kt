@@ -124,7 +124,12 @@ private suspend fun fetchAndStoreGates(
         }
         if (gate.type_id == 35841) {
             fetched ++
-            val ansiblex = MongoAnsiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id)
+            val ansiblex = MongoAnsiblex(
+                id = id,
+                name = gate.name,
+                solarSystemId = gate.solar_system_id,
+                allianceId = allianceId
+            )
             gates.add(ansiblex)
             mongo.gateStore(ansiblex, allianceId)
         }

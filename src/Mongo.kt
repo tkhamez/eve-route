@@ -13,29 +13,30 @@ class Mongo(uri: String) {
 
     fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
         val gates = mutableListOf<MongoAnsiblex>()
-        database.getCollection<MongoAnsiblex>("ansiblex-$allianceId").find().forEach { gates.add(it) }
+        database.getCollection<MongoAnsiblex>("ansiblex")
+            .find(MongoAnsiblex::allianceId eq allianceId).forEach { gates.add(it) }
         return gates
     }
 
     fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int) {
-        val col = database.getCollection<MongoAnsiblex>("ansiblex-$allianceId")
-        val existingGate = col.findOne(MongoAnsiblex::id eq ansiblex.id)
+        val col = database.getCollection<MongoAnsiblex>("ansiblex")
+        val existingGate = col.findOne(MongoAnsiblex::id eq ansiblex.id, MongoAnsiblex::allianceId eq allianceId)
         if (existingGate == null) {
             col.insertOne(ansiblex)
         } else {
-            col.replaceOne(MongoAnsiblex::id eq ansiblex.id, ansiblex)
+            col.replaceOne(MongoAnsiblex::_id eq ansiblex._id, ansiblex)
         }
     }
 
     fun gatesRemoveOther(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
-        val col = database.getCollection<MongoAnsiblex>("ansiblex-$allianceId")
+        val col = database.getCollection<MongoAnsiblex>("ansiblex")
 
         val ids: MutableList<Long> = mutableListOf()
         ansiblexes.forEach { ids.add(it.id) }
 
-        val gatesToDelete = col.find(MongoAnsiblex::id nin ids)
+        val gatesToDelete = col.find(MongoAnsiblex::id nin ids, MongoAnsiblex::allianceId eq allianceId)
         gatesToDelete.forEach {
-            col.deleteOne(MongoAnsiblex::id eq it.id)
+            col.deleteOne(MongoAnsiblex::id eq it.id, MongoAnsiblex::allianceId eq allianceId)
         }
     }
 

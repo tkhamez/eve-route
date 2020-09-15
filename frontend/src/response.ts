@@ -57,9 +57,11 @@ export type ResponseRouteLocation = {
 }
 
 export type Ansiblex = {
+  //_id: string,
   id: number,
   name: string,
   solarSystemId: bigint,
+  //allianceId: bigint,
 }
 
 export type Waypoint = {
