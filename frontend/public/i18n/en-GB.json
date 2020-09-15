@@ -119,7 +119,7 @@
   },
   "updateGates": {
     "intro": [
-      "Ansiblex jump Gates can be found by normal characters only with the ESI search. ",
+      "Ansiblex jump gates can be found by normal characters only with the ESI search. ",
       "Unfortunately CCP does not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
       "But a manually initiated search <3>seems to be ok</3>."
     ],
