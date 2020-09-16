@@ -1,19 +1,24 @@
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Container, Link, Typography } from '@material-ui/core';
+import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import GitHubIcon from '@material-ui/icons/GitHub';
 
 export default function Footer() {
-  const { t } = useTranslation();
   return (
       <Container maxWidth="lg">
         <Typography variant="body2" color="textSecondary" align="center">
-          Created by <Link color="textPrimary" href="https://evewho.com/character/96061222" target="_blank" rel="noopener noreferrer">Tian Khamez</Link>
+          <Trans i18nKey="footer.created-by">
+            %<Link color="textPrimary" href="https://evewho.com/character/96061222"
+                   target="_blank" rel="noopener noreferrer">%</Link>%
+          </Trans>
           {' '}|{' '}
-          <strong>Ƶ</strong> {t('footer.donate')}
+          <FavoriteBorderOutlinedIcon fontSize="inherit" style={{position: 'relative', top: '2px'}} />{' '}
+          <Trans i18nKey="footer.donate2">%<span title="ISK">%</span>%</Trans>
           {' '}|{' '}
-          <Link color="textPrimary" href="https://github.com/tkhamez/eve-route" target="_blank" rel="noopener noreferrer">
-            <GitHubIcon fontSize="inherit" style={{position: 'relative', top: '2px'}}/> GitHub
+          <Link color="textPrimary" href="https://github.com/tkhamez/eve-route"
+                target="_blank" rel="noopener noreferrer">
+            <GitHubIcon fontSize="inherit" style={{position: 'relative', top: '2px'}} /> GitHub
           </Link>
           {' '}|{' '}
           <Link color="textPrimary" href="https://discord.gg/EjzHx8p" target="_blank" rel="noopener noreferrer">
@@ -23,7 +28,8 @@ export default function Footer() {
         <Typography variant="body2" color="textSecondary" align="center">
           <small>
             <Trans i18nKey="footer.ccp">
-              %<Link color="textPrimary" href="https://www.ccpgames.com" target="_blank" rel="noopener noreferrer">%</Link>%
+              %<Link color="textPrimary" href="https://www.ccpgames.com"
+                     target="_blank" rel="noopener noreferrer">%</Link>%
             </Trans>
           </small>
         </Typography>

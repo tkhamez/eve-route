@@ -19,7 +19,7 @@ const styles = (theme: Theme) => createStyles({
     backgroundColor: theme.palette.grey[900],
   },
   footer: {
-    padding: theme.spacing(2, 0),
+    padding: theme.spacing(0.5, 0),
     marginTop: 'auto',
     backgroundColor: theme.palette.background.default,
   },

@@ -33,7 +33,9 @@
     "zh-CN": "中文"
   },
   "footer": {
+    "created-by": "Created by <1>Tian Khamez</1>",
     "donate": "Donate ISK if you like it",
+    "donate2": "Donate <1>Ƶ</1> if you like it",
     "ccp": [
       "\"EVE\", \"EVE Online\", \"CCP\" and all related logos and images are ",
       "trademarks or registered trademarks of <1>CCP hf</1>."
