@@ -53,6 +53,12 @@ data class ResponseConnectedSystems(
     var connections: MutableList<ConnectedSystems> = mutableListOf()
 )
 
+data class ResponseMapConnections(
+    var code: ResponseCodes? = null,
+    val ansiblexes: MutableList<ConnectedSystems> = mutableListOf(),
+    val temporary: MutableList<ConnectedSystems> = mutableListOf(),
+)
+
 data class ResponseGatesUpdated(
     var code: ResponseCodes? = null,
     var allianceId: Int? = null,

@@ -12,7 +12,7 @@ import io.ktor.routing.post
 import io.ktor.sessions.*
 import net.tkhamez.everoute.*
 import net.tkhamez.everoute.Route as EveRoute
-import net.tkhamez.everoute.Graph
+import net.tkhamez.everoute.GraphHelper
 import net.tkhamez.everoute.data.*
 
 fun Route.route(config: Config) {
@@ -31,7 +31,60 @@ fun Route.route(config: Config) {
         val location = httpRequest.get<EsiLocation>("latest/characters/$characterId/location/", accessToken)
         response.solarSystemId = location?.solar_system_id
         if (response.solarSystemId != null) {
-            response.solarSystemName = Graph().findSystem(response.solarSystemId!!)?.name
+            response.solarSystemName = GraphHelper().findSystem(response.solarSystemId!!)?.name
+        }
+
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
+    }
+
+    /**
+     * Returns all Ansiblex and temporary connections (system names)
+     */
+    get("/api/route/map-connections") {
+        val response = ResponseMapConnections()
+
+        val session = call.sessions.get<Session>()
+        val allianceId = session?.eveCharacter?.allianceId
+        val characterId = session?.eveCharacter?.id
+
+        if (allianceId == null || characterId == null) {
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
+            return@get
+        }
+
+        val mongo = Mongo(config.db)
+        val gates = mongo.gatesGet(allianceId)
+        val tempConnections = mongo.temporaryConnectionsGet(characterId)
+
+        val graphHelper = GraphHelper()
+
+        for (connectionType in listOf(gates, tempConnections)) {
+            val addedConnections = mutableListOf<String>()
+            connectionType.forEach { connection ->
+                var startSystem: GraphSystem? = null
+                var endSystem: GraphSystem? = null
+                if (connection is MongoAnsiblex) {
+                    startSystem = graphHelper.findSystem(connection.solarSystemId)
+                    endSystem = graphHelper.getEndSystem(connection)
+                } else if (connection is MongoTemporaryConnection) {
+                    startSystem = graphHelper.findSystem(connection.system1Id)
+                    endSystem = graphHelper.findSystem(connection.system2Id)
+                }
+                if (
+                    startSystem != null &&
+                    endSystem != null &&
+                    !addedConnections.contains("${startSystem.name} - ${endSystem.name}")
+                ) {
+                    addedConnections.add("${startSystem.name} - ${endSystem.name}")
+                    addedConnections.add("${endSystem.name} - ${startSystem.name}")
+                    if (connection is MongoAnsiblex) {
+                        response.ansiblexes.add(ConnectedSystems(startSystem.name, endSystem.name))
+                    } else { // MongoTemporaryConnection
+                        response.temporary.add(ConnectedSystems(startSystem.name, endSystem.name))
+                    }
+                }
+            }
         }
 
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
@@ -40,9 +93,9 @@ fun Route.route(config: Config) {
     get("/api/route/avoided-systems") {
         val response = ResponseSystems()
         val avoidedSystems = call.sessions.get<Session>()?.avoidedSystems ?: mutableSetOf()
-        val graph = Graph()
+        val graphHelper = GraphHelper()
         avoidedSystems.forEach {
-            val system = graph.findSystem(it)
+            val system = graphHelper.findSystem(it)
             if (system != null) {
                 response.systems.add(System(system.id, system.name))
             }
@@ -53,10 +106,10 @@ fun Route.route(config: Config) {
     get("/api/route/removed-connections") {
         val response = ResponseConnectedSystems()
         val removedConnections = call.sessions.get<Session>()?.removedConnections ?: mutableSetOf()
-        val graph = Graph()
+        val graphHelper = GraphHelper()
         removedConnections.forEach {
-            val system1 = graph.findSystem(it.system1)
-            val system2 = graph.findSystem(it.system2)
+            val system1 = graphHelper.findSystem(it.system1)
+            val system2 = graphHelper.findSystem(it.system2)
             if (system1 != null && system2 != null) {
                 response.connections.add(ConnectedSystems(system1.name, system2.name))
             }

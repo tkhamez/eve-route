@@ -7,7 +7,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
-import net.tkhamez.everoute.Graph
+import net.tkhamez.everoute.GraphHelper
 import net.tkhamez.everoute.Mongo
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.gson
@@ -33,9 +33,9 @@ fun Route.connection(config: Config) {
             return@post
         }
 
-        val graph = Graph()
-        val system1 = graph.findSystem(systems[0])
-        val system2 = graph.findSystem(systems[1])
+        val graphHelper = GraphHelper()
+        val system1 = graphHelper.findSystem(systems[0])
+        val system2 = graphHelper.findSystem(systems[1])
 
         if (system1 == null || system2 == null) {
             response.code = ResponseCodes.SystemNotFound
@@ -43,7 +43,9 @@ fun Route.connection(config: Config) {
             return@post
         }
 
-        val connection = MongoTemporaryConnection(system1.id, system1.name, system2.id, system2.name, characterId, Date())
+        val connection = MongoTemporaryConnection(
+            system1.id, system1.name, system2.id, system2.name, characterId, Date()
+        )
         try {
             Mongo(config.db).temporaryConnectionStore(connection)
         } catch (e: MongoException) {

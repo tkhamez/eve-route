@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import axios from 'axios';
-import { MapData } from '../types';
-import { RouteType, Waypoint } from '../response';
+import { MapData, System } from '../types';
+import { ResponseMapConnections, RouteType, Waypoint } from '../response';
+import { GlobalDataContext } from "../GlobalDataContext";
 
 const useStyles = makeStyles((theme) => ({
   map: {
@@ -36,8 +37,10 @@ type Props = {
 
 export default function Map(props: Props) {
   const { t } = useTranslation();
+  const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
   const [mapData, setMapData] = useState<MapData>();
+  const [mapConnections, setMapConnections] = useState<ResponseMapConnections>();
   const [svgLoaded, setSvgLoaded] = useState(false);
   const [mapError, setMapError] = useState('');
 
@@ -45,53 +48,41 @@ export default function Map(props: Props) {
    * Load JSON.
    */
   useEffect(() => {
-    if (mapData) {
-      return;
+    if (!mapData) {
+      axios.get<MapData>('/map.json').then(r => {
+        setMapData(r.data);
+      }).catch(() => {
+        setMapError(t('map.json-error'));
+      });
     }
-    axios.get<MapData>('/map.json').then(result => {
-      setMapData(result.data);
-    }).catch(() => {
-      setMapError(t('map.json-error'));
-    });
-  }, [mapData, t]);
+    if (!mapConnections) {
+      axios.get<ResponseMapConnections>(`${globalData.domain}/api/route/map-connections`).then(r => {
+        if (r.data.code) { // error
+          console.log(t(`responseCode.${r.data.code}`));
+        }
+        setMapConnections(r.data);
+      }).catch(() => {
+        setMapConnections({ ansiblexes: [], temporary: [], code: null });
+      });
+    }
+  }, [globalData.domain, mapConnections, mapData, t]);
 
   /**
    * Configure map and add data.
    */
   useEffect(() => {
-    if (!mapData || !svgLoaded) {
+    if (!mapData || !svgLoaded || !mapConnections) {
       return
     }
-
-    const systems = SVG.getElement('systems');
-    const connections = SVG.getElement('connections');
-
-    const systemRadius = 3;
-    SVG.setViewBox(mapData, systemRadius);
-    SVG.makeDraggable();
-    SVG.setupMouseZoom();
-
-    mapData.systems.forEach(system => {
-      let nodeClass  = 'system ';
-      if (system.security <= 0) {
-        nodeClass += 'null-sec';
-      } else if (system.security < 0.5) {
-        nodeClass += 'low-sec';
-      } else {
-        nodeClass += 'high-sec';
-      }
-      const newSystem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      newSystem.setAttribute('cx', system.position.x.toString());
-      newSystem.setAttribute('cy', system.position.y.toString());
-      newSystem.setAttribute('r', systemRadius.toString());
-      newSystem.setAttribute('class', nodeClass);
-      systems.appendChild(newSystem);
-    });
-
-    mapData.connections.forEach(connection => {
-      SVG.addLine(connections, connection.x1, connection.y1, connection.x2, connection.y2, 'connection');
-    });
-  }, [mapData, svgLoaded]);
+    if (!SVG.init) {
+      SVG.init = true;
+      const systemRadius = 3;
+      SVG.setViewBox(mapData, systemRadius);
+      SVG.makeDraggable();
+      SVG.setupMouseZoom();
+      SVG.addSystemsAndConnections(mapData, systemRadius, mapConnections);
+    }
+  }, [mapConnections, mapData, svgLoaded]);
 
   /**
    * Add route to map.
@@ -155,7 +146,11 @@ export default function Map(props: Props) {
       } else if (connection[0].type === RouteType.Temporary) {
         classes += ' temporary';
       }
-      SVG.addLine(route, connection[0].x, connection[0].y, connection[1].x, connection[1].y, classes);
+      if (classes === 'route') {
+        SVG.addLine(route, connection[0].x, connection[0].y, connection[1].x, connection[1].y, classes);
+      } else {
+        SVG.addCurvedLine(route, connection[0].x, connection[0].y, connection[1].x, connection[1].y, classes);
+      }
     });
 
     SVG.zoomIn(routeMinX, routeMaxX, routeMinY, routeMaxY);
@@ -217,6 +212,8 @@ const SVG = (() => {
 
   // noinspection JSSuspiciousNameCombination
   return {
+    init: false,
+
     getSvgElement(): SVGGraphicsElement {
       return getDocument().documentElement;
     },
@@ -324,6 +321,49 @@ const SVG = (() => {
       }, { passive: false });
     },
 
+    addSystemsAndConnections(mapData: MapData, systemRadius: number, mapConnections: ResponseMapConnections) {
+      const svgSystems = SVG.getElement('systems');
+      const svgConnections = SVG.getElement('connections');
+      const allSystems: { [index: string]: System } = {};
+
+      mapData.systems.forEach(system => {
+        allSystems[system.name] = system;
+        let nodeClass  = 'system ';
+        if (system.security <= 0) {
+          nodeClass += 'null-sec';
+        } else if (system.security < 0.5) {
+          nodeClass += 'low-sec';
+        } else {
+          nodeClass += 'high-sec';
+        }
+        const newSystem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        newSystem.setAttribute('cx', system.position.x.toString());
+        newSystem.setAttribute('cy', system.position.y.toString());
+        newSystem.setAttribute('r', systemRadius.toString());
+        newSystem.setAttribute('class', nodeClass);
+        svgSystems.appendChild(newSystem);
+      });
+
+      mapData.connections.forEach(connection => {
+        SVG.addLine(svgConnections, connection.x1, connection.y1, connection.x2, connection.y2, 'connection');
+      });
+
+      [mapConnections.ansiblexes, mapConnections.temporary].forEach((connections, index) => {
+        connections.forEach(connection => {
+          if (allSystems[connection.system1] && allSystems[connection.system2]) {
+            SVG.addCurvedLine(
+              svgConnections,
+              allSystems[connection.system1].position.x,
+              allSystems[connection.system1].position.y,
+              allSystems[connection.system2].position.x,
+              allSystems[connection.system2].position.y,
+              index === 0 ? 'ansiblex' : 'temporary'
+            );
+          }
+        });
+      });
+    },
+
     addLine(parent: Element, x1: number, y1: number, x2: number, y2: number, classes: string) {
       const newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       newLine.setAttribute('x1', x1.toString());
@@ -332,6 +372,34 @@ const SVG = (() => {
       newLine.setAttribute('y2', y2.toString());
       newLine.setAttribute('class', classes);
       parent.appendChild(newLine);
+    },
+
+    addCurvedLine(parent: Element, x1: number, y1: number, x2: number, y2: number, classes: string) {
+      // mid-point of line
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+
+      // angle of perpendicular to line
+      let theta;
+      if (x1 > x2) {
+        theta = Math.atan2(y1 - y2, x1 - x2) - Math.PI / 2;
+      } else {
+        theta = Math.atan2(y2 - y1, x2 - x1) - Math.PI / 2;
+      }
+
+      // distance of control point from mid-point of line:
+      const offset = 50;
+
+      // location of control point:
+      const c1x = midX + offset * Math.cos(theta);
+      const c1y = midY + offset * Math.sin(theta);
+
+      // M = move to, Q quadratic curve
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M ${x1} ${y1} Q ${c1x} ${c1y} ${x2} ${y2}`);
+      path.setAttribute('class', classes);
+
+      parent.appendChild(path);
     },
 
     pan(dx: number, dy: number) {

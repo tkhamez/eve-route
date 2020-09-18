@@ -4,7 +4,7 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.*
 import io.ktor.routing.*
-import net.tkhamez.everoute.Graph
+import net.tkhamez.everoute.GraphHelper
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.gson
 
@@ -23,10 +23,8 @@ fun Route.systems() {
 }
 
 private fun getResponse(search: String): ResponseSystemNames {
-    val graph = Graph().getSystems()
-
     val response = ResponseSystemNames()
-    graph.systems.forEach {
+    GraphHelper().getGraph().systems.forEach {
         if (search == "" || it.name.toLowerCase().contains(search.toLowerCase())) {
             response.systems.add(it.name)
         }

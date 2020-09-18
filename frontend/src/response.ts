@@ -30,6 +30,12 @@ export type ResponseConnectedSystems = {
   connections: Array<ConnectedSystems>,
 }
 
+export type ResponseMapConnections = {
+  code: string|null,
+  ansiblexes: Array<ConnectedSystems>,
+  temporary: Array<ConnectedSystems>,
+}
+
 export type ResponseGatesUpdated = {
   code: string|null,
   allianceId: bigint|null,

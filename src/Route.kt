@@ -1,7 +1,6 @@
 package net.tkhamez.everoute
 
 import net.tkhamez.everoute.data.*
-import net.tkhamez.everoute.data.Graph
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -11,10 +10,7 @@ class Route(
     private val avoidedSystems: Set<Int>,
     private val removedConnections: Set<ConnectedSystems>
 ) {
-    /**
-     * Graph with ESI data of all systems with edges.
-     */
-    private val graph: Graph = net.tkhamez.everoute.Graph().getSystems()
+    private val graphHelper = GraphHelper()
 
     /**
      * Helper variable with all systems, including wormholes.
@@ -40,7 +36,7 @@ class Route(
 
     init {
         // build node connections
-        centralNode = buildNodes(graph)
+        centralNode = buildNodes()
         addGates(ansiblexes)
         addTempConnections(temporaryConnections)
     }
@@ -51,8 +47,8 @@ class Route(
         }
 
         // find start and end system
-        val startSystem: GraphSystem? = findSystem(from)
-        val endSystem: GraphSystem? = findSystem(to)
+        val startSystem: GraphSystem? = graphHelper.findSystem(from)
+        val endSystem: GraphSystem? = graphHelper.findSystem(to)
         if (startSystem == null || endSystem == null) {
             return listOf()
         }
@@ -97,14 +93,14 @@ class Route(
     /**
      * Creates and connects all nodes
      */
-    private fun buildNodes(graph: Graph): Node<GraphSystem>? {
-        graph.systems.forEach {
+    private fun buildNodes(): Node<GraphSystem>? {
+        graphHelper.getGraph().systems.forEach {
             allSystems[it.id] = it
         }
 
         var center: Node<GraphSystem>? = null
 
-        graph.connections.forEach {
+        graphHelper.getGraph().connections.forEach {
             val sourceNode = getNode(it[0])
             val targetNode = getNode(it[1])
             if (sourceNode != null && targetNode != null) { // system can be null if it is avoided
@@ -123,10 +119,7 @@ class Route(
         ansiblexes.forEach { gate ->
             allAnsiblexes[gate.solarSystemId] = gate
 
-            // find end system ID (full gate name e.g.: "5ELE-A » AZN-D2 - Easy Route")
-            val systemNames = gate.name.substring(0, gate.name.indexOf(" - ")) // e.g. "5ELE-A » AZN-D2"
-            val endSystemName = systemNames.substring(systemNames.indexOf(" » ") + 3)
-            val endSystemId = findSystem(endSystemName)?.id
+            val endSystemId = graphHelper.getEndSystem(gate)?.id
 
             // connect nodes
             val startSystemNode = allNodes[gate.solarSystemId]
@@ -181,15 +174,6 @@ class Route(
             }
         }
         return allNodes[systemId]
-    }
-
-    private fun findSystem(systemName: String): GraphSystem? {
-        for (system in graph.systems) {
-            if (system.name.toLowerCase() == systemName.toLowerCase()) {
-                return system
-            }
-        }
-        return null
     }
 
     /**
