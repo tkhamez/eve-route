@@ -16,12 +16,13 @@ export default function Footer() {
           <FavoriteBorderOutlinedIcon fontSize="inherit" style={{position: 'relative', top: '2px'}} />{' '}
           <Trans i18nKey="footer.donate2">%<span title="ISK">%</span>%</Trans>
           {' '}|{' '}
-          <Link color="textPrimary" href="https://github.com/tkhamez/eve-route"
+          <Link className="no-wrap" color="textPrimary" href="https://github.com/tkhamez/eve-route"
                 target="_blank" rel="noopener noreferrer">
             <GitHubIcon fontSize="inherit" style={{position: 'relative', top: '2px'}} /> GitHub
           </Link>
           {' '}|{' '}
-          <Link color="textPrimary" href="https://discord.gg/EjzHx8p" target="_blank" rel="noopener noreferrer">
+          <Link className="no-wrap" color="textPrimary" href="https://discord.gg/EjzHx8p"
+                target="_blank" rel="noopener noreferrer">
             <img src="/discord.svg" width="18px" alt="Discord" style={{position: 'relative', top: '5px'}} /> Discord
           </Link>
         </Typography>

@@ -19,6 +19,10 @@
     background-color: #303030; /* theme.palette.background.default */
 }
 
+.no-wrap {
+    white-space: nowrap;
+}
+
 *[data-title] {
     position: relative;
 }

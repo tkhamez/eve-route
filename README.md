@@ -153,7 +153,7 @@ or contact me via [Tweetfleet Slack](https://tweetfleet.slack.com) @Tian
 
 ## Donations
 
-If you like this software, you can thank me by sending ISK to the character 
+If you like this application, you can thank me by sending ISK to the character 
 [Tian Khamez](https://evewho.com/character/96061222).
 
 ## Copyright Notice
