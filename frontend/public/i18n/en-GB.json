@@ -10,7 +10,6 @@
     "FailedToStoreData": "Failed to store data.",
     "LoginEsiErrorAlliance": "Failed to fetch alliance, please try again",
     "LoginEsiErrorVerify": "Failed to verify character, please try again.",
-    "LoginNoAlliance": "This character is not a member of any alliance.",
     "LoginSsoFailed": "EVE SSO login failed, please try again.",
     "LoginWrongAlliance": "This character is not a member of one of the allowed alliances.",
     "MissingInput": "Missing input.",
@@ -26,6 +25,7 @@
     "WrongSearchTerm": "Wrong search term."
   },
   "header": {
+    "no-alliance": "No alliance",
     "logout": "Logout",
     "change-language": "Change language",
     "en-GB": "English",
@@ -45,7 +45,7 @@
     "log-in": "Log in with EVE Online",
     "description": "A route planner for EVE Online that supports Ansiblex jump gates and wormhole connections.",
     "login-restriction": [
-      "Login is only possible for characters who are members of an alliance. ",
+      "You need a character that is a member of an alliance to use all features. ",
       "It is also possible that the login is restricted to certain alliances."
     ],
     "choose-features": "Choose features:",

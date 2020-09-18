@@ -144,8 +144,6 @@ private suspend fun getCharacter(esiVerify: EsiVerify, config: Config, httpReque
 
     if (allianceId == null) {
         getCharacterResult = ResponseCodes.LoginEsiErrorAlliance
-    } else if (allianceId == 0) {
-        getCharacterResult = ResponseCodes.LoginNoAlliance
     } else if (config.alliances.isNotEmpty() && ! config.alliances.contains(allianceId.toString())) {
         getCharacterResult = ResponseCodes.LoginWrongAlliance
     } else {
@@ -153,16 +151,13 @@ private suspend fun getCharacter(esiVerify: EsiVerify, config: Config, httpReque
             "latest/alliances/$allianceId/?datasource=${config.esiDatasource}",
             "[${esiVerify.CharacterID}]"
         )
-
-        if (alliance != null) {
-            eveCharacter = EveCharacter(
-                esiVerify.CharacterID,
-                esiVerify.CharacterName,
-                allianceId,
-                alliance.name,
-                alliance.ticker
-            )
-        }
+        eveCharacter = EveCharacter(
+            esiVerify.CharacterID,
+            esiVerify.CharacterName,
+            allianceId,
+            alliance?.name ?: "",
+            alliance?.ticker ?: "",
+        )
     }
 
     return eveCharacter

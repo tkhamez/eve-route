@@ -16,7 +16,6 @@ enum class ResponseCodes {
     FailedToStoreData,
     LoginEsiErrorAlliance,
     LoginEsiErrorVerify,
-    LoginNoAlliance,
     LoginSsoFailed,
     LoginWrongAlliance,
     MissingInput,

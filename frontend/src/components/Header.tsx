@@ -53,8 +53,13 @@ export default function Header() {
 
             { globalData.user.name &&
               <div>
-                [<span data-title={globalData.user.allianceName} aria-label={globalData.user.allianceName}>
-                  {globalData.user.allianceTicker}</span>]
+                [
+                {globalData.user.allianceTicker &&
+                  <span data-title={globalData.user.allianceName} aria-label={globalData.user.allianceName}>
+                    {globalData.user.allianceTicker}</span>
+                }
+                {! globalData.user.allianceTicker && t('header.no-alliance') }
+                ]
                 {' '}
                 {globalData.user.name}
                 <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.logout}>
