@@ -99,7 +99,7 @@
     "esi-results": [
       "The EVE API (ESI) returns Ansiblex gates for which the character has \"docking access\" (deposit fuel). ",
       "So it is possible that not all gates are returned that the character can use. ",
-      "See also <1>this Ticket</1>."
+      "See also <1>this ticket</1>."
     ],
     "unknown-gates": [
       "Since the API does not always return all the gates it should return, it is assumed that if there is a ",

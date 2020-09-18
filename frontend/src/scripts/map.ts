@@ -1,4 +1,4 @@
-import { MapData } from "../types";
+import { MapData } from '../types';
 const fs = require('fs');
 
 fs.writeFileSync('public/map.json', JSON.stringify(readJson()));
@@ -13,7 +13,7 @@ function readJson() {
   };
 
   const mod = 100000000000000;
-  const dataPath = "../esi-data/json/universe/";
+  const dataPath = '../esi-data/json/universe/';
 
   const regionDenyList = [
     //'A821-A', 'J7HZ-F', 'UUA-F4', // unreachable normal regions
@@ -23,7 +23,7 @@ function readJson() {
   ];
   const regionDenyListSubString = '-R00'; // Wormholes
 
-  const regionsData = JSON.parse(fs.readFileSync(dataPath+"regions/regions.json", "utf8"));
+  const regionsData = JSON.parse(fs.readFileSync(`${dataPath}regions/regions.json`, 'utf8'));
   for (const regionData of regionsData) {
     if (
       regionDenyList.indexOf(regionData.name) !== -1 ||
@@ -32,7 +32,7 @@ function readJson() {
       continue;
     }
 
-    const systemsData = fs.readFileSync(dataPath+"systems/" + regionData.name + "-systems.json", "utf8");
+    const systemsData = fs.readFileSync(`${dataPath}systems/${regionData.name}-systems.json`, 'utf8');
     for (const systemData of JSON.parse(systemsData)) {
       let security;
       if (systemData.securityStatus > 0 && systemData.securityStatus < 0.05) {
@@ -54,7 +54,7 @@ function readJson() {
       data.max.y = Math.max(data.max.y, Math.round(systemData.position.z/mod) * -1);
     }
 
-    const stargatesDataJson = fs.readFileSync(dataPath+"stargates/" + regionData.name + "-stargates.json", "utf8" );
+    const stargatesDataJson = fs.readFileSync(`${dataPath}stargates/${regionData.name}-stargates.json`, 'utf8');
     const stargatesData = JSON.parse(stargatesDataJson);
     const uniqueEdges = [];
     for (const stargateData of stargatesData) {
