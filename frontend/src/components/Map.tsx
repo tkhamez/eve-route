@@ -55,6 +55,9 @@ export default function Map(props: Props) {
         setMapError(t('map.json-error'));
       });
     }
+  }, [globalData.domain, mapData, t]);
+
+  useEffect(() => {
     if (!mapConnections) {
       axios.get<ResponseMapConnections>(`${globalData.domain}/api/route/map-connections`).then(r => {
         if (r.data.code) { // error
@@ -65,7 +68,7 @@ export default function Map(props: Props) {
         setMapConnections({ ansiblexes: [], temporary: [], code: null });
       });
     }
-  }, [globalData.domain, mapConnections, mapData, t]);
+  }, [globalData.domain, mapConnections, t]);
 
   /**
    * Configure map and add data.
