@@ -1,27 +1,27 @@
 package net.tkhamez.everoute.routes
 
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.call
-import io.ktor.auth.OAuthAccessTokenResponse
-import io.ktor.auth.authenticate
-import io.ktor.auth.authentication
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import com.auth0.jwk.UrlJwkProvider
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.interfaces.DecodedJWT
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.http.*
 import io.ktor.locations.*
-import io.ktor.request.path
-import io.ktor.response.respond
-import io.ktor.response.respondRedirect
-import io.ktor.response.respondText
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.sessions.get
-import io.ktor.sessions.sessions
-import io.ktor.sessions.set
-import net.tkhamez.everoute.HttpRequest
+import io.ktor.sessions.*
 import net.tkhamez.everoute.EsiToken
+import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.Login
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.gson
+import org.slf4j.Logger
+import java.net.URL
+import java.security.interfaces.ECPublicKey
+import java.security.interfaces.RSAPublicKey
+import java.util.*
 
 @KtorExperimentalLocationsAPI
 fun Route.authentication(config: Config) {
@@ -62,7 +62,8 @@ fun Route.authentication(config: Config) {
         route("/api/auth/login") {
             handle {
                 val session = call.sessions.get<Session>() ?: Session()
-                val httpRequest = HttpRequest(config, call.application.environment.log)
+                val log = call.application.environment.log
+                val httpRequest = HttpRequest(config, log)
 
                 val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
                 if (principal == null) {
@@ -71,19 +72,14 @@ fun Route.authentication(config: Config) {
                     return@handle
                 }
 
-                val esiVerify = httpRequest.request<EsiVerify>(
-                    config.verifyUrl,
-                    HttpMethod.Get,
-                    null,
-                    principal.accessToken
-                )
-                if (esiVerify == null) {
+                val tokenVerify = verify(principal.accessToken, config, log)
+                if (tokenVerify == null) {
                     call.sessions.set(session.copy(loginResult = ResponseCodes.LoginEsiErrorVerify))
                     call.respondRedirect("/")
                     return@handle
                 }
 
-                val character = getCharacter(esiVerify, config, httpRequest)
+                val character = getCharacter(tokenVerify, config, httpRequest)
                 if (character == null) {
                     call.sessions.set(session.copy(loginResult = getCharacterResult))
                 } else {
@@ -91,8 +87,7 @@ fun Route.authentication(config: Config) {
                         esiToken = EsiToken.Data(
                             accessToken = principal.accessToken,
                             refreshToken = principal.refreshToken.toString(),
-                            expiresOn = esiVerify.ExpiresOn,
-                            scopes = esiVerify.Scopes
+                            expiresOn = tokenVerify.exp.toLong(),
                         ),
                         eveCharacter = character
                     ))
@@ -131,14 +126,47 @@ fun Route.authentication(config: Config) {
     }
 }
 
+private fun verify(token: String?, config: Config, log: Logger): TokenVerify? {
+    val jwt = JWT.decode(token)
+    val jwkProvider = UrlJwkProvider(URL(config.keySetUrl))
+    val jwk = jwkProvider.get(jwt.keyId)
+
+    val algorithm = when (jwk.algorithm) {
+        "RS256" -> {
+            val publicKey = jwk.publicKey as? RSAPublicKey
+            Algorithm.RSA256(publicKey, null)
+        }
+        "ES256" -> {
+            val publicKey = jwk.publicKey as? ECPublicKey
+            Algorithm.ECDSA256(publicKey, null)
+        }
+        else -> null
+    } ?: return null
+
+    val verifier = JWT.require(algorithm) // signature
+        .withIssuer(config.issuer) // iss
+        .build()
+    val decoded: DecodedJWT
+    try {
+        decoded = verifier.verify(token)
+    } catch(e: Exception) {
+        log.info(e.message)
+        return null
+    }
+
+    val json = String(Base64.getDecoder().decode(decoded.payload))
+    return gson.fromJson(json, TokenVerify::class.java)
+}
+
 private var getCharacterResult: ResponseCodes? = null
 
-private suspend fun getCharacter(esiVerify: EsiVerify, config: Config, httpRequest: HttpRequest): EveCharacter? {
+private suspend fun getCharacter(tokenVerify: TokenVerify, config: Config, httpRequest: HttpRequest): EveCharacter? {
     var eveCharacter: EveCharacter? = null
+    val characterId = tokenVerify.sub.replace("CHARACTER:EVE:", "").toInt()
 
     val esiAffiliation = httpRequest.post<Array<EsiAffiliation>>(
         "latest/characters/affiliation/?datasource=${config.esiDatasource}",
-        "[${esiVerify.CharacterID}]"
+        "[$characterId]"
     )
     val allianceId = esiAffiliation?.get(0)?.alliance_id
 
@@ -149,11 +177,11 @@ private suspend fun getCharacter(esiVerify: EsiVerify, config: Config, httpReque
     } else {
         val alliance = httpRequest.get<EsiAlliance>(
             "latest/alliances/$allianceId/?datasource=${config.esiDatasource}",
-            "[${esiVerify.CharacterID}]"
+            "[$characterId]"
         )
         eveCharacter = EveCharacter(
-            esiVerify.CharacterID,
-            esiVerify.CharacterName,
+            characterId,
+            tokenVerify.name,
             allianceId,
             alliance?.name ?: "",
             alliance?.ticker ?: "",

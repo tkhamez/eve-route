@@ -11,6 +11,18 @@ data class EsiVerify(
     val Scopes: String
 )
 
+data class TokenVerify(
+    //val scp: List<String>,
+    //val jti: String,
+    //val kid: String,
+    val sub: String,
+    //val azp: String,
+    val name: String,
+    //val owner: String,
+    val exp: String,
+    //val iss: String,
+)
+
 data class EsiAffiliation(
     val alliance_id: Int,
     val character_id: Int,

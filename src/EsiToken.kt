@@ -11,8 +11,6 @@ import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.EsiRefreshToken
 import net.tkhamez.everoute.data.Session
 import org.slf4j.Logger
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class EsiToken(private val config: Config, private val call: ApplicationCall) {
@@ -21,8 +19,7 @@ class EsiToken(private val config: Config, private val call: ApplicationCall) {
     data class Data(
         val refreshToken: String,
         var accessToken: String,
-        var expiresOn: String,
-        var scopes: String
+        var expiresOn: Long, // time in seconds
     )
 
     /**
@@ -41,11 +38,7 @@ class EsiToken(private val config: Config, private val call: ApplicationCall) {
     }
 
     private suspend fun getToken(esiToken: Data): Data {
-        val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        val df: DateFormat = SimpleDateFormat(dateFormat)
-        df.timeZone = TimeZone.getTimeZone("UTC")
-
-        val expiresOn = df.parse(esiToken.expiresOn)
+        val expiresOn = Date(esiToken.expiresOn * 1000)
         val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
         var token: EsiRefreshToken? = null
@@ -56,7 +49,7 @@ class EsiToken(private val config: Config, private val call: ApplicationCall) {
         if (token != null) {
             val newExpiresOn = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             newExpiresOn.add(Calendar.SECOND, token.expires_in)
-            esiToken.expiresOn = df.format(newExpiresOn.time)
+            esiToken.expiresOn = newExpiresOn.time.time / 1000
             esiToken.accessToken = token.access_token
         }
 
