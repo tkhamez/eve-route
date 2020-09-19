@@ -8,17 +8,20 @@
     <meta name="description"
           content="A route planner for EVE Online that supports Ansiblex jump gates and wormhole connections." />
     <meta name="keywords" content="EVE, route, planner, Ansiblex" />
-    <title>EVE Route</title>
+    <title>EVE Route Planner</title>
   </head>
   <body dir="ltr">
+    <h1 id="headline">A route planner for EVE Online that supports Ansiblex jump gates and wormhole connections.</h1>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="outdatedBrowser">
+    <div id="outdatedBrowser" style="display: none;">
       You are using an <strong>outdated</strong> browser. Please
       <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
       to improve your experience and security.
     </div>
     <script type="text/javascript">
+      document.getElementById('outdatedBrowser').style.display = 'block';
       const supported = () => function () {};
+      document.getElementById('headline').remove();
       document.getElementById('outdatedBrowser').remove();
     </script>
     <div id="root"></div>
