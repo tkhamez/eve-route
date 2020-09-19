@@ -72,7 +72,7 @@ fun Route.gates(config: Config) {
             response.param = esiSearchStructure.structure.size.toString()
 
             // Set update date now to prevent a second parallel update.
-            mongo.allianceUpdate(MongoAlliance(allianceId, Date()))
+            mongo.allianceUpdate(MongoAlliance(id = allianceId, updated = Date()))
 
             // fetch all gates in the background
             launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log) }
@@ -126,9 +126,9 @@ private suspend fun fetchAndStoreGates(
             fetched ++
             val ansiblex = MongoAnsiblex(
                 id = id,
+                allianceId = allianceId,
                 name = gate.name,
                 solarSystemId = gate.solar_system_id,
-                allianceId = allianceId
             )
             gates.add(ansiblex)
             mongo.gateStore(ansiblex, allianceId)

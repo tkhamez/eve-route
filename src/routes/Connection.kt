@@ -44,7 +44,12 @@ fun Route.connection(config: Config) {
         }
 
         val connection = MongoTemporaryConnection(
-            system1.id, system1.name, system2.id, system2.name, characterId, Date()
+            system1Id = system1.id,
+            system2Id = system2.id,
+            characterId = characterId,
+            system1Name = system1.name,
+            system2Name = system2.name,
+            created = Date()
         )
         try {
             Mongo(config.db).temporaryConnectionStore(connection)
@@ -60,10 +65,14 @@ fun Route.connection(config: Config) {
     }
 
     delete("/api/connection/delete/{system1Id}/{system2Id}") {
-        Mongo(config.db).temporaryConnectionDelete(
-            call.parameters["system1Id"].toString().toInt(),
-            call.parameters["system2Id"].toString().toInt()
-        )
+        val characterId = call.sessions.get<Session>()?.eveCharacter?.id
+        if (characterId != null) { // should always be true because of auth intercept
+            Mongo(config.db).temporaryConnectionDelete(
+                call.parameters["system1Id"].toString().toInt(),
+                call.parameters["system2Id"].toString().toInt(),
+                characterId,
+            )
+        }
         call.respondText("", contentType = ContentType.Application.Json)
     }
 

@@ -14,17 +14,22 @@ class Mongo(uri: String) {
     fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
         val gates = mutableListOf<MongoAnsiblex>()
         database.getCollection<MongoAnsiblex>("ansiblex")
-            .find(MongoAnsiblex::allianceId eq allianceId).forEach { gates.add(it) }
+            .find(MongoAnsiblex::allianceId eq allianceId)
+            .forEach { gates.add(it) }
         return gates
     }
 
     fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int) {
         val col = database.getCollection<MongoAnsiblex>("ansiblex")
-        val existingGate = col.findOne(MongoAnsiblex::id eq ansiblex.id, MongoAnsiblex::allianceId eq allianceId)
+        val filter = and(
+            MongoAnsiblex::id eq ansiblex.id,
+            MongoAnsiblex::allianceId eq allianceId
+        )
+        val existingGate = col.findOne(filter)
         if (existingGate == null) {
             col.insertOne(ansiblex)
         } else {
-            col.replaceOne(MongoAnsiblex::_id eq ansiblex._id, ansiblex)
+            col.replaceOne(filter, ansiblex)
         }
     }
 
@@ -53,30 +58,32 @@ class Mongo(uri: String) {
 
     fun temporaryConnectionStore(tempConnection: MongoTemporaryConnection) {
         val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
-
-        val existingConnection = col.findOne(
+        val filter = and(
             MongoTemporaryConnection::system1Id eq tempConnection.system1Id,
-            MongoTemporaryConnection::system2Id eq tempConnection.system2Id
+            MongoTemporaryConnection::system2Id eq tempConnection.system2Id,
+            MongoTemporaryConnection::characterId eq tempConnection.characterId,
         )
-
+        val existingConnection = col.findOne(filter)
         if (existingConnection == null) {
             col.insertOne(tempConnection)
+        } else {
+            col.replaceOne(filter, tempConnection)
         }
     }
 
     fun temporaryConnectionsDeleteAllExpired() {
         val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
-
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.add(Calendar.DAY_OF_YEAR, -2)
         col.deleteMany(MongoTemporaryConnection::created lt calendar.time)
     }
 
-    fun temporaryConnectionDelete(system1Id: Int, system2Id: Int) {
+    fun temporaryConnectionDelete(system1Id: Int, system2Id: Int, characterId: Int) {
         val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
         col.deleteOne(
             MongoTemporaryConnection::system1Id eq system1Id,
-            MongoTemporaryConnection::system2Id eq system2Id
+            MongoTemporaryConnection::system2Id eq system2Id,
+            MongoTemporaryConnection::characterId eq characterId,
         )
     }
 
