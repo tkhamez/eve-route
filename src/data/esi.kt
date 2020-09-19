@@ -11,7 +11,7 @@ data class EsiVerify(
     val Scopes: String
 )
 
-data class TokenVerify(
+data class EsiTokenVerify(
     //val scp: List<String>,
     //val jti: String,
     //val kid: String,

@@ -126,7 +126,7 @@ fun Route.authentication(config: Config) {
     }
 }
 
-private fun verify(token: String?, config: Config, log: Logger): TokenVerify? {
+private fun verify(token: String?, config: Config, log: Logger): EsiTokenVerify? {
     val jwt = JWT.decode(token)
     val jwkProvider = UrlJwkProvider(URL(config.keySetUrl))
     val jwk = jwkProvider.get(jwt.keyId)
@@ -155,12 +155,12 @@ private fun verify(token: String?, config: Config, log: Logger): TokenVerify? {
     }
 
     val json = String(Base64.getDecoder().decode(decoded.payload))
-    return gson.fromJson(json, TokenVerify::class.java)
+    return gson.fromJson(json, EsiTokenVerify::class.java)
 }
 
 private var getCharacterResult: ResponseCodes? = null
 
-private suspend fun getCharacter(tokenVerify: TokenVerify, config: Config, httpRequest: HttpRequest): EveCharacter? {
+private suspend fun getCharacter(tokenVerify: EsiTokenVerify, config: Config, httpRequest: HttpRequest): EveCharacter? {
     var eveCharacter: EveCharacter? = null
     val characterId = tokenVerify.sub.replace("CHARACTER:EVE:", "").toInt()
 
