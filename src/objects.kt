@@ -9,6 +9,9 @@ import io.ktor.client.features.json.GsonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
+import net.tkhamez.everoute.database.DbInterface
+import net.tkhamez.everoute.database.Exposed
+import net.tkhamez.everoute.database.Mongo
 import java.util.*
 
 val httpClient = HttpClient(Apache) {
@@ -24,3 +27,11 @@ val httpClient = HttpClient(Apache) {
 }
 
 val gson: Gson = GsonBuilder().registerTypeAdapter(Date::class.java, GsonUTCDateAdapter()).create()
+
+fun db(uri: String): DbInterface {
+    return if (uri.startsWith("mongodb://") || uri.startsWith("mongodb+srv://")) {
+        Mongo(uri)
+    } else {
+        Exposed(uri)
+    }
+}

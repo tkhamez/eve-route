@@ -33,9 +33,9 @@ Set the Callback URL to https://your.domain.tld/api/auth/login
 
 ### Database
 
-The app needs a MongoDB database.
+The app needs a MongoDB, PostgreSQL, MySQL, MariaDB, SQLite or H2 (embedded mode) database.
 
-You can use the included docker-compose file to create a server and provide a web-based GUI:
+You can use the included docker-compose file to create a MongoDB server and provide a web-based GUI:
 ```shell script
 docker-compose up
 ```
@@ -84,6 +84,13 @@ export EVE_ROUTE_OAUTH_ISSUER=login.eveonline.com
 export EVE_ROUTE_ESI_DOMAIN=https://esi.evetech.net
 export EVE_ROUTE_ESI_DATASOURCE=tranquility
 ```
+
+Example connection strings for other databases: 
+- jdbc:postgresql://user:pass@localhost:5432/db
+- jdbc:mysql://user:pass@localhost/db?serverTimezone=UTC
+- jdbc:mariadb://user:pass@localhost/db
+- jdbc:sqlite:/data/data.db
+- jdbc:h2:./h2file
 
 The CORS domain setting includes http and https.
 

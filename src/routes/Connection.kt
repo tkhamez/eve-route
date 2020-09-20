@@ -8,8 +8,8 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
 import net.tkhamez.everoute.GraphHelper
-import net.tkhamez.everoute.Mongo
 import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.db
 import net.tkhamez.everoute.gson
 import java.util.*
 
@@ -52,7 +52,7 @@ fun Route.connection(config: Config) {
             created = Date()
         )
         try {
-            Mongo(config.db).temporaryConnectionStore(connection)
+            db(config.db).temporaryConnectionStore(connection)
         } catch (e: MongoException) {
             response.code = ResponseCodes.FailedToStoreData
         }
@@ -67,7 +67,7 @@ fun Route.connection(config: Config) {
     delete("/api/connection/delete/{system1Id}/{system2Id}") {
         val characterId = call.sessions.get<Session>()?.eveCharacter?.id
         if (characterId != null) { // should always be true because of auth intercept
-            Mongo(config.db).temporaryConnectionDelete(
+            db(config.db).temporaryConnectionDelete(
                 call.parameters["system1Id"].toString().toInt(),
                 call.parameters["system2Id"].toString().toInt(),
                 characterId,
@@ -86,9 +86,9 @@ fun Route.connection(config: Config) {
             return@get
         }
 
-        val mongo = Mongo(config.db)
-        mongo.temporaryConnectionsDeleteAllExpired()
-        mongo.temporaryConnectionsGet(characterId).forEach {
+        val db = db(config.db)
+        db.temporaryConnectionsDeleteAllExpired()
+        db.temporaryConnectionsGet(characterId).forEach {
             response.temporaryConnections.add(it)
         }
 

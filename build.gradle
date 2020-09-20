@@ -75,6 +75,15 @@ dependencies {
     //compile 'org.litote.kmongo:kmongo-coroutine:4.0.3'
     //compile 'org.litote.kmongo:kmongo-rxjava2:4.0.3'
 
+    implementation "org.jetbrains.exposed:exposed-core:0.27.1"
+    implementation "org.jetbrains.exposed:exposed-jdbc:0.27.1"
+    implementation "org.jetbrains.exposed:exposed-java-time:0.27.1"
+    implementation 'org.postgresql:postgresql:42.2.16'
+    implementation "mysql:mysql-connector-java:8.0.21"
+    implementation "org.mariadb.jdbc:mariadb-java-client:2.6.2"
+    implementation "org.xerial:sqlite-jdbc:3.32.3.2"
+    implementation "com.h2database:h2:1.4.200"
+
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
 
     implementation "org.jetbrains.kotlin:kotlin-script-runtime:$kotlin_version"

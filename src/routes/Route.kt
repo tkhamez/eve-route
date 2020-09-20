@@ -53,9 +53,9 @@ fun Route.route(config: Config) {
             return@get
         }
 
-        val mongo = Mongo(config.db)
-        val gates = mongo.gatesGet(allianceId)
-        val tempConnections = mongo.temporaryConnectionsGet(characterId)
+        val db = db(config.db)
+        val gates = db.gatesGet(allianceId)
+        val tempConnections = db.temporaryConnectionsGet(characterId)
 
         val graphHelper = GraphHelper()
 
@@ -158,10 +158,10 @@ fun Route.route(config: Config) {
             return@get
         }
 
-        val mongo = Mongo(config.db)
-        val gates = mongo.gatesGet(allianceId)
-        mongo.temporaryConnectionsDeleteAllExpired()
-        val tempConnections = mongo.temporaryConnectionsGet(characterId)
+        val db = db(config.db)
+        val gates = db.gatesGet(allianceId)
+        db.temporaryConnectionsDeleteAllExpired()
+        val tempConnections = db.temporaryConnectionsGet(characterId)
         val avoidedSystems = session.avoidedSystems ?: mutableSetOf()
         val removedConnections = session.removedConnections ?: mutableSetOf()
         response.route = EveRoute(gates, tempConnections, avoidedSystems, removedConnections).find(

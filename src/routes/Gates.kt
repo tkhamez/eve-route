@@ -10,8 +10,8 @@ import io.ktor.sessions.sessions
 import kotlinx.coroutines.launch
 import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
-import net.tkhamez.everoute.Mongo
 import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.db
 import net.tkhamez.everoute.gson
 import org.slf4j.Logger
 import java.util.*
@@ -27,7 +27,7 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        Mongo(config.db).gatesGet(allianceId).forEach { response.ansiblexes.add(it) }
+        db(config.db).gatesGet(allianceId).forEach { response.ansiblexes.add(it) }
 
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
@@ -52,8 +52,8 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        val mongo = Mongo(config.db)
-        val alliance = mongo.allianceGet(allianceId)
+        val db = db(config.db)
+        val alliance = db.allianceGet(allianceId)
         if (alliance?.updated != null && alliance.updated.time.plus((60 * 60 * 1000)) > Date().time) {
             response.code = ResponseCodes.AlreadyUpdated
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
@@ -72,7 +72,7 @@ fun Route.gates(config: Config) {
             response.param = esiSearchStructure.structure.size.toString()
 
             // Set update date now to prevent a second parallel update.
-            mongo.allianceUpdate(MongoAlliance(id = allianceId, updated = Date()))
+            db.allianceUpdate(MongoAlliance(id = allianceId, updated = Date()))
 
             // fetch all gates in the background
             launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log) }
@@ -91,8 +91,7 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        val mongo = Mongo(config.db)
-        val alliance = mongo.allianceGet(allianceId)
+        val alliance = db(config.db).allianceGet(allianceId)
         response.allianceId = alliance?.id
         response.updated = alliance?.updated
 
@@ -108,7 +107,7 @@ private suspend fun fetchAndStoreGates(
     log: Logger
 ) {
     val httpRequest = HttpRequest(config, log)
-    val mongo = Mongo(config.db)
+    val db = db(config.db)
 
     val gates = mutableListOf<MongoAnsiblex>()
     val failed = mutableListOf<Long>()
@@ -131,11 +130,11 @@ private suspend fun fetchAndStoreGates(
                 solarSystemId = gate.solar_system_id,
             )
             gates.add(ansiblex)
-            mongo.gateStore(ansiblex, allianceId)
+            db.gateStore(ansiblex, allianceId)
         }
     }
 
-    mongo.gatesRemoveOther(gates, allianceId)
+    db.gatesRemoveOther(gates, allianceId)
 
     log.info("Fetched and stored $fetched Ansiblexes.")
     if (failed.size > 0) {
