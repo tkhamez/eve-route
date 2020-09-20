@@ -3,8 +3,9 @@
 
 yyyy-mm-dd
 
-- Fixed some MongoDB operations.
 - [#3][i3] Added support for PostgreSQL, MySQL, MariaDB, SQLite and H2 (embedded mode) databases.
+- User is logged off from the frontend if the backend responds with a "Forbidden" error.
+- Fixed some MongoDB operations.
 
 [i3]: https://github.com/tkhamez/eve-route/issues/3
 

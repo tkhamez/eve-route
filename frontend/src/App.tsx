@@ -89,7 +89,17 @@ class App extends React.Component<Props, AppState> {
     this.fetchUser = this.fetchUser.bind(this);
     this.logoutUser = this.logoutUser.bind(this);
 
+    // setup axios
     axios.defaults.withCredentials = true;
+    const app = this;
+    axios.interceptors.response.use((response) => {
+      return response;
+    }, (error) => {
+      if (error.response.status === 403) {
+        app.logoutUser();
+      }
+      return Promise.reject(error);
+    });
   }
 
   componentDidMount() {
