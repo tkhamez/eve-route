@@ -132,7 +132,7 @@ IntelliJ Configuration (from Kotlin template):
 ./gradlew buildGraph
 ./gradlew shadowJar
 
-java -jar build/libs/eve-route-0.1.0.jar
+java -jar build/libs/eve-route-0.2.0.jar
 ```
 
 #### WAR (Servlet Container)
@@ -140,7 +140,7 @@ java -jar build/libs/eve-route-0.1.0.jar
 ```shell script
 ./gradlew war
 
-cd build/libs/ && jar -xvf eve-route-0.1.0.war
+cd build/libs/ && jar -xvf eve-route-0.2.0.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
 
