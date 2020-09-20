@@ -83,6 +83,7 @@ export default function AddConnection() {
         fetch();
       }
     }).catch(() => {
+      setSubmitDisabled(false);
       setSubmitResult(t('app.error'));
     });
   };
