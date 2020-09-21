@@ -11,14 +11,16 @@ import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.routing.Route
 import io.ktor.sessions.*
+import net.tkhamez.everoute.*
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.HttpRequest
-import net.tkhamez.everoute.Login
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.gson
 import org.slf4j.Logger
 import java.net.URL
+import java.security.SecureRandom
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.util.*
@@ -28,8 +30,13 @@ fun Route.authentication(config: Config) {
 
     /**
      * Intercept all non-public routes below /api/ and return 403 if client is not logged in.
+     *
+     * Check CSRF token of all POST, PUT and DELETE request.
      */
     intercept(ApplicationCallPipeline.Features) {
+        val session = call.sessions.get<Session>()
+
+        // check login
         val path = call.request.path()
         val publicRoutes = listOf(
             "/api/auth/login",
@@ -43,12 +50,18 @@ fun Route.authentication(config: Config) {
             "/api/auth/login/111",
             "/api/auth/result",
         )
-        if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1) {
-            val session = call.sessions.get<Session>()
-            if (session?.eveCharacter == null) {
-                call.respond(HttpStatusCode.Forbidden, "")
-                return@intercept finish()
-            }
+        if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1 && session?.eveCharacter == null) {
+            call.respond(HttpStatusCode.Unauthorized, "")
+            return@intercept finish()
+        }
+
+        // check CSRF token
+        if (
+            call.request.httpMethod in arrayOf(HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete) &&
+            (session?.csrfToken == null || session.csrfToken != call.request.header(config.csrfHeaderKey))
+        ) {
+            call.respond(HttpStatusCode.Forbidden, "")
+            return@intercept finish()
         }
     }
 
@@ -83,14 +96,17 @@ fun Route.authentication(config: Config) {
                 if (character == null) {
                     call.sessions.set(session.copy(loginResult = getCharacterResult))
                 } else {
-                    call.sessions.set(session.copy(
-                        esiToken = EsiToken.Data(
-                            accessToken = principal.accessToken,
-                            refreshToken = principal.refreshToken.toString(),
-                            expiresOn = tokenVerify.exp.toLong(),
-                        ),
-                        eveCharacter = character
-                    ))
+                    call.sessions.set(
+                        session.copy(
+                            esiToken = EsiToken.Data(
+                                accessToken = principal.accessToken,
+                                refreshToken = principal.refreshToken.toString(),
+                                expiresOn = tokenVerify.exp.toLong(),
+                            ),
+                            eveCharacter = character,
+                            csrfToken = randomString(),
+                        )
+                    )
                 }
 
                 call.respondRedirect("/")
@@ -110,11 +126,13 @@ fun Route.authentication(config: Config) {
     get("/api/auth/user") {
         val session = call.sessions.get<Session>()
         var data: ResponseAuthUser? = null
-        if (session?.eveCharacter != null) {
+        if (session?.eveCharacter != null && session.csrfToken != null) {
             data = ResponseAuthUser(
-                session.eveCharacter.name,
-                session.eveCharacter.allianceName,
-                session.eveCharacter.allianceTicker,
+                name = session.eveCharacter.name,
+                allianceName = session.eveCharacter.allianceName,
+                allianceTicker = session.eveCharacter.allianceTicker,
+                csrfHeaderKey = config.csrfHeaderKey,
+                csrfToken = session.csrfToken,
             )
         }
         call.respondText(gson.toJson(data), contentType = ContentType.Application.Json)
@@ -149,7 +167,7 @@ private fun verify(token: String?, config: Config, log: Logger): EsiTokenVerify?
     val decoded: DecodedJWT
     try {
         decoded = verifier.verify(token)
-    } catch(e: Exception) {
+    } catch (e: Exception) {
         log.info(e.message)
         return null
     }
@@ -189,4 +207,12 @@ private suspend fun getCharacter(tokenVerify: EsiTokenVerify, config: Config, ht
     }
 
     return eveCharacter
+}
+
+private fun randomString(): String {
+    val random = SecureRandom()
+    val bytes = ByteArray(47)
+    random.nextBytes(bytes)
+
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
 }

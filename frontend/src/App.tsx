@@ -88,21 +88,10 @@ class App extends React.Component<Props, AppState> {
     this.logout = this.logout.bind(this);
     this.fetchUser = this.fetchUser.bind(this);
     this.logoutUser = this.logoutUser.bind(this);
-
-    // setup axios
-    axios.defaults.withCredentials = true;
-    const app = this;
-    axios.interceptors.response.use((response) => {
-      return response;
-    }, (error) => {
-      if (error.response.status === 403) {
-        app.logoutUser();
-      }
-      return Promise.reject(error);
-    });
   }
 
   componentDidMount() {
+    setupAxios(this);
     setInterval(this.fetchUser, 1000 * 60 * 10); // every 10 minutes
     this.fetchUser();
   }
@@ -115,12 +104,17 @@ class App extends React.Component<Props, AppState> {
 
   fetchUser() {
     axios.get<ResponseAuthUser>(this.domain+'/api/auth/user').then(response => {
+      axios.defaults.headers.post[response.data.csrfHeaderKey] = response.data.csrfToken;
+      axios.defaults.headers.put[response.data.csrfHeaderKey] = response.data.csrfToken;
+      axios.defaults.headers.delete[response.data.csrfHeaderKey] = response.data.csrfToken;
       this.setState({
         loaded: true,
         user: response.data,
       });
-    }).catch(() => { // 403
-      this.logoutUser();
+    }).catch((e) => {
+      if (e.response && e.response.status === 401) {
+        this.logoutUser();
+      }
     });
   }
 
@@ -137,3 +131,15 @@ class App extends React.Component<Props, AppState> {
 }
 
 export default withTranslation()(withStyles(styles)(App));
+
+const setupAxios = (app: App) => {
+  axios.defaults.withCredentials = true;
+  axios.interceptors.response.use((response) => {
+    return response;
+  }, (error) => {
+    if (error.response && error.response.status === 401) {
+      app.logoutUser();
+    }
+    return Promise.reject(error);
+  });
+};

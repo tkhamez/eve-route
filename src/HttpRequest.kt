@@ -35,7 +35,7 @@ class HttpRequest(val config: Config, val log: Logger) {
                 if (authToken != null) header("Authorization", "$authType $authToken")
                 if (requestBody != null) body = requestBody
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.error(e.message)
         }
         return result

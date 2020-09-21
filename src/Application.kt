@@ -47,18 +47,18 @@ fun main() {
 fun Application.module() {
 
     val config = Config(
-        environment.config.property("app.db").getString(),
-        environment.config.property("app.clientId").getString(),
-        environment.config.property("app.clientSecret").getString(),
-        environment.config.property("app.callback").getString(),
-        environment.config.property("app.authorizeUrl").getString(),
-        environment.config.property("app.accessTokenUrl").getString(),
-        environment.config.property("app.keySetUrl").getString(),
-        environment.config.property("app.issuer").getString(),
-        environment.config.property("app.esiDomain").getString(),
-        environment.config.property("app.esiDatasource").getString(),
-        environment.config.property("app.corsDomain").getString(),
-        environment.config.property("app.allianceAllowlist").getString(),
+        db = environment.config.property("app.db").getString(),
+        clientId = environment.config.property("app.clientId").getString(),
+        clientSecret = environment.config.property("app.clientSecret").getString(),
+        callback = environment.config.property("app.callback").getString(),
+        authorizeUrl = environment.config.property("app.authorizeUrl").getString(),
+        accessTokenUrl = environment.config.property("app.accessTokenUrl").getString(),
+        keySetUrl = environment.config.property("app.keySetUrl").getString(),
+        issuer = environment.config.property("app.issuer").getString(),
+        esiDomain = environment.config.property("app.esiDomain").getString(),
+        esiDatasource = environment.config.property("app.esiDatasource").getString(),
+        cors = environment.config.property("app.corsDomain").getString(),
+        alliances = environment.config.property("app.allianceAllowlist").getString(),
     )
 
     // Remove all those DEBUG messages from the console
@@ -143,6 +143,7 @@ fun Application.module() {
             host(config.cors, listOf("http", "https"))
             allowCredentials = true
             allowNonSimpleContentTypes = true
+            header(config.csrfHeaderKey)
         }
     }
 

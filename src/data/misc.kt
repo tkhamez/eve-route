@@ -19,6 +19,7 @@ data class Config(
     val esiDatasource: String,
     val cors: String,
     val alliances: String,
+    val csrfHeaderKey: String = "X-CSRF-Token",
 )
 
 data class Session(
@@ -27,6 +28,7 @@ data class Session(
     val eveCharacter: EveCharacter? = null,
     val avoidedSystems: MutableSet<Int>? = null,
     val removedConnections: MutableSet<ConnectedSystems>? = null,
+    val csrfToken: String? = null,
 )
 
 data class EveCharacter(

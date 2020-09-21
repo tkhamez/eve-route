@@ -1,4 +1,10 @@
 
+## 0.3.0
+
+yyyy-mm-dd
+
+- Added CSRF protection.
+
 ## 0.2.0
 
 2020-09-20
