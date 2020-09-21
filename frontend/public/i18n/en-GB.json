@@ -34,8 +34,7 @@
   },
   "footer": {
     "created-by": "Created by <1>Tian Khamez</1>",
-    "donate": "Donate ISK if you like it",
-    "donate2": "Donate <1>Ƶ</1> if you like it",
+    "donate": "Donate <1>Ƶ</1> if you like it",
     "ccp": [
       "\"EVE\", \"EVE Online\", \"CCP\" and all related logos and images are ",
       "trademarks or registered trademarks of <1>CCP hf</1>."
@@ -86,7 +85,7 @@
       "Choose systems for a wormhole connection or missing Ansiblexes. ",
       "The connection is temporarily added <1>for your character only</1> and removed after 2 days."
     ],
-    "your-temporary-connections": "Your connections",
+    "your-connections": "Your connections",
     "expires": "Expires",
     "delete": "Delete"
   },

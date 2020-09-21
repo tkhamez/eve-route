@@ -14,7 +14,7 @@ export default function Footer() {
           </Trans>
           {' '}|{' '}
           <FavoriteBorderOutlinedIcon fontSize="inherit" style={{position: 'relative', top: '2px'}} />{' '}
-          <Trans i18nKey="footer.donate2">%<span title="ISK">%</span>%</Trans>
+          <Trans i18nKey="footer.donate">%<span title="ISK">%</span>%</Trans>
           {' '}|{' '}
           <Link className="no-wrap" color="textPrimary" href="https://github.com/tkhamez/eve-route"
                 target="_blank" rel="noopener noreferrer">

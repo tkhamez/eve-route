@@ -126,7 +126,7 @@ export default function AddConnection() {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6" >
-            {t('addConnection.your-temporary-connections')}
+            {t('addConnection.your-connections')}
           </Typography>
           {fetchAllError}
         </Grid>
