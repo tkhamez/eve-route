@@ -14,9 +14,8 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
 import io.ktor.auth.*
-import io.ktor.features.CORS
+import io.ktor.features.*
 //import kotlinx.coroutines.*
-import io.ktor.features.StatusPages
 import io.ktor.util.KtorExperimentalAPI
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.Session
@@ -57,6 +56,7 @@ fun Application.module() {
         issuer = environment.config.property("app.issuer").getString(),
         esiDomain = environment.config.property("app.esiDomain").getString(),
         esiDatasource = environment.config.property("app.esiDatasource").getString(),
+        secure = environment.config.property("app.secure").getString(),
         cors = environment.config.property("app.corsDomain").getString(),
         alliances = environment.config.property("app.allianceAllowlist").getString(),
     )
@@ -85,6 +85,9 @@ fun Application.module() {
         )
         cookie<Session>("EVE_ROUTE_SESSION", storage) {
             cookie.extensions["SameSite"] = "lax"
+            if (config.secure == "1") {
+                cookie.extensions["secure"] = "true"
+            }
             cookie.path = "/"
             serializer = GsonSessionSerializer(Session::class.java)
         }

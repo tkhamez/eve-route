@@ -11,11 +11,10 @@ import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.routing.Route
 import io.ktor.sessions.*
-import net.tkhamez.everoute.*
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.HttpRequest
+import net.tkhamez.everoute.Login
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.gson
 import org.slf4j.Logger
@@ -34,7 +33,10 @@ fun Route.authentication(config: Config) {
      * Check CSRF token of all POST, PUT and DELETE request.
      */
     intercept(ApplicationCallPipeline.Features) {
-        val session = call.sessions.get<Session>()
+        val session = call.sessions.get<Session>() ?: Session()
+        if (session.started == null) { // first request
+            call.sessions.set(session.copy(started = Date().time))
+        }
 
         // check login
         val path = call.request.path()
@@ -50,7 +52,7 @@ fun Route.authentication(config: Config) {
             "/api/auth/login/111",
             "/api/auth/result",
         )
-        if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1 && session?.eveCharacter == null) {
+        if (path.indexOf("/api/") == 0 && publicRoutes.indexOf(path) == -1 && session.eveCharacter == null) {
             call.respond(HttpStatusCode.Unauthorized, "")
             return@intercept finish()
         }
@@ -58,7 +60,7 @@ fun Route.authentication(config: Config) {
         // check CSRF token
         if (
             call.request.httpMethod in arrayOf(HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete) &&
-            (session?.csrfToken == null || session.csrfToken != call.request.header(config.csrfHeaderKey))
+            (session.csrfToken == null || session.csrfToken != call.request.header(config.csrfHeaderKey))
         ) {
             call.respond(HttpStatusCode.Forbidden, "")
             return@intercept finish()

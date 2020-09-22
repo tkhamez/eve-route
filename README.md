@@ -74,7 +74,8 @@ export EVE_ROUTE_CLIENT_ID=ab12
 export EVE_ROUTE_CLIENT_SECRET=12ab
 export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
 
-# the following are optional:
+# the following are optional (default values are defined in resources/application.conf):
+export EVE_ROUTE_SECURE=1
 export EVE_ROUTE_CORS_DOMAIN=localhost:3000
 export EVE_ROUTE_ALLIANCE_ALLOWLIST=99003214,99010079
 export EVE_ROUTE_OAUTH_AUTHORIZE=https://login.eveonline.com/v2/oauth/authorize
@@ -93,6 +94,8 @@ Example connection strings for other databases:
 - jdbc:h2:./h2file
 
 The CORS domain setting includes http and https.
+
+EVE_ROUTE_SECURE=1 enables the secure flag for the session cookie.
 
 #### Generate Graph from ESI Data
 

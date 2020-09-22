@@ -17,12 +17,14 @@ data class Config(
     val issuer: String,
     val esiDomain: String,
     val esiDatasource: String,
+    val secure: String,
     val cors: String,
     val alliances: String,
     val csrfHeaderKey: String = "X-CSRF-Token",
 )
 
 data class Session(
+    val started: Long? = null,
     val loginResult: ResponseCodes? = null,
     val esiToken: EsiToken.Data? = null,
     val eveCharacter: EveCharacter? = null,
