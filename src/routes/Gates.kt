@@ -3,8 +3,7 @@ package net.tkhamez.everoute.routes
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
-import io.ktor.routing.Route
-import io.ktor.routing.get
+import io.ktor.routing.*
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import kotlinx.coroutines.launch
@@ -32,7 +31,7 @@ fun Route.gates(config: Config) {
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
-    get("/api/gates/search/{term}") {
+    post("/api/gates/search/{term}") {
         val log = call.application.environment.log
         val response = ResponseMessage()
 
@@ -40,7 +39,7 @@ fun Route.gates(config: Config) {
         if (searchTerm != "»") {
             response.code = ResponseCodes.WrongSearchTerm
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
-            return@get
+            return@post
         }
 
         val characterId = call.sessions.get<Session>()?.eveCharacter?.id
@@ -49,7 +48,7 @@ fun Route.gates(config: Config) {
         if (accessToken == null || characterId == null || allianceId == null) {
             response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
-            return@get
+            return@post
         }
 
         val db = db(config.db)
@@ -57,7 +56,7 @@ fun Route.gates(config: Config) {
         if (alliance?.updated != null && alliance.updated.time.plus((60 * 60 * 1000)) > Date().time) {
             response.code = ResponseCodes.AlreadyUpdated
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
-            return@get
+            return@post
         }
 
         // Find Ansiblexes with docking (deposit fuel) permission, needs scope esi-search.search_structures.v1

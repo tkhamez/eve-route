@@ -54,7 +54,7 @@ export default function UpdateGates() {
     }
     setSearchResult('');
     setSubmitDisabled(true);
-    axios.get<ResponseMessage>(`${globalData.domain}/api/gates/search/${searchTerm}`).then(response => {
+    axios.post<ResponseMessage>(`${globalData.domain}/api/gates/search/${searchTerm}`).then(response => {
       setSearchResult(t(`responseCode.${response.data.code}`, {number: response.data.param}));
       fetchGatesUpdated();
     }).catch(() => {
