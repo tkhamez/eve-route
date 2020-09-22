@@ -19,7 +19,7 @@ data class Config(
     val esiDatasource: String,
     val secure: String,
     val cors: String,
-    val alliances: String,
+    val alliances: List<String>,
     val csrfHeaderKey: String = "X-CSRF-Token",
 )
 

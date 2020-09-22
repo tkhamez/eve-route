@@ -58,7 +58,10 @@ fun Application.module() {
         esiDatasource = environment.config.property("app.esiDatasource").getString(),
         secure = environment.config.property("app.secure").getString(),
         cors = environment.config.property("app.corsDomain").getString(),
-        alliances = environment.config.property("app.allianceAllowlist").getString(),
+        alliances =
+            if (environment.config.property("app.allianceAllowlist").getString().isNotEmpty())
+                environment.config.property("app.allianceAllowlist").getString().split(',')
+            else listOf()
     )
 
     // Remove all those DEBUG messages from the console
