@@ -50,6 +50,7 @@ Requires [Node.js](https://nodejs.org/) 12 and [Yarn](https://yarnpkg.com/).
 
 ```shell script
 cd frontend
+yarn install
 ```
 
 Dev: build map data and start server:
