@@ -7,6 +7,7 @@ https://eve-route.herokuapp.com
 <!-- toc -->
 
 - [Setup](#setup)
+  * [Git](#git)
   * [EVE App](#eve-app)
   * [Database](#database)
 - [Build and Run](#build-and-run)
@@ -141,7 +142,6 @@ IntelliJ Configuration (from Kotlin template):
 #### Fat JAR
 
 ```shell script
-./gradlew buildGraph
 ./gradlew shadowJar
 
 java -jar build/libs/eve-route-0.2.0.jar
