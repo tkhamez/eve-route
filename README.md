@@ -21,6 +21,14 @@ https://eve-route.herokuapp.com
 
 ## Setup
 
+### Git
+
+```shell script
+git clone https://github.com/tkhamez/eve-route.git
+cd eve-route
+git submodule update --init
+```
+
 ### EVE App
 
 Create an EVE app at https://developers.eveonline.com with the following scopes
