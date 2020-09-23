@@ -1,9 +1,12 @@
 
-## 0.3.0
+## next
 
 yyyy-mm-dd
 
 - Added CSRF protection.
+- Added option to enable the "secure" flag for the session cookie.
+- Fixed alliance check during login.
+- Some cleanups, library updates and improved documentation.
 
 ## 0.2.0
 
