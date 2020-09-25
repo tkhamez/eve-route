@@ -58,7 +58,7 @@ const Login = () => {
         <Grid item xs={12}>
           <Box display="flex" flexDirection="column" alignItems="center">
 
-            <Typography className={classes.row} variant="h6">{t('login.description')}</Typography>
+            <Typography className={classes.row} variant="h6" align="center">{t('login.description')}</Typography>
 
             { loginResult &&
               <Typography className={classes.row1} color={"error"}>
@@ -101,7 +101,9 @@ const Login = () => {
                   rel="noopener noreferrer">
               <img src="/eve-sso-login-black-large.png" alt={t('login.log-in')} title={t('login.log-in')}/>
             </Link>
-            <Typography className={classes.row2} variant="body2">{t('login.login-restriction')}</Typography>
+            <Typography className={classes.row2} variant="body2" align="center">
+              {t('login.login-restriction')}
+            </Typography>
 
           </Box>
         </Grid>

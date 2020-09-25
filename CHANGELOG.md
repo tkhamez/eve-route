@@ -8,6 +8,7 @@ yyyy-mm-dd
 - Added option to enable the "secure" flag for the session cookie.
 - More efficient storage of Ansiblex gates in the database.
 - Added database migrations.
+- Small layout improvements.
 - Some cleanups, library updates and improved documentation.
 
 ## 0.2.0

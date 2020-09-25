@@ -52,7 +52,7 @@ export default function Header() {
             <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>
 
             { globalData.user.name &&
-              <div>
+              <div style={{marginLeft: '5px'}}>
                 [
                 {globalData.user.allianceTicker &&
                   <span data-title={globalData.user.allianceName} aria-label={globalData.user.allianceName}>
