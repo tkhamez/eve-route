@@ -64,8 +64,11 @@ fun Application.module() {
             else listOf()
     )
 
-    // Remove all those DEBUG messages from the console
+    // mongodb: Remove all those DEBUG messages from the console
     (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
+
+    // jdbc: run migration
+    db(config.db).migrate()
 
     install(StatusPages) {
         exception<Throwable> { cause ->

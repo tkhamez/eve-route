@@ -70,14 +70,16 @@ dependencies {
     implementation "com.auth0:java-jwt:3.10.3"
     implementation "com.auth0:jwks-rsa:0.13.0"
 
-    implementation 'org.litote.kmongo:kmongo:4.0.3'
-    //implementation 'org.litote.kmongo:kmongo-async:4.0.3'
-    //implementation 'org.litote.kmongo:kmongo-coroutine:4.0.3'
-    //implementation 'org.litote.kmongo:kmongo-rxjava2:4.0.3'
+    implementation "org.litote.kmongo:kmongo:$kmongo_version"
+    //implementation "org.litote.kmongo:kmongo-async:$kmongo_version"
+    //implementation "org.litote.kmongo:kmongo-coroutine:$kmongo_version"
+    //implementation "org.litote.kmongo:kmongo-rxjava2:$kmongo_version"
 
-    implementation "org.jetbrains.exposed:exposed-core:0.27.1"
-    implementation "org.jetbrains.exposed:exposed-jdbc:0.27.1"
-    implementation "org.jetbrains.exposed:exposed-java-time:0.27.1"
+    implementation "org.flywaydb:flyway-core:$flyway_version"
+
+    implementation "org.jetbrains.exposed:exposed-core:$exposed_version"
+    implementation "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
+    implementation "org.jetbrains.exposed:exposed-java-time:$exposed_version"
     implementation 'org.postgresql:postgresql:42.2.16'
     implementation "mysql:mysql-connector-java:8.0.21"
     implementation "org.mariadb.jdbc:mariadb-java-client:2.6.2"

@@ -5,6 +5,8 @@ import net.tkhamez.everoute.data.MongoAnsiblex
 import net.tkhamez.everoute.data.MongoTemporaryConnection
 
 interface DbInterface {
+    fun migrate()
+
     fun gatesGet(allianceId: Int): List<MongoAnsiblex>
 
     fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int)

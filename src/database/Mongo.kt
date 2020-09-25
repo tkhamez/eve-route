@@ -11,6 +11,9 @@ class Mongo(uri: String): DbInterface {
     private val client = KMongo.createClient(uri)
     private val database = client.getDatabase(dbName)
 
+    override fun migrate() {
+    }
+
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
         val gates = mutableListOf<MongoAnsiblex>()
         database.getCollection<MongoAnsiblex>("ansiblex")

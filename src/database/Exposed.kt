@@ -3,9 +3,11 @@ package net.tkhamez.everoute.database
 import net.tkhamez.everoute.data.MongoAlliance
 import net.tkhamez.everoute.data.MongoAnsiblex
 import net.tkhamez.everoute.data.MongoTemporaryConnection
+import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.datetime
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -14,6 +16,10 @@ import java.time.ZoneId
 import java.util.*
 
 class Exposed(uri: String): DbInterface {
+    private var url: String = ""
+    private var user: String = ""
+    private var password: String = ""
+
     object Ansiblex: IntIdTable() {
         val ansiblexId = long("ansiblexId")
         val allianceId = integer("allianceId")
@@ -43,9 +49,6 @@ class Exposed(uri: String): DbInterface {
     }
 
     init {
-        val url: String
-        var user = ""
-        var password = ""
         if (uri.startsWith("jdbc:postgresql:") || uri.startsWith("jdbc:mysql:") || uri.startsWith("jdbc:mariadb:")) {
             // e.g. jdbc:mysql://eve_route:password@localhost:3306/eve_route?serverTimezone=UTC
             val scheme = uri.substring(0, uri.indexOf("://") + 3)
@@ -54,21 +57,44 @@ class Exposed(uri: String): DbInterface {
             val userAndPassword = uri.substring(uri.indexOf("://") + 3, uri.indexOf("@"))
             user = userAndPassword.substring(0, userAndPassword.indexOf(":"))
             password = userAndPassword.substring(userAndPassword.indexOf(":") + 1)
+            user = URLDecoder.decode(user, StandardCharsets.UTF_8.name())
+            password = URLDecoder.decode(password, StandardCharsets.UTF_8.name())
         } else if (uri.startsWith("jdbc:sqlite:") || uri.startsWith("jdbc:h2:")) {
             url = uri
         } else {
             throw Exception("Database not supported.")
         }
 
-        Database.connect(
-            url = url,
-            user = URLDecoder.decode(user, StandardCharsets.UTF_8.name()),
-            password = URLDecoder.decode(password, StandardCharsets.UTF_8.name()),
-        )
+        Database.connect(url = url, user = user, password = password)
+    }
 
-        transaction {
-            SchemaUtils.create(Ansiblex, TemporaryConnection, Alliance)
+    override fun migrate() {
+        //transaction { SchemaUtils.create(Alliance, Ansiblex, TemporaryConnection) }
+
+        var vendor = url.substring(5, url.indexOf(":", 5))
+        if (vendor == "mariadb") {
+            vendor = "mysql"
         }
+        val flyway = Flyway
+            .configure()
+            .dataSource(url, user, password)
+            .locations("db/migration/$vendor")
+            .load()
+
+        // Check if V1 already exists
+        var tablesExist = true
+        transaction {
+            try {
+                TransactionManager.current().exec("SELECT 1 FROM Alliance")
+            } catch (e: Exception) {
+                tablesExist = false
+            }
+        }
+        if (tablesExist) {
+            flyway.baseline()
+        }
+
+        flyway.migrate()
     }
 
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
