@@ -6,9 +6,15 @@ package net.tkhamez.everoute.data
 
 import java.util.Date
 
-data class MongoAnsiblex(
+data class MongoAnsiblexV02(
     val id: Long, // unique together with allianceId
     val allianceId: Int,
+    val name: String,
+    val solarSystemId: Int,
+)
+data class MongoAnsiblex(
+    val id: Long,
+    var alliances: MutableSet<Int> = mutableSetOf(),
     val name: String,
     val solarSystemId: Int,
 )

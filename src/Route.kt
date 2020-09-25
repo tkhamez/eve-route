@@ -125,7 +125,7 @@ class Route(
             val startSystemNode = allNodes[gate.solarSystemId]
             val endSystemNode = allNodes[endSystemId]
             if (startSystemNode != null && endSystemNode != null) { // system can be null if it is avoided
-                if (! isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name)) {
+                if (!isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name)) {
                     startSystemNode.connect(endSystemNode, Waypoint.Type.Ansiblex)
                 }
             }
@@ -141,7 +141,7 @@ class Route(
             val startSystemNode = getNode(connection.system1Id)
             val endSystemNode = getNode(connection.system2Id)
             if (startSystemNode != null && endSystemNode != null) { // system can be null if it is avoided
-                if (! isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name)) {
+                if (!isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name)) {
                     startSystemNode.connect(endSystemNode, Waypoint.Type.Temporary)
                 }
             }

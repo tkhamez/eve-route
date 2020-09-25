@@ -4,6 +4,7 @@ import net.tkhamez.everoute.data.MongoAlliance
 import net.tkhamez.everoute.data.MongoAnsiblex
 import net.tkhamez.everoute.data.MongoTemporaryConnection
 import org.flywaydb.core.Flyway
+import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.datetime
@@ -20,14 +21,23 @@ class Exposed(uri: String): DbInterface {
     private var user: String = ""
     private var password: String = ""
 
-    object Ansiblex: IntIdTable() {
-        val ansiblexId = long("ansiblexId")
-        val allianceId = integer("allianceId")
+    object Ansiblex: IdTable<Long>() {
+        override val id = long("id").entityId()
         val name = varchar("name", 255)
         val solarSystemId = integer("solarSystemId")
-        init {
-            index(true, ansiblexId, allianceId) // unique index
-        }
+        override val primaryKey = PrimaryKey(id, name = "PK_Ansiblex")
+    }
+
+    object Alliance: IdTable<Int>() {
+        override val id = integer("id").entityId()
+        val updated = datetime("updated")
+        override val primaryKey = PrimaryKey(id, name = "PK_Alliance")
+    }
+
+    object AnsiblexAlliance: Table() {
+        val ansiblexId = reference("ansiblexId", Ansiblex)
+        val allianceId = reference("allianceId", Alliance)
+        override val primaryKey = PrimaryKey(ansiblexId, allianceId, name = "PK_AnsiblexAlliance")
     }
 
     object TemporaryConnection: IntIdTable() {
@@ -40,12 +50,6 @@ class Exposed(uri: String): DbInterface {
         init {
             index(true, system1Id, system2Id, characterId)
         }
-    }
-
-    object Alliance: Table() {
-        val id = integer("id")
-        val updated = datetime("updated")
-        override val primaryKey = PrimaryKey(id, name = "PK_Alliance")
     }
 
     init {
@@ -69,7 +73,7 @@ class Exposed(uri: String): DbInterface {
     }
 
     override fun migrate() {
-        //transaction { SchemaUtils.create(Alliance, Ansiblex, TemporaryConnection) }
+        //transaction { SchemaUtils.create(Alliance, Ansiblex, AnsiblexAlliance, TemporaryConnection) }
 
         var vendor = url.substring(5, url.indexOf(":", 5))
         if (vendor == "mariadb") {
@@ -81,16 +85,22 @@ class Exposed(uri: String): DbInterface {
             .locations("db/migration/$vendor")
             .load()
 
-        // Check if V1 already exists
-        var tablesExist = true
+        // Check if V1 from v0.2.0 already exists
+        var tablesAnsiblexExist = true
+        var tablesFlywayExist = true
         transaction {
             try {
-                TransactionManager.current().exec("SELECT 1 FROM Alliance")
+                TransactionManager.current().exec("SELECT 1 FROM Ansiblex")
             } catch (e: Exception) {
-                tablesExist = false
+                tablesAnsiblexExist = false
+            }
+            try {
+                TransactionManager.current().exec("SELECT 1 FROM flyway_schema_history")
+            } catch (e: Exception) {
+                tablesFlywayExist = false
             }
         }
-        if (tablesExist) {
+        if (tablesAnsiblexExist && ! tablesFlywayExist) {
             flyway.baseline()
         }
 
@@ -98,14 +108,18 @@ class Exposed(uri: String): DbInterface {
     }
 
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
-        val gates = mutableListOf<MongoAnsiblex>()
+        val ansiblexes = mutableListOf<MongoAnsiblex>()
 
         transaction {
-            Ansiblex.select { Ansiblex.allianceId eq allianceId }.forEach {
-                gates.add(
+            val ids = mutableListOf<Long>()
+            AnsiblexAlliance
+                .select { AnsiblexAlliance.allianceId eq allianceId }
+                .forEach { ids.add(it[AnsiblexAlliance.ansiblexId].value) }
+
+            Ansiblex.select { Ansiblex.id inList ids }.forEach {
+                ansiblexes.add(
                     MongoAnsiblex(
-                        id = it[Ansiblex.ansiblexId],
-                        allianceId = it[Ansiblex.allianceId],
+                        id = it[Ansiblex.id].value,
                         name = it[Ansiblex.name],
                         solarSystemId = it[Ansiblex.solarSystemId],
                     )
@@ -113,41 +127,50 @@ class Exposed(uri: String): DbInterface {
             }
         }
 
-        return gates
+        return ansiblexes
     }
 
     override fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int) {
         transaction {
-            val existing = Ansiblex.select {
-                Ansiblex.ansiblexId eq ansiblex.id and (Ansiblex.allianceId eq allianceId)
-            }.firstOrNull()
-            if (existing == null) {
-                Ansiblex.insert {
-                    it[ansiblexId] = ansiblex.id
-                    it[Ansiblex.allianceId] = ansiblex.allianceId
+            val existingAnsiblex = Ansiblex.select { Ansiblex.id eq ansiblex.id }.firstOrNull()
+            if (existingAnsiblex == null) {
+                val newAnsiblexId = Ansiblex.insertAndGetId {
+                    it[id] = ansiblex.id
                     it[name] = ansiblex.name
                     it[solarSystemId] = ansiblex.solarSystemId
                 }
+                AnsiblexAlliance.insert {
+                    it[ansiblexId] = newAnsiblexId
+                    it[AnsiblexAlliance.allianceId] = allianceId
+                }
             } else {
-                Ansiblex.update({ Ansiblex.id eq existing[Ansiblex.id] }) {
-                    it[ansiblexId] = ansiblex.id
-                    it[Ansiblex.allianceId] = ansiblex.allianceId
+                Ansiblex.update({ Ansiblex.id eq existingAnsiblex[Ansiblex.id] }) {
+                    it[id] = ansiblex.id
                     it[name] = ansiblex.name
                     it[solarSystemId] = ansiblex.solarSystemId
+                }
+                AnsiblexAlliance.insertIgnore {
+                    it[ansiblexId] = existingAnsiblex[Ansiblex.id]
+                    it[AnsiblexAlliance.allianceId] = allianceId
                 }
             }
         }
     }
 
     override fun gatesRemoveOther(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
-        val ids: MutableList<Long> = mutableListOf()
-        ansiblexes.forEach { ids.add(it.id) }
         transaction {
-            Ansiblex.select {
-                Ansiblex.ansiblexId notInList ids and (Ansiblex.allianceId eq allianceId)
-            }.forEach {
-                Ansiblex.deleteWhere { Ansiblex.id eq it[Ansiblex.id] }
+            // Delete relations
+            val ids: MutableList<Long> = mutableListOf()
+            ansiblexes.forEach { ids.add(it.id) }
+            AnsiblexAlliance.deleteWhere {
+                AnsiblexAlliance.allianceId eq allianceId and
+                    (AnsiblexAlliance.ansiblexId notInList ids)
             }
+
+            // Delete Ansiblex gates without any relation
+            val withRelation = mutableSetOf<Long>()
+            AnsiblexAlliance.selectAll().forEach { withRelation.add(it[AnsiblexAlliance.ansiblexId].value) }
+            Ansiblex.deleteWhere { Ansiblex.id notInList withRelation }
         }
     }
 
@@ -226,7 +249,7 @@ class Exposed(uri: String): DbInterface {
         transaction {
             val alliance = Alliance.select { Alliance.id eq allianceId }.firstOrNull()
             if (alliance != null) {
-                result = MongoAlliance(id = alliance[Alliance.id], updated = date(alliance[Alliance.updated]))
+                result = MongoAlliance(id = alliance[Alliance.id].value, updated = date(alliance[Alliance.updated]))
             }
         }
         return result

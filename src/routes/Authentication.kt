@@ -192,7 +192,7 @@ private suspend fun getCharacter(tokenVerify: EsiTokenVerify, config: Config, ht
 
     if (allianceId == null) {
         getCharacterResult = ResponseCodes.LoginEsiErrorAlliance
-    } else if (config.alliances.isNotEmpty() && ! config.alliances.contains(allianceId.toString())) {
+    } else if (config.alliances.isNotEmpty() && !config.alliances.contains(allianceId.toString())) {
         getCharacterResult = ResponseCodes.LoginWrongAlliance
     } else {
         val alliance = httpRequest.get<EsiAlliance>(

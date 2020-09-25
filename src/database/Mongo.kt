@@ -2,6 +2,7 @@ package net.tkhamez.everoute.database
 
 import net.tkhamez.everoute.data.MongoAlliance
 import net.tkhamez.everoute.data.MongoAnsiblex
+import net.tkhamez.everoute.data.MongoAnsiblexV02
 import net.tkhamez.everoute.data.MongoTemporaryConnection
 import org.litote.kmongo.*
 import java.util.*
@@ -12,27 +13,46 @@ class Mongo(uri: String): DbInterface {
     private val database = client.getDatabase(dbName)
 
     override fun migrate() {
+        // 0.2.0 -> 0.3.0: copy "allianceId" to "alliances"
+        val col = database.getCollection<MongoAnsiblex>("ansiblex")
+        database.getCollection<MongoAnsiblexV02>("ansiblex").find(MongoAnsiblexV02::allianceId gt 0).forEach {
+            val filter = and(MongoAnsiblex::id eq it.id, MongoAnsiblex::alliances exists true)
+            var gateV03 = col.findOne(filter)
+            if (gateV03 == null) {
+                gateV03 = MongoAnsiblex(
+                    id = it.id,
+                    name = it.name,
+                    solarSystemId = it.solarSystemId,
+                )
+                gateV03.alliances.add(it.allianceId)
+                col.insertOne(gateV03)
+            } else {
+                gateV03.alliances.add(it.allianceId)
+                col.replaceOne(filter, gateV03)
+            }
+        }
+        col.deleteMany(MongoAnsiblex::alliances exists false)
     }
 
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
         val gates = mutableListOf<MongoAnsiblex>()
         database.getCollection<MongoAnsiblex>("ansiblex")
-            .find(MongoAnsiblex::allianceId eq allianceId)
+            .find(MongoAnsiblex::alliances contains allianceId)
             .forEach { gates.add(it) }
         return gates
     }
 
     override fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int) {
         val col = database.getCollection<MongoAnsiblex>("ansiblex")
-        val filter = and(
-            MongoAnsiblex::id eq ansiblex.id,
-            MongoAnsiblex::allianceId eq allianceId
-        )
-        val existingGate = col.findOne(filter)
-        if (existingGate == null) {
+        val existingAnsiblex: MongoAnsiblex? = col.findOne(MongoAnsiblex::id eq ansiblex.id)
+        if (existingAnsiblex == null) {
+            ansiblex.alliances.add(allianceId)
             col.insertOne(ansiblex)
         } else {
-            col.replaceOne(filter, ansiblex)
+            if (!existingAnsiblex.alliances.contains(allianceId)) {
+                existingAnsiblex.alliances.add(allianceId)
+            }
+            col.replaceOne(MongoAnsiblex::id eq ansiblex.id, existingAnsiblex)
         }
     }
 
@@ -42,9 +62,13 @@ class Mongo(uri: String): DbInterface {
         val ids: MutableList<Long> = mutableListOf()
         ansiblexes.forEach { ids.add(it.id) }
 
-        val gatesToDelete = col.find(MongoAnsiblex::id nin ids, MongoAnsiblex::allianceId eq allianceId)
-        gatesToDelete.forEach {
-            col.deleteOne(MongoAnsiblex::id eq it.id, MongoAnsiblex::allianceId eq allianceId)
+        col.find(MongoAnsiblex::id nin ids).forEach {
+            it.alliances.remove(allianceId)
+            if (it.alliances.size > 0) {
+                col.replaceOne(MongoAnsiblex::id eq it.id, it)
+            } else {
+                col.deleteOne(MongoAnsiblex::id eq it.id)
+            }
         }
     }
 

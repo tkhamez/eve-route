@@ -196,7 +196,7 @@ fun Route.route(config: Config) {
                     index + 1 < waypoints.size && // not end system
                     value.ansiblexId == null && // not an ansiblex
                     value.connectionType != EveRoute.Waypoint.Type.Temporary && // not a temporary connection
-                    ! incomingTemporary // previous system was not a temporary connection
+                    !incomingTemporary // previous system was not a temporary connection
                 )
             ) {
                 continue

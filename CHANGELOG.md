@@ -3,9 +3,11 @@
 
 yyyy-mm-dd
 
-- Added CSRF protection.
-- Added option to enable the "secure" flag for the session cookie.
 - Fixed alliance check during login.
+- Added CSRF protection for all requests that change data.
+- Added option to enable the "secure" flag for the session cookie.
+- More efficient storage of Ansiblex gates in the database.
+- Added database migrations.
 - Some cleanups, library updates and improved documentation.
 
 ## 0.2.0
