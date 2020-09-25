@@ -1,17 +1,11 @@
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import {
-  Box,
-  Button,
-  createStyles,
-  Grid,
-  Typography
-} from '@material-ui/core';
+import { Box, Button, createStyles, Grid, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
-import { ResponseMessage, ResponseRouteFind, Waypoint } from '../response';
+import { ResponseMapConnections, ResponseMessage, ResponseRouteFind, Waypoint } from '../response';
 import SystemInput from '../components/SystemInput';
 import RouteList from '../components/RouteList';
 import NavModal from '../components/NavModal';
@@ -33,11 +27,12 @@ type HomeState = {
   buttonRouteSetDisabled: boolean,
   routeFindResultMessage: string,
   routeFindResultWaypoints: Array<Waypoint>,
+  mapConnections: ResponseMapConnections|null,
   routeSetResult: string,
 }
 
 class Home extends React.Component<Props, HomeState> {
-  private t: Function;
+  t: Function;
   private esiRoute: Array<object> = [];
 
   static contextType = GlobalDataContext;
@@ -48,7 +43,7 @@ class Home extends React.Component<Props, HomeState> {
     return (
       <div className='grid-spacing-2-wrapper'>
 
-        <NavModal />
+        <NavModal connectionChanged={this.connectionChanged} />
 
         <Grid container spacing={2} className='card'>
           <Grid item xs={12}>
@@ -98,7 +93,7 @@ class Home extends React.Component<Props, HomeState> {
             />
           </Grid>
           <Grid item sm={8} xs={12}>
-            <Map waypoints={this.state.routeFindResultWaypoints} />
+            <Map waypoints={this.state.routeFindResultWaypoints} mapConnections={this.state.mapConnections}  />
           </Grid>
         </Grid>
 
@@ -117,6 +112,7 @@ class Home extends React.Component<Props, HomeState> {
       buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
       routeFindResultWaypoints: [],
+      mapConnections: null,
       routeSetResult: '',
     };
 
@@ -124,6 +120,14 @@ class Home extends React.Component<Props, HomeState> {
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
   }
+
+  componentDidMount() {
+    loadConnections(this);
+  }
+
+  connectionChanged = () => {
+    loadConnections(this)
+  };
 
   startChanged = (value: string) => {
     this.setState({routeFrom: value});
@@ -187,3 +191,17 @@ class Home extends React.Component<Props, HomeState> {
 }
 
 export default withTranslation()(withStyles(styles)(Home));
+
+/**
+ * Load Ansiblex and temporary connections.
+ */
+const loadConnections = (app: Home) => {
+  axios.get<ResponseMapConnections>(`${app.context.domain}/api/route/map-connections`).then(r => {
+    if (r.data.code) { // error
+      console.log(app.t(`responseCode.${r.data.code}`));
+    }
+    app.setState({mapConnections: r.data});
+  }).catch(() => {
+    app.setState({mapConnections: { ansiblexes: [], temporary: [], code: null }});
+  });
+};

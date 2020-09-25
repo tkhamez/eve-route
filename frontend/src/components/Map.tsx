@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   waypoints: Array<Waypoint>,
+  mapConnections: ResponseMapConnections|null,
 }
 
 export default function Map(props: Props) {
@@ -40,12 +41,11 @@ export default function Map(props: Props) {
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
   const [mapData, setMapData] = useState<MapData>();
-  const [mapConnections, setMapConnections] = useState<ResponseMapConnections>();
   const [svgLoaded, setSvgLoaded] = useState(false);
   const [mapError, setMapError] = useState('');
 
   /**
-   * Load JSON.
+   * Load JSON file.
    */
   useEffect(() => {
     if (!mapData) {
@@ -57,24 +57,11 @@ export default function Map(props: Props) {
     }
   }, [globalData.domain, mapData, t]);
 
-  useEffect(() => {
-    if (!mapConnections) {
-      axios.get<ResponseMapConnections>(`${globalData.domain}/api/route/map-connections`).then(r => {
-        if (r.data.code) { // error
-          console.log(t(`responseCode.${r.data.code}`));
-        }
-        setMapConnections(r.data);
-      }).catch(() => {
-        setMapConnections({ ansiblexes: [], temporary: [], code: null });
-      });
-    }
-  }, [globalData.domain, mapConnections, t]);
-
   /**
    * Configure map and add data.
    */
   useEffect(() => {
-    if (!mapData || !svgLoaded || !mapConnections) {
+    if (!mapData || !svgLoaded || !props.mapConnections) {
       return
     }
     if (!SVG.init) {
@@ -83,12 +70,19 @@ export default function Map(props: Props) {
       SVG.setViewBox(mapData, systemRadius);
       SVG.makeDraggable();
       SVG.setupMouseZoom();
-      SVG.addSystemsAndConnections(mapData, systemRadius, mapConnections);
+      SVG.addSystemsAndConnections(mapData, systemRadius);
+      SVG.updateConnections(props.mapConnections);
     }
-  }, [mapConnections, mapData, svgLoaded]);
+  }, [props.mapConnections, mapData, svgLoaded]);
+
+  useEffect(() => {
+    if (props.mapConnections) {
+      SVG.updateConnections(props.mapConnections);
+    }
+  }, [props.mapConnections]);
 
   /**
-   * Add route to map.
+   * Add and remove route from map.
    */
   useEffect(() => {
     if (!mapData || !svgLoaded) {
@@ -213,6 +207,8 @@ const SVG = (() => {
 
   const center = { x: 0, y: 0 };
 
+  const allSystems: { [index: string]: System } = {};
+
   // noinspection JSSuspiciousNameCombination
   return {
     init: false,
@@ -324,10 +320,9 @@ const SVG = (() => {
       }, { passive: false });
     },
 
-    addSystemsAndConnections(mapData: MapData, systemRadius: number, mapConnections: ResponseMapConnections) {
+    addSystemsAndConnections(mapData: MapData, systemRadius: number) {
       const svgSystems = SVG.getElement('systems');
-      const svgConnections = SVG.getElement('connections');
-      const allSystems: { [index: string]: System } = {};
+      const svgConnections = SVG.getElement('fixed-connections');
 
       mapData.systems.forEach(system => {
         allSystems[system.name] = system;
@@ -353,6 +348,14 @@ const SVG = (() => {
       mapData.connections.forEach(connection => {
         SVG.addLine(svgConnections, connection.x1, connection.y1, connection.x2, connection.y2, 'connection');
       });
+    },
+
+    updateConnections(mapConnections: ResponseMapConnections) {
+      const svgConnections = SVG.getElement('changing-connections');
+
+      while (svgConnections.lastChild) {
+        svgConnections.removeChild(svgConnections.lastChild);
+      }
 
       [mapConnections.ansiblexes, mapConnections.temporary].forEach((connections, index) => {
         connections.forEach(connection => {

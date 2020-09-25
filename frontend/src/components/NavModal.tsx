@@ -44,7 +44,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NavModal() {
+type Props = {
+  connectionChanged: Function,
+}
+
+export default function NavModal(props: Props) {
   const { t } = useTranslation();
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -111,7 +115,7 @@ export default function NavModal() {
           <div className={classes.body}>
             {content === 'HowItWorks' && <HowItWorks />}
             {content === 'UpdateGates' && <UpdateGates />}
-            {content === 'AddConnection' && <AddConnection />}
+            {content === 'AddConnection' && <AddConnection connectionChanged={props.connectionChanged} />}
           </div>
         </div>
       </Modal>

@@ -4,7 +4,8 @@
 yyyy-mm-dd
 
 - Fixed alliance check during login.
-- Map: added title (on mouse over) to systems.
+- Map: Added title (on mouse over) to systems.
+- Map: Connections are redrawn when a temporary connection has been added or removed.
 - Added CSRF protection for all requests that change data.
 - Added option to enable the "secure" flag for the session cookie.
 - More efficient storage of Ansiblex gates in the database.

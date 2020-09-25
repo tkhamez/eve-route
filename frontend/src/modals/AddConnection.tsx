@@ -26,7 +26,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function AddConnection() {
+type Props = {
+  connectionChanged: Function,
+}
+
+export default function AddConnection(props: Props) {
   const { t } = useTranslation();
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
@@ -81,6 +85,7 @@ export default function AddConnection() {
         system2Input.current.clearInput();
 
         fetch();
+        props.connectionChanged();
       }
     }).catch(() => {
       setSubmitDisabled(false);
@@ -91,6 +96,7 @@ export default function AddConnection() {
   const remove = (id1: bigint, id2: bigint) => {
     axios.delete(`${globalData.domain}/api/connection/delete/${id1}/${id2}`).then(() => {
       fetch();
+      props.connectionChanged();
     }).catch(() => {})
   };
 

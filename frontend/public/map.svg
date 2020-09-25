@@ -3,7 +3,8 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0">
     <rect id="draggable" class="draggable"/>
     <g id="map" transform="matrix(1 0 0 1 0 0)">
-        <g id="connections"/>
+        <g id="fixed-connections"/>
+        <g id="changing-connections"/>
         <g id="route"/>
         <g id="systems"/>
     </g>
