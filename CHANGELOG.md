@@ -4,6 +4,7 @@
 yyyy-mm-dd
 
 - Fixed alliance check during login.
+- Added button to set the start system back to the current location.
 - Map: Added title (on mouse over) to systems.
 - Map: Connections are redrawn when a temporary connection has been added or removed.
 - Added CSRF protection for all requests that change data.

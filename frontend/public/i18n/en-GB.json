@@ -133,7 +133,8 @@
     "num-gates": "{{number}} gates:"
   },
   "systemInput": {
-    "clear": "Clear"
+    "clear": "Clear",
+    "current-location": "Set to current location"
   },
   "routeList": {
     "route": "Route",

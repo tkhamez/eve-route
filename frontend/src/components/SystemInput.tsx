@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useCallback, useContext, useImperativeHandle, useRef } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
+import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseRouteLocation, ResponseSystemNames } from '../response';
@@ -25,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
     '&:hover $clearIndicator, & .Mui-focused $clearIndicator': {
       visibility: 'visible'
     },
+  },
+  location: {
+    color: theme.palette.grey[500],
   },
   clearIndicator: {
     visibility: 'hidden',
@@ -60,12 +64,26 @@ export default forwardRef((props: Props, ref: any) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const startSystemId = "start-system";
 
   useImperativeHandle(ref, () => ({
     clearInput() {
       onChange('');
     }
   }));
+
+  const fetchLocation = useCallback(() => {
+    axios.get<ResponseRouteLocation>(`${globalData.domain}/api/route/location`).then(r => {
+      if (r.data.code) {
+        console.log(r.data.code);
+      } else if (r.data.solarSystemName) {
+        setInputValue(r.data.solarSystemName);
+        props.onChange(r.data.solarSystemName);
+      }
+    }).catch(() => {});
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalData.domain, props.onChange]); // TODO do *not* use "props" here or there will be an endless loop
 
   useEffect(() => {
     const handleClick = (evt: MouseEvent) => {
@@ -84,20 +102,11 @@ export default forwardRef((props: Props, ref: any) => {
   }, [props.fieldId]);
 
   useEffect(() => {
-    if (props.fieldId !== "start-system") {
+    if (props.fieldId !== startSystemId) {
       return;
     }
-    axios.get<ResponseRouteLocation>(`${globalData.domain}/api/route/location`).then(r => {
-      if (r.data.code) {
-        console.log(r.data.code);
-      } else if (r.data.solarSystemName) {
-        setInputValue(r.data.solarSystemName);
-        props.onChange(r.data.solarSystemName);
-      }
-    }).catch(() => {});
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalData.domain, props.fieldId, props.onChange]); // do *not* use "props" here or there will be an endless loop
+    fetchLocation();
+  }, [fetchLocation, props.fieldId]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -176,6 +185,20 @@ export default forwardRef((props: Props, ref: any) => {
         onChange={e => onChange(e.target.value)}
         onKeyPress={onKeyPress}
         InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              {props.fieldId === startSystemId &&
+                <IconButton
+                  className={classes.location}
+                  size="small"
+                  title={t('systemInput.current-location')}
+                  onClick={fetchLocation}
+                >
+                  <LocationOnOutlinedIcon fontSize="small" />
+                </IconButton>
+              }
+            </InputAdornment>
+          ),
           endAdornment: (
             <InputAdornment position="end">
               <CircularProgress color="inherit" size={15} className={!loading ? classes.loadingHidden : ''} />
