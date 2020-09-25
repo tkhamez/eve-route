@@ -344,6 +344,9 @@ const SVG = (() => {
         newSystem.setAttribute('cy', system.position.y.toString());
         newSystem.setAttribute('r', systemRadius.toString());
         newSystem.setAttribute('class', nodeClass);
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = system.name;
+        newSystem.appendChild(title);
         svgSystems.appendChild(newSystem);
       });
 
