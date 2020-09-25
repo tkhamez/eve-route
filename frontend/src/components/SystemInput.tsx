@@ -178,7 +178,6 @@ export default forwardRef((props: Props, ref: any) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              {loading && false ? <CircularProgress color="inherit" size={15} /> : null}
               <CircularProgress color="inherit" size={15} className={!loading ? classes.loadingHidden : ''} />
               {' '}
               <IconButton
