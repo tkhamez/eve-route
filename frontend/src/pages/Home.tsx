@@ -50,13 +50,22 @@ class Home extends React.Component<Props, HomeState> {
             <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}
                            findRoute={this.calculateRoute} />
             </Box>
           </Grid>
-          <Grid item xs={6}>
+
+          <Grid item xs={2}>
+            <Box display="flex" justifyContent="center">
+              <Button variant="contained" color="primary" onClick={this.swapSystems}>
+                &lt; = &gt;
+              </Button>
+            </Box>
+          </Grid>
+
+          <Grid item xs={5}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged}
                            findRoute={this.calculateRoute} />
@@ -119,6 +128,7 @@ class Home extends React.Component<Props, HomeState> {
     this.calculateRoute = this.calculateRoute.bind(this);
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
+    this.swapSystems = this.swapSystems.bind(this);
   }
 
   componentDidMount() {
@@ -187,6 +197,14 @@ class Home extends React.Component<Props, HomeState> {
     }).then(() => {
       app.setState({buttonRouteSetDisabled: false});
     });
+  }
+
+  swapSystems() {
+    const app = this;
+    var oldFrom = this.state.routeFrom;
+    var oldTo = this.state.routeTo;
+    app.setState({routeFrom: oldTo});
+    app.setState({routeTo: oldFrom});
   }
 }
 
