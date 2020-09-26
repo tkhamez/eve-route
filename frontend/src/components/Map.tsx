@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import AspectRatioIcon from '@material-ui/icons/AspectRatio';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
@@ -10,25 +12,44 @@ import { ResponseMapConnections, RouteType, Waypoint } from '../response';
 import { GlobalDataContext } from "../GlobalDataContext";
 
 const useStyles = makeStyles((theme) => ({
-  map: {
+  mapWrap: {
     position: 'relative',
     backgroundColor: theme.palette.grey[900],
     borderRadius: '4px',
   },
-  icons: {
-    position: 'absolute',
-    right: 0,
-    cursor: 'pointer',
-    color: 'grey',
-    backgroundColor: theme.palette.grey[900],
-    opacity: 0.9,
+  map: {
+    width: '100%',
+    height: 'auto',
+  },
+  drag: {
+    textAlign: 'center',
   },
   icon: {
-    fontSize: '2rem',
+    color: 'grey',
     '&:hover': {
       color: 'lightgrey',
     }
-  }
+  },
+  changeHeightIcon: {
+    cursor: 'row-resize',
+  },
+  resetHeightIcon: {
+    cursor: 'pointer',
+    fontSize: '1.1rem',
+    position: 'relative',
+    top: '-4px',
+    right: '-2px',
+  },
+  mapIcons: {
+    position: 'absolute',
+    right: 0,
+    cursor: 'pointer',
+    backgroundColor: theme.palette.grey[900],
+    opacity: 0.9,
+  },
+  mapIcon: {
+    fontSize: '2rem',
+  },
 }));
 
 type Props = {
@@ -72,6 +93,7 @@ export default function Map(props: Props) {
       SVG.setupMouseZoom();
       SVG.addSystemsAndConnections(mapData, systemRadius);
       SVG.updateConnections(props.mapConnections);
+      ResizeMap.init();
     }
   }, [props.mapConnections, mapData, svgLoaded]);
 
@@ -159,17 +181,95 @@ export default function Map(props: Props) {
   };
 
   return (
-    <div className={classes.map}>
-      <div className={classes.icons}>
-        <ZoomInIcon className={classes.icon} onClick={() => SVG.zoom(1.25)} />
-        <ZoomOutIcon className={classes.icon} onClick={() => SVG.zoom(0.75)} />
-        <RotateLeftIcon className={classes.icon} onClick={() => SVG.reset()} />
+    <div id="wrapper">
+      <div id="mapWrap" className={classes.mapWrap}>
+        <div className={classes.mapIcons}>
+          <ZoomInIcon className={`${classes.icon} ${classes.mapIcon}`} onClick={() => SVG.zoom(1.25)} />
+          <ZoomOutIcon className={`${classes.icon} ${classes.mapIcon}`} onClick={() => SVG.zoom(0.75)} />
+          <RotateLeftIcon className={`${classes.icon} ${classes.mapIcon}`} onClick={() => SVG.reset()} />
+        </div>
+        <object id="map" className={classes.map} type="image/svg+xml" data="/map.svg" onLoad={svgOnLoad}>
+          {t('map.svg-error')}
+        </object>
+        <div>{mapError}</div>
       </div>
-      <object id="map" type="image/svg+xml" data="/map.svg" onLoad={svgOnLoad}>{t('map.svg-error')}</object>
-      <div>{mapError}</div>
+      <div className={classes.drag}>
+        <span title={t('map.change-height')}>
+          <DragHandleIcon className={`${classes.icon} ${classes.changeHeightIcon}`}
+                          onMouseDown={ResizeMap.handleMouseDown} />
+        </span>
+        <span title={t('map.reset-height')}>
+          <AspectRatioIcon className={`${classes.icon} ${classes.resetHeightIcon}`} onClick={ResizeMap.reset} />
+        </span>
+      </div>
     </div>
   )
 }
+
+const ResizeMap = (() => {
+  let map: HTMLElement|null;
+  let wrapper: HTMLElement|null;
+  let initialMapHeight = 0;
+  let isResizing = false;
+  let newHeight = 0;
+
+  const handleMouseUp = () => {
+    isResizing = false;
+  };
+
+  const handleMouseMove = (e: MouseEvent, svg?: boolean) => {
+    if (!isResizing || !map || !wrapper) {
+      return;
+    }
+
+    if (initialMapHeight === 0) {
+      initialMapHeight = wrapper.offsetHeight;
+      wrapper.style.height = `${initialMapHeight}px`;
+    }
+
+    if (svg) {
+      newHeight = e.clientY;
+    } else {
+      newHeight = e.clientY - wrapper.offsetTop + window.pageYOffset
+    }
+    if (newHeight > 32 + 17) {
+      map.style.height = `${newHeight - 17}px`;
+      if (newHeight > initialMapHeight) {
+        wrapper.style.height = `${newHeight + 5}px`;
+      }
+    }
+  };
+
+  return {
+    init() {
+      map = document.getElementById('map');
+      wrapper = document.getElementById('wrapper');
+
+      document.removeEventListener('mouseup', handleMouseUp, false);
+      document.removeEventListener('mousemove', handleMouseMove, false);
+      document.addEventListener('mouseup', handleMouseUp, false);
+      document.addEventListener('mousemove', handleMouseMove, false);
+
+      const svgElement = SVG.getSvgElement();
+      svgElement.removeEventListener('mouseup', handleMouseUp, false);
+      svgElement.removeEventListener('mousemove', handleMouseMove, false);
+      svgElement.addEventListener('mouseup', handleMouseUp, false);
+      svgElement.addEventListener('mousemove', e => handleMouseMove(e, true), false);
+    },
+
+    handleMouseDown() {
+      isResizing = true;
+    },
+
+    reset() {
+      if (map && wrapper) {
+        initialMapHeight = 0;
+        wrapper.style.height = 'auto';
+        map.style.height = 'auto';
+      }
+    },
+  };
+})();
 
 const SVG = (() => {
   const getDocument = () => {

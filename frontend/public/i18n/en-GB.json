@@ -151,6 +151,8 @@
   },
   "map": {
     "svg-error": "Your browser does not support SVG",
-    "json-error": "Failed to load map data."
+    "json-error": "Failed to load map data.",
+    "change-height": "Change map height",
+    "reset-height": "Reset map height"
   }
 }
