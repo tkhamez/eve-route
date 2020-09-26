@@ -1,7 +1,7 @@
 
-## next
+## 0.3.0
 
-yyyy-mm-dd
+2020-09-27
 
 - Added button to set the start system back to the current location.
 - Added button to swap start and end systems. (thanks [@NevarrTivianne](https://github.com/NevarrTivianne))
