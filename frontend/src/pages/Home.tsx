@@ -1,8 +1,9 @@
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { Box, Button, createStyles, Grid, Typography } from '@material-ui/core';
+import { Box, Button, createStyles, Grid, IconButton, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
+import SwapHorizIcon from '@material-ui/icons/SwapHoriz';
 import axios from 'axios';
 import { GlobalDataContext } from '../GlobalDataContext';
 import { ResponseMapConnections, ResponseMessage, ResponseRouteFind, Waypoint } from '../response';
@@ -23,6 +24,8 @@ interface Props extends WithTranslation {
 type HomeState = {
   routeFrom: string,
   routeTo: string,
+  startSystemInput: string,
+  endSystemInput: string,
   buttonRouteFindDisabled: boolean,
   buttonRouteSetDisabled: boolean,
   routeFindResultMessage: string,
@@ -50,16 +53,23 @@ class Home extends React.Component<Props, HomeState> {
             <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}
-                           findRoute={this.calculateRoute} />
+                           findRoute={this.calculateRoute} fieldValue={this.state.startSystemInput} />
             </Box>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={2}>
+            <Box display="flex" justifyContent="center">
+              <IconButton color="primary" onClick={this.swapSystems} disabled={this.state.buttonRouteFindDisabled}>
+                <SwapHorizIcon />
+              </IconButton>
+            </Box>
+          </Grid>
+          <Grid item xs={5}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="end-system" fieldName={t('home.end-system')} onChange={this.endChanged}
-                           findRoute={this.calculateRoute} />
+                           findRoute={this.calculateRoute} fieldValue={this.state.endSystemInput} />
             </Box>
           </Grid>
 
@@ -108,6 +118,8 @@ class Home extends React.Component<Props, HomeState> {
     this.state = {
       routeFrom: '',
       routeTo: '',
+      startSystemInput: '',
+      endSystemInput: '',
       buttonRouteFindDisabled: true,
       buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
@@ -119,6 +131,7 @@ class Home extends React.Component<Props, HomeState> {
     this.calculateRoute = this.calculateRoute.bind(this);
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
+    this.swapSystems = this.swapSystems.bind(this);
   }
 
   componentDidMount() {
@@ -131,11 +144,13 @@ class Home extends React.Component<Props, HomeState> {
 
   startChanged = (value: string) => {
     this.setState({routeFrom: value});
+    this.setState({startSystemInput: value});
     this.setState({buttonRouteFindDisabled: !(value !== '' && this.state.routeTo !== '')});
   };
 
   endChanged = (value: string) => {
     this.setState({routeTo: value});
+    this.setState({endSystemInput: value});
     this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== '' && value !== '')});
   };
 
@@ -187,6 +202,11 @@ class Home extends React.Component<Props, HomeState> {
     }).then(() => {
       app.setState({buttonRouteSetDisabled: false});
     });
+  }
+
+  swapSystems() {
+    this.setState({startSystemInput: this.state.routeTo});
+    this.setState({endSystemInput: this.state.routeFrom});
   }
 }
 

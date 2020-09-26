@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   fieldId: string,
   fieldName: string,
+  fieldValue?: string,
   onChange: Function,
   findRoute?: Function,
 }
@@ -68,6 +69,8 @@ export default forwardRef((props: Props, ref: any) => {
 
   // copy props for use in useEffect()
   const propsOnChange = props.onChange;
+  const propsFindRoute = props.findRoute;
+  const propsFieldValue = props.fieldValue;
 
   useImperativeHandle(ref, () => ({
     clearInput() {
@@ -108,6 +111,16 @@ export default forwardRef((props: Props, ref: any) => {
     }
     fetchLocation();
   }, [fetchLocation, props.fieldId]);
+
+  useEffect(() => {
+    if (propsFieldValue && propsFieldValue !== inputValue) {
+      setInputValue(propsFieldValue);
+      propsOnChange(propsFieldValue);
+      if (propsFindRoute) {
+        propsFindRoute();
+      }
+    }
+  }, [inputValue, propsFieldValue, propsFindRoute, propsOnChange]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
