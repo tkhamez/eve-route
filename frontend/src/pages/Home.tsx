@@ -58,7 +58,7 @@ class Home extends React.Component<Props, HomeState> {
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="start-end" fieldName={t('home.end-system')} onChange={this.endChanged}
+              <SystemInput fieldId="end-system" fieldName={t('home.end-system')} onChange={this.endChanged}
                            findRoute={this.calculateRoute} />
             </Box>
           </Grid>
@@ -149,24 +149,24 @@ class Home extends React.Component<Props, HomeState> {
     const app = this;
     app.setState({buttonRouteFindDisabled: true});
     app.setState({buttonRouteSetDisabled: true});
-    app.setState({ routeFindResultMessage: '' });
-    app.setState({ routeFindResultWaypoints: [] });
-    app.setState({ routeSetResult: '' });
+    app.setState({routeFindResultMessage: ''});
+    app.setState({routeFindResultWaypoints: []});
+    app.setState({routeSetResult: ''});
     const url = `${this.context.domain}/api/route/find/${this.state.routeFrom}/${this.state.routeTo}`;
     axios.get<ResponseRouteFind>(url).then(response => {
       if (response.data.route.length === 0) {
         if (response.data.code) {
-          app.setState({ routeFindResultMessage: app.t(`responseCode.${response.data.code}`) });
+          app.setState({routeFindResultMessage: app.t(`responseCode.${response.data.code}`)});
         } else {
-          app.setState({ routeFindResultMessage: app.t('home.no-route-found') });
+          app.setState({routeFindResultMessage: app.t('home.no-route-found')});
         }
       } else {
         app.esiRoute = response.data.route;
-        app.setState({ routeFindResultWaypoints: response.data.route });
+        app.setState({routeFindResultWaypoints: response.data.route});
         app.setState({buttonRouteSetDisabled: app.esiRoute.length <= 1});
       }
     }).catch(() => {
-      app.setState({ routeFindResultMessage: app.t('app.error') });
+      app.setState({routeFindResultMessage: app.t('app.error')});
     }).then(() => {
       this.setState({buttonRouteFindDisabled: false});
     });
@@ -175,15 +175,15 @@ class Home extends React.Component<Props, HomeState> {
   routeSet() {
     const app = this;
     app.setState({buttonRouteSetDisabled: true});
-    app.setState({ routeSetResult: '' });
+    app.setState({routeSetResult: ''});
     axios.post<ResponseMessage>(
       `${this.context.domain}/api/route/set`,
       JSON.stringify(this.esiRoute),
-      { headers: { 'Content-Type': 'application/json' } },
+      {headers: {'Content-Type': 'application/json'}},
     ).then(response => {
-        app.setState({ routeSetResult: app.t(`responseCode.${response.data.code}`, {message: response.data.param}) });
+        app.setState({routeSetResult: app.t(`responseCode.${response.data.code}`, {message: response.data.param})});
     }).catch(() => {
-      app.setState({ routeSetResult: app.t('app.error') });
+      app.setState({routeSetResult: app.t('app.error')});
     }).then(() => {
       app.setState({buttonRouteSetDisabled: false});
     });
@@ -202,6 +202,6 @@ const loadConnections = (app: Home) => {
     }
     app.setState({mapConnections: r.data});
   }).catch(() => {
-    app.setState({mapConnections: { ansiblexes: [], temporary: [], code: null }});
+    app.setState({mapConnections: {ansiblexes: [], temporary: [], code: null}});
   });
 };

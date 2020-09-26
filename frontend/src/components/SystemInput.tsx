@@ -66,6 +66,9 @@ export default forwardRef((props: Props, ref: any) => {
   const [loading, setLoading] = useState(false);
   const startSystemId = "start-system";
 
+  // copy props for use in useEffect()
+  const propsOnChange = props.onChange;
+
   useImperativeHandle(ref, () => ({
     clearInput() {
       onChange('');
@@ -78,12 +81,10 @@ export default forwardRef((props: Props, ref: any) => {
         console.log(r.data.code);
       } else if (r.data.solarSystemName) {
         setInputValue(r.data.solarSystemName);
-        props.onChange(r.data.solarSystemName);
+        propsOnChange(r.data.solarSystemName);
       }
     }).catch(() => {});
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalData.domain, props.onChange]); // TODO do *not* use "props" here or there will be an endless loop
+  }, [globalData.domain, propsOnChange]);
 
   useEffect(() => {
     const handleClick = (evt: MouseEvent) => {
