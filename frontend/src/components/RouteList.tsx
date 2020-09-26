@@ -173,6 +173,11 @@ export default function RouteList(props: Props) {
             })}
           </small>
         </ListItem>
+        <ListItem>
+          {props.waypoints.length > 0 &&
+            <small>{t('routeList.number-of-jumpsCount', {count: props.waypoints.length - 1})}</small>
+          }
+        </ListItem>
         {props.waypoints.map((value, index) => {
           const last = index + 1 === props.waypoints.length;
           const secondaryName = value.connectionType === RouteType.Ansiblex ?

@@ -145,7 +145,9 @@
     "unknown-ansiblex": "Unknown Ansiblex",
     "temporary-connection": "Temporary connection",
     "avoid-system": "Avoid system",
-    "remove-connection": "Remove connection"
+    "remove-connection": "Remove connection",
+    "number-of-jumpsCount": "{{count}} jump.",
+    "number-of-jumpsCount_plural": "{{count}} jumps."
   },
   "map": {
     "svg-error": "Your browser does not support SVG",
