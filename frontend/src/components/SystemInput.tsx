@@ -89,6 +89,9 @@ export default forwardRef((props: Props, ref: any) => {
     }).catch(() => {});
   }, [globalData.domain, propsOnChange]);
 
+  /**
+   * Register an "outside click" event to close the dropdown.
+   */
   useEffect(() => {
     const handleClick = (evt: MouseEvent) => {
       const target: any = evt.target;
@@ -105,6 +108,9 @@ export default forwardRef((props: Props, ref: any) => {
     };
   }, [props.fieldId]);
 
+  /**
+   * Fetch current location for the start-system.
+   */
   useEffect(() => {
     if (props.fieldId !== startSystemId) {
       return;
@@ -112,6 +118,9 @@ export default forwardRef((props: Props, ref: any) => {
     fetchLocation();
   }, [fetchLocation, props.fieldId]);
 
+  /**
+   * Handle system input from parent component.
+   */
   useEffect(() => {
     if (propsFieldValue && propsFieldValue !== inputValue) {
       setInputValue(propsFieldValue);
@@ -120,8 +129,12 @@ export default forwardRef((props: Props, ref: any) => {
         propsFindRoute();
       }
     }
-  }, [inputValue, propsFieldValue, propsFindRoute, propsOnChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propsFieldValue, propsFindRoute, propsOnChange]); // do not include "inputValue" or it will be called too often
 
+  /**
+   * System search.
+   */
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (searchTerm === '') {
@@ -169,6 +182,7 @@ export default forwardRef((props: Props, ref: any) => {
     const system = e.currentTarget.textContent || '';
     setOpen(false);
     setInputValue(system);
+    setSearchTerm('');
     props.onChange(system);
 
     // @ts-ignore
