@@ -76,7 +76,7 @@ export default function Map(props: Props) {
   }, [props.mapConnections, mapData, svgLoaded]);
 
   useEffect(() => {
-    if (props.mapConnections) {
+    if (SVG.init && props.mapConnections) {
       SVG.updateConnections(props.mapConnections);
     }
   }, [props.mapConnections]);
