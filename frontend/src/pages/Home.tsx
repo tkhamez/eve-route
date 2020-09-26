@@ -1,7 +1,7 @@
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { Box, Button, createStyles, Grid, IconButton, Typography } from '@material-ui/core';
+import { Box, Button, createStyles, Grid, IconButton, Theme, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import SwapHorizIcon from '@material-ui/icons/SwapHoriz';
 import axios from 'axios';
@@ -12,8 +12,13 @@ import RouteList from '../components/RouteList';
 import NavModal from '../components/NavModal';
 import Map from '../components/Map';
 
-const styles = () => createStyles({
-
+const styles = (theme: Theme) => createStyles({
+  swapButton: {
+    [theme.breakpoints.down('xs')]: {
+      paddingTop: 0,
+      paddingBottom: 0,
+    }
+  }
 });
 
 interface Props extends WithTranslation {
@@ -41,6 +46,7 @@ class Home extends React.Component<Props, HomeState> {
   static contextType = GlobalDataContext;
 
   render() {
+    const { classes } = this.props;
     const { t } = this.props;
 
     return (
@@ -53,20 +59,21 @@ class Home extends React.Component<Props, HomeState> {
             <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
           </Grid>
 
-          <Grid item xs={5}>
+          <Grid item sm={5} xs={12}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}
                            findRoute={this.calculateRoute} fieldValue={this.state.startSystemInput} />
             </Box>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item sm={2} xs={12}>
             <Box display="flex" justifyContent="center">
-              <IconButton color="primary" onClick={this.swapSystems} disabled={this.state.buttonRouteFindDisabled}>
+              <IconButton color="primary" className={classes.swapButton}
+                          onClick={this.swapSystems} disabled={this.state.buttonRouteFindDisabled}>
                 <SwapHorizIcon />
               </IconButton>
             </Box>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item sm={5} xs={12}>
             <Box display="flex" justifyContent="center">
               <SystemInput fieldId="end-system" fieldName={t('home.end-system')} onChange={this.endChanged}
                            findRoute={this.calculateRoute} fieldValue={this.state.endSystemInput} />
