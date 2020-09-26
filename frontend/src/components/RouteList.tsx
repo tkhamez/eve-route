@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { IconButton, Link, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import AdjustOutlinedIcon from '@material-ui/icons/AdjustOutlined';
 import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import ArrowDropDownCircleTwoToneIcon from '@material-ui/icons/ArrowDropDownCircleTwoTone';
@@ -234,6 +234,11 @@ export default function RouteList(props: Props) {
             </ListItem>
           )
         })}
+        <ListItem>
+          {props.waypoints.length > 0 &&
+            <Typography variant="caption">{t('routeList.check-in-game')}</Typography>
+          }
+        </ListItem>
       </List>
   )
 }

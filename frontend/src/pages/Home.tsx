@@ -99,9 +99,6 @@ class Home extends React.Component<Props, HomeState> {
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="body2" align="center">{t('home.check-in-game')}</Typography>
-          </Grid>
 
           <Grid item sm={4} xs={12}>
             <RouteList waypoints={this.state.routeFindResultWaypoints}

@@ -67,10 +67,6 @@
     "end-system": "End system",
     "find-route": "Find route",
     "set-route": "Set route",
-    "check-in-game": [
-      "Please note that an Ansiblex gate can be offline. ",
-      "If this is the case, you can exclude it manually from the route."
-    ],
     "no-route-found": "No route found."
   },
   "navModal": {
@@ -147,7 +143,11 @@
     "avoid-system": "Avoid system",
     "remove-connection": "Remove connection",
     "number-of-jumpsCount": "{{count}} jump.",
-    "number-of-jumpsCount_plural": "{{count}} jumps."
+    "number-of-jumpsCount_plural": "{{count}} jumps.",
+    "check-in-game": [
+      "Please note that an Ansiblex gate can be offline. ",
+      "If this is the case, you can exclude it manually from the route."
+    ]
   },
   "map": {
     "svg-error": "Your browser does not support SVG",
