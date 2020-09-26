@@ -202,12 +202,17 @@ export default function RouteList(props: Props) {
               <ListItemText className={classes.listText}
                 primary={
                   <span className={classes.listTextContent}>
-                    <IconButton className={`${classes.actionButton} ${classes.primaryActionButton}`}
-                                aria-label={t('routeList.avoid-system')}
-                                data-title={t('routeList.avoid-system')}
-                                size="small" onClick={() => avoidSystem(value.systemId)}>
-                      <RemoveCircleOutlineIcon fontSize="inherit"/>
-                    </IconButton>
+                    {!last && index !== 0 &&
+                      <IconButton className={`${classes.actionButton} ${classes.primaryActionButton}`}
+                                  aria-label={t('routeList.avoid-system')}
+                                  data-title={t('routeList.avoid-system')}
+                                  size="small" onClick={() => avoidSystem(value.systemId)}>
+                        <RemoveCircleOutlineIcon fontSize="inherit"/>
+                      </IconButton>
+                    }
+                    {(last || index === 0) &&
+                      <IconButton disabled={true}/>
+                    }
                     <span>
                       {value.systemName}
                       <small className={classes.security}>{' ' + value.systemSecurity}</small>
