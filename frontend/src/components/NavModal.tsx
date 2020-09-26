@@ -66,7 +66,7 @@ export default function NavModal(props: Props) {
   return (
     <div>
       <Grid container spacing={2} className='card'>
-        <Grid item xs={5}>
+        <Grid item xs={5} style={{paddingTop: '6px', paddingBottom: '6px'}}>
           <Box display="flex" justifyContent="flex-start">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('HowItWorks')}>
@@ -75,7 +75,7 @@ export default function NavModal(props: Props) {
             </Button>
           </Box>
         </Grid>
-        <Grid item xs={7}>
+        <Grid item xs={7} style={{paddingTop: '6px', paddingBottom: '6px'}}>
           <Box display="flex" justifyContent="flex-end">
             <Button size="small" className={classes.topButton} color="primary" disableRipple
                     onClick={() => handleOpen('UpdateGates')}>
