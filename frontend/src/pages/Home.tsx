@@ -67,7 +67,7 @@ class Home extends React.Component<Props, HomeState> {
           </Grid>
           <Grid item sm={2} xs={12}>
             <Box display="flex" justifyContent="center">
-              <IconButton color="primary" className={classes.swapButton}
+              <IconButton color="primary" className={classes.swapButton} title={t('home.swap-systems')}
                           onClick={this.swapSystems} disabled={this.state.buttonRouteFindDisabled}>
                 <SwapHorizIcon />
               </IconButton>
@@ -82,7 +82,7 @@ class Home extends React.Component<Props, HomeState> {
 
           <Grid item xs={6}>
             <Box display="flex" justifyContent="flex-end">
-              <Button variant="contained" color="primary" onClick={this.routeFind}
+              <Button variant="contained" color="primary" onClick={() => this.routeFind()}
                       disabled={this.state.buttonRouteFindDisabled}>
                 {t('home.find-route')}
               </Button>
@@ -132,10 +132,8 @@ class Home extends React.Component<Props, HomeState> {
       routeSetResult: '',
     };
 
-    this.calculateRoute = this.calculateRoute.bind(this);
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
-    this.swapSystems = this.swapSystems.bind(this);
   }
 
   componentDidMount() {
@@ -158,20 +156,28 @@ class Home extends React.Component<Props, HomeState> {
     this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== '' && value !== '')});
   };
 
-  calculateRoute() {
+  swapSystems = () => {
+    this.routeFind(this.state.routeTo, this.state.routeFrom); /// reload route with already swapped systems
+    this.setState({startSystemInput: this.state.routeTo});
+    this.setState({endSystemInput: this.state.routeFrom});
+  };
+
+  calculateRoute = () => {
     if (! this.state.buttonRouteFindDisabled) {
       this.routeFind();
     }
   };
 
-  routeFind() {
+  routeFind(from?: String, to?: String) {
     const app = this;
     app.setState({buttonRouteFindDisabled: true});
     app.setState({buttonRouteSetDisabled: true});
     app.setState({routeFindResultMessage: ''});
     app.setState({routeFindResultWaypoints: []});
     app.setState({routeSetResult: ''});
-    const url = `${this.context.domain}/api/route/find/${this.state.routeFrom}/${this.state.routeTo}`;
+    from = from || this.state.routeFrom;
+    to = to || this.state.routeTo;
+    const url = `${this.context.domain}/api/route/find/${from}/${to}`;
     axios.get<ResponseRouteFind>(url).then(response => {
       if (response.data.route.length === 0) {
         if (response.data.code) {
@@ -206,11 +212,6 @@ class Home extends React.Component<Props, HomeState> {
     }).then(() => {
       app.setState({buttonRouteSetDisabled: false});
     });
-  }
-
-  swapSystems() {
-    this.setState({startSystemInput: this.state.routeTo});
-    this.setState({endSystemInput: this.state.routeFrom});
   }
 }
 

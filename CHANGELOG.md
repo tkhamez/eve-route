@@ -1,4 +1,11 @@
 
+## next
+
+yyyy-mm-dd
+
+- Fix: Clicking "swap systems" only switched the input values, it did not change the start and end systems
+  for the route.
+
 ## 0.3.0
 
 2020-09-27

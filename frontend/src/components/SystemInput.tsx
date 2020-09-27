@@ -69,7 +69,6 @@ export default forwardRef((props: Props, ref: any) => {
 
   // copy props for use in useEffect()
   const propsOnChange = props.onChange;
-  const propsFindRoute = props.findRoute;
   const propsFieldValue = props.fieldValue;
 
   useImperativeHandle(ref, () => ({
@@ -125,12 +124,9 @@ export default forwardRef((props: Props, ref: any) => {
     if (propsFieldValue && propsFieldValue !== inputValue) {
       setInputValue(propsFieldValue);
       propsOnChange(propsFieldValue);
-      if (propsFindRoute) {
-        propsFindRoute();
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [propsFieldValue, propsFindRoute, propsOnChange]); // do not include "inputValue" or it will be called too often
+  }, [propsFieldValue, propsOnChange]); // do not include "inputValue" or it will be called too often
 
   /**
    * System search.
