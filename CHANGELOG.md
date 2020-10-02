@@ -1,7 +1,7 @@
 
-## next
+## 0.3.1
 
-yyyy-mm-dd
+2020-10-02
 
 - Fix: Clicking "swap systems" only switched the input values, it did not change the start and end systems
   for the route.
