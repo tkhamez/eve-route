@@ -189,8 +189,7 @@ fun Route.route(config: Config) {
         var startSystemSet = false
         for ((index, value) in waypoints.withIndex()) {
             if (
-                value.wormhole // can't set waypoint to a wormhole
-                ||
+                value.wormhole || // can't set waypoint to a wormhole
                 (
                     startSystemSet && // not start system
                     index + 1 < waypoints.size && // not end system
@@ -214,8 +213,13 @@ fun Route.route(config: Config) {
             val clear = if (startSystemSet) "false" else "true"
             params += "&add_to_beginning=false&clear_other_waypoints=$clear"
             val result = httpRequest.post<HttpResponse>(path + params, null, accessToken)
-            if (result?.status != HttpStatusCode.NoContent) {
-                response.param = result?.status.toString()
+            if (result == null || result.status != HttpStatusCode.NoContent) {
+                if (result == null) {
+                    response.param = "Request failed"
+                } else {
+                    response.param = result.status.toString()
+                }
+                break
             }
             startSystemSet = true
         }

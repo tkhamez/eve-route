@@ -20,7 +20,7 @@
       "You can close this window."
     ],
     "SetWaypointsSuccess": "Waypoints successfully set.",
-    "SetWaypointsFailure": "Failed to set waypoints.",
+    "SetWaypointsFailure": "Failed to set waypoints: {{message}}.",
     "SystemNotFound": "System(s) not found.",
     "WrongSearchTerm": "Wrong search term."
   },
