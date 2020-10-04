@@ -1,4 +1,12 @@
 
+## next
+
+yyyy-mm-dd
+
+- [#9][i9] Wrong in-game route: Added small delay between requests and debug messages.
+
+[i9]: https://github.com/tkhamez/eve-route/issues/9
+
 ## 0.3.1
 
 2020-10-02
