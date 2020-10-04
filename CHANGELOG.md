@@ -5,6 +5,7 @@ yyyy-mm-dd
 
 - [#9][i9] Wrong in-game route: Added small delay between requests and debug messages.
 - [#7][i7] Docker container for a complete development environment added.
+- Added Dockerfile to run the jar file.
 
 [i9]: https://github.com/tkhamez/eve-route/issues/9
 [i7]: https://github.com/tkhamez/eve-route/issues/7

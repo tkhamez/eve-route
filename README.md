@@ -11,9 +11,9 @@ https://eve-route.herokuapp.com
   * [EVE App](#eve-app)
   * [Database](#database)
 - [Build and Run](#build-and-run)
-  * [Docker](#docker)
   * [Frontend](#frontend)
   * [Backend](#backend)
+  * [Docker](#docker)
 - [Deploy](#deploy)
   * [Heroku](#heroku)
 - [Final Notes](#final-notes)
@@ -48,34 +48,6 @@ Set the Callback URL to https://your.domain.tld/api/auth/login
 The application needs a MongoDB, PostgreSQL, MySQL, MariaDB, SQLite or H2 (embedded mode) database.
 
 ## Build and Run
-
-### Docker
-
-#### Development Environment
-
-This was only tested so far on Linux with Docker 19.03 and Docker Compose 1.17.
-
-```shell script
-docker-compose up
-```
-
-This provides a MongoDB Server at port 27017, Mongo Express at http://localhost:8081, a container with
-Gradle 6 and JDK 11 and one with Node.js 12 and Yarn.
-
-Create a shell to run commands for the frontend and backend:
-```shell script
-export UID && docker-compose run --service-ports node /bin/sh
-export UID && docker-compose run --service-ports gradle /bin/bash
-```
-
-Set the necessary environment variables in the Gradle container:
-```shell script
-export EVE_ROUTE_CLIENT_ID=ab12
-export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
-```
-
-Note: Use `gradle` instead of `./gradlew`, this saves a download of ~100MB.
 
 ### Frontend
 
@@ -179,6 +151,58 @@ java -jar build/libs/eve-route-0.3.1.jar
 cd build/libs/ && jar -xvf eve-route-0.3.1.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
+
+### Docker
+
+#### Development Environment
+
+This was only tested so far on Linux with Docker 19.03 and Docker Compose 1.17.
+
+```shell script
+docker-compose up
+```
+
+This provides a MongoDB Server at port 27017, Mongo Express at http://localhost:8081, a container with
+Gradle 6 and JDK 11 and one with Node.js 12 and Yarn.
+
+Create a shell to run commands for the frontend and backend:
+```shell script
+export UID && docker-compose run --service-ports node /bin/sh
+export UID && docker-compose run --service-ports gradle /bin/bash
+```
+
+Set the necessary environment variables in the Gradle container:
+```shell script
+export EVE_ROUTE_CLIENT_ID=ab12
+export EVE_ROUTE_CLIENT_SECRET=12ab
+export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
+```
+
+Note: Use `gradle` instead of `./gradlew`, this saves a download of ~100MB.
+
+#### Production
+
+Build the application jar file. e.g. in the Gradle container from the development environment:
+```shell script
+gradle shadowJar
+```
+
+Build the Docker container:
+```shell script
+docker build -t everoute .
+```
+
+Run the container, this example uses the Mongo database from docker-compose:
+```shell script
+docker run \
+  --env EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route \
+  --env EVE_ROUTE_CLIENT_ID=ab12 \
+  --env EVE_ROUTE_CLIENT_SECRET=12ab \
+  --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
+  --network host -m512M --cpus 2 -it -p 8080:8080 --rm everoute
+```
+
+See also https://ktor.io/docs/docker.html.
 
 ## Deploy
 
