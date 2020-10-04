@@ -175,6 +175,7 @@ fun Route.route(config: Config) {
 
     post("/api/route/set") {
         val response = ResponseMessage()
+        val log = call.application.environment.log
 
         val accessToken = EsiToken(config, call).get()
         if (accessToken == null) {
@@ -183,7 +184,7 @@ fun Route.route(config: Config) {
             return@post
         }
 
-        val httpRequest = HttpRequest(config, call.application.environment.log)
+        val httpRequest = HttpRequest(config, log)
         val body = call.receiveText()
         val waypoints = gson.fromJson(body, Array<EveRoute.Waypoint>::class.java)
         var incomingTemporary = false
@@ -214,6 +215,7 @@ fun Route.route(config: Config) {
             val clear = if (startSystemSet) "false" else "true"
             params += "&add_to_beginning=false&clear_other_waypoints=$clear"
             val result = httpRequest.post<HttpResponse>(path + params, null, accessToken)
+            log.debug("Setting waypoint: ${value.systemName}")
             if (result == null || result.status != HttpStatusCode.NoContent) {
                 if (result == null) {
                     response.param = "Request failed"
