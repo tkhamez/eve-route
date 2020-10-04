@@ -10,6 +10,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.sessions.*
+import kotlinx.coroutines.delay
 import net.tkhamez.everoute.*
 import net.tkhamez.everoute.Route as EveRoute
 import net.tkhamez.everoute.GraphHelper
@@ -222,6 +223,10 @@ fun Route.route(config: Config) {
                 break
             }
             startSystemSet = true
+
+            // Wait a bit to reduce the chance that waypoints are set in the wrong order.
+            // see https://github.com/tkhamez/eve-route/issues/9
+            delay(50L)
         }
 
         response.code = if (response.param == null)
