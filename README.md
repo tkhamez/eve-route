@@ -11,12 +11,15 @@ https://eve-route.herokuapp.com
   * [EVE App](#eve-app)
   * [Database](#database)
 - [Build and Run](#build-and-run)
+  * [Docker](#docker)
   * [Frontend](#frontend)
   * [Backend](#backend)
-- [Deploy to Heroku](#deploy-to-heroku)
-- [Contact](#contact)
-- [Donations](#donations)
-- [Copyright Notice](#copyright-notice)
+- [Deploy](#deploy)
+  * [Heroku](#heroku)
+- [Final Notes](#final-notes)
+  * [Contact](#contact)
+  * [Donations](#donations)
+  * [Copyright Notice](#copyright-notice)
 
 <!-- tocstop -->
 
@@ -42,16 +45,37 @@ Set the Callback URL to https://your.domain.tld/api/auth/login
 
 ### Database
 
-The app needs a MongoDB, PostgreSQL, MySQL, MariaDB, SQLite or H2 (embedded mode) database.
+The application needs a MongoDB, PostgreSQL, MySQL, MariaDB, SQLite or H2 (embedded mode) database.
 
-You can use the included docker-compose file to create a MongoDB server and provide a web-based GUI:
+## Build and Run
+
+### Docker
+
+#### Development Environment
+
+This was only tested so far on Linux with Docker 19.03 and Docker Compose 1.17.
+
 ```shell script
 docker-compose up
 ```
 
-GUI: http://localhost:8081
+This provides a MongoDB Server at port 27017, Mongo Express at http://localhost:8081, a container with
+Gradle 6 and JDK 11 and one with Node.js 12 and Yarn.
 
-## Build and Run
+Create a shell to run commands for the frontend and backend:
+```shell script
+export UID && docker-compose run --service-ports node /bin/sh
+export UID && docker-compose run --service-ports gradle /bin/bash
+```
+
+Set the necessary environment variables in the Gradle container:
+```shell script
+export EVE_ROUTE_CLIENT_ID=ab12
+export EVE_ROUTE_CLIENT_SECRET=12ab
+export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
+```
+
+Note: Use `gradle` instead of `./gradlew`, this saves a download of ~100MB.
 
 ### Frontend
 
@@ -75,7 +99,7 @@ yarn build
 
 ### Backend
 
-Requires [JDK](https://openjdk.java.net/) 11+.
+Requires [JDK](https://openjdk.java.net/) 11.
 
 Make sure the necessary environment variables are set, e.g.:
 ```shell script
@@ -156,7 +180,9 @@ cd build/libs/ && jar -xvf eve-route-0.3.1.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
 
-## Deploy to Heroku
+## Deploy
+
+### Heroku
 
 Add build packs in this order:
 
@@ -165,18 +191,20 @@ heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/gradle
 ```
 
-## Contact
+## Final Notes
+
+### Contact
 
 If you have questions or feedback, you can join the EVE Route [Discord Server](https://discord.gg/EjzHx8p) 
 or contact me via [Tweetfleet Slack](https://tweetfleet.slack.com) @Tian 
 ([invitations](https://slack.eveisesi.space/)).
 
-## Donations
+### Donations
 
 If you like this application, you can thank me by sending ISK to the character 
 [Tian Khamez](https://evewho.com/character/96061222).
 
-## Copyright Notice
+### Copyright Notice
 
 EVE Route is licensed under the [MIT license](LICENSE).
 

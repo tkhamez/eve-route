@@ -3,19 +3,38 @@ version: '3.1'
 services:
 
   mongo:
+    container_name: everoute_mongo
     image: mongo:4.4-bionic
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: eve-route
-    volumes:
-      - ./.mongo:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    ports: ['27017:27017']
+    volumes: [ "./.mongo:/data/db", "./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro" ]
+    ports: [ "27017:27017" ]
 
   mongo-express:
+    container_name: everoute_mongo_express
     image: mongo-express
-    ports: ['8081:8081']
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
+    ports: [ "8081:8081" ]
+
+  node:
+    container_name: everoute_node
+    image: node:12-alpine3.12
+    user: ${UID}
+    volumes: [ ".:/opt/eve-route" ]
+    working_dir: /opt/eve-route/frontend
+    ports: [ "3000:3000" ]
+
+  gradle:
+    container_name: everoute_gradle
+    image: gradle:6.6.1-jdk11
+    user: ${UID}
+    environment:
+      EVE_ROUTE_DB: mongodb://eve-route:password@mongo:27017/eve-route
+      EVE_ROUTE_CORS_DOMAIN: localhost:3000
+    volumes: [ ".:/opt/eve-route", "./.gradle:/home/gradle/.gradle" ]
+    working_dir: /opt/eve-route
+    ports: [ "8080:8080" ]
