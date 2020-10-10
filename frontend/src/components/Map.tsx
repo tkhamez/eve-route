@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import AspectRatioIcon from '@material-ui/icons/AspectRatio';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
@@ -12,10 +10,15 @@ import { ResponseMapConnections, RouteType, Waypoint } from '../response';
 import { GlobalDataContext } from "../GlobalDataContext";
 
 const useStyles = makeStyles((theme) => ({
+  wrapper: {
+    position: 'sticky',
+    top: '5px',
+  },
   mapWrap: {
     position: 'relative',
     backgroundColor: theme.palette.grey[900],
     borderRadius: '4px',
+    fontSize: '0',
   },
   map: {
     width: '100%',
@@ -181,7 +184,7 @@ export default function Map(props: Props) {
   };
 
   return (
-    <div id="wrapper">
+    <div id="wrapper" className={classes.wrapper}>
       <div id="mapWrap" className={classes.mapWrap}>
         <div className={classes.mapIcons}>
           <ZoomInIcon className={`${classes.icon} ${classes.mapIcon}`} onClick={() => SVG.zoom(1.25)} />
@@ -193,77 +196,51 @@ export default function Map(props: Props) {
         </object>
         <div>{mapError}</div>
       </div>
-      <div className={classes.drag}>
-        <span title={t('map.change-height')}>
-          <DragHandleIcon className={`${classes.icon} ${classes.changeHeightIcon}`}
-                          onMouseDown={ResizeMap.handleMouseDown} />
-        </span>
-        <span title={t('map.reset-height')}>
-          <AspectRatioIcon className={`${classes.icon} ${classes.resetHeightIcon}`} onClick={ResizeMap.reset} />
-        </span>
-      </div>
     </div>
   )
 }
 
 const ResizeMap = (() => {
-  let map: HTMLElement|null;
   let wrapper: HTMLElement|null;
-  let initialMapHeight = 0;
-  let isResizing = false;
-  let newHeight = 0;
+  let map: HTMLElement|null;
 
-  const handleMouseUp = () => {
-    isResizing = false;
-  };
-
-  const handleMouseMove = (e: MouseEvent, svg?: boolean) => {
-    if (!isResizing || !map || !wrapper) {
+  const handleResize = () => {
+    if (!wrapper || !map) {
       return;
     }
 
-    if (initialMapHeight === 0) {
-      initialMapHeight = wrapper.offsetHeight;
-      wrapper.style.height = `${initialMapHeight}px`;
+    if (window.innerWidth < 600) {
+      ResizeMap.reset();
+      return;
     }
 
-    if (svg) {
-      newHeight = e.clientY;
-    } else {
-      newHeight = e.clientY - wrapper.offsetTop + window.pageYOffset
+    let newHeight = document.documentElement.clientHeight;
+    const offset = wrapper.offsetTop - window.pageYOffset;
+    if (offset > 0) {
+      newHeight -= offset;
     }
-    if (newHeight > 32 + 17) {
-      map.style.height = `${newHeight - 17}px`;
-      if (newHeight > initialMapHeight) {
-        wrapper.style.height = `${newHeight + 5}px`;
-      }
+
+    if (newHeight > 32) { // 32 = height of map icon bar
+      wrapper.style.height = 'auto';
+      map.style.height = `${newHeight - 10}px`; // -10 for a margin top/bottom
     }
   };
 
   return {
     init() {
-      map = document.getElementById('map');
       wrapper = document.getElementById('wrapper');
+      map = document.getElementById('map');
 
-      document.removeEventListener('mouseup', handleMouseUp, false);
-      document.removeEventListener('mousemove', handleMouseMove, false);
-      document.addEventListener('mouseup', handleMouseUp, false);
-      document.addEventListener('mousemove', handleMouseMove, false);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleResize);
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('scroll', handleResize);
 
-      const svgElement = SVG.getSvgElement();
-      svgElement.removeEventListener('mouseup', handleMouseUp, false);
-      svgElement.removeEventListener('mousemove', handleMouseMove, false);
-      svgElement.addEventListener('mouseup', handleMouseUp, false);
-      svgElement.addEventListener('mousemove', e => handleMouseMove(e, true), false);
-    },
-
-    handleMouseDown() {
-      isResizing = true;
+      handleResize();
     },
 
     reset() {
       if (map && wrapper) {
-        initialMapHeight = 0;
         wrapper.style.height = 'auto';
         map.style.height = 'auto';
       }
