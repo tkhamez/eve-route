@@ -3,6 +3,7 @@
 
 yyyy-mm-dd
 
+- Triglavian Invasion: Updated gates and systems.
 - Change: The map now sticks on top, and it's height is set automatically based on the viewport height.
 - [#9][i9] Wrong in-game route: Added small delay between requests and debug messages.
 - [#7][i7] Docker container for a complete development environment added.
