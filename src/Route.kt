@@ -32,20 +32,14 @@ class Route(
      */
     private val allTemporaryConnections: MutableMap<Int, MongoTemporaryConnection> = mutableMapOf()
 
-    private val centralNode: Node<GraphSystem>?
-
     init {
         // build node connections
-        centralNode = buildNodes()
+        buildNodes()
         addGates(ansiblexes)
         addTempConnections(temporaryConnections)
     }
 
     fun find(from: String, to: String): List<Waypoint> {
-        if (centralNode == null) { // should not happen
-            return listOf()
-        }
-
         // find start and end system
         val startSystem: GraphSystem? = graphHelper.findSystem(from)
         val endSystem: GraphSystem? = graphHelper.findSystem(to)
@@ -93,26 +87,18 @@ class Route(
     /**
      * Creates and connects all nodes
      */
-    private fun buildNodes(): Node<GraphSystem>? {
+    private fun buildNodes() {
         graphHelper.getGraph().systems.forEach {
             allSystems[it.id] = it
         }
-
-        var center: Node<GraphSystem>? = null
 
         graphHelper.getGraph().connections.forEach {
             val sourceNode = getNode(it[0])
             val targetNode = getNode(it[1])
             if (sourceNode != null && targetNode != null) { // system can be null if it is avoided
                 sourceNode.connect(targetNode, Waypoint.Type.Stargate)
-
-                if (sourceNode.getValue().name == "Skarkon") {
-                    center = sourceNode
-                }
             }
         }
-
-        return center
     }
 
     private fun addGates(ansiblexes: List<MongoAnsiblex>) {
