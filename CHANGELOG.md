@@ -5,12 +5,14 @@ yyyy-mm-dd
 
 - Triglavian Invasion: Updated gates and systems.
 - Change: The map now sticks on top, and it's height is set automatically based on the viewport height.
+- [#4][i4] Moved navigation buttons to header (removes secondary bar).
 - [#9][i9] Wrong in-game route: Added small delay between requests and debug messages.
 - [#7][i7] Docker container for a complete development environment added.
 - Added Dockerfile to run the jar file.
 
 [i9]: https://github.com/tkhamez/eve-route/issues/9
 [i7]: https://github.com/tkhamez/eve-route/issues/7
+[i4]: https://github.com/tkhamez/eve-route/issues/4
 
 ## 0.3.1
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { TFunction } from "i18next";
 import { createStyles, Theme, Container } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
@@ -9,7 +10,7 @@ import Footer from './components/Footer';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import './App.css';
-import { ResponseAuthUser } from "./response";
+import { ResponseAuthUser, ResponseMapConnections } from "./response";
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -26,6 +27,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface Props extends WithTranslation {
+  t: TFunction,
   classes: any
 }
 
@@ -36,10 +38,12 @@ type AppState = {
     allianceName: string,
     allianceTicker: string,
   },
+  mapConnections: any, // ResponseMapConnections|null
 }
 
 class App extends React.Component<Props, AppState> {
-  private readonly domain: string;
+  t: Function;
+  readonly domain: string;
 
   render() {
     const { classes } = this.props;
@@ -47,13 +51,14 @@ class App extends React.Component<Props, AppState> {
     const globalData = {
       domain: this.domain,
       user: this.state.user,
+      mapConnections: this.state.mapConnections,
       logoutUser: this.logout
     };
 
     return (
       <GlobalDataContext.Provider value={globalData}>
         <div className={classes.root}>
-          <Header />
+          <Header connectionChanged={this.connectionChanged}/>
 
           <Container component="main" maxWidth="lg">
             { this.state.loaded && this.state.user.name === '' && <Login /> }
@@ -70,6 +75,7 @@ class App extends React.Component<Props, AppState> {
 
   constructor(props: Props) {
     super(props);
+    this.t = props.t;
 
     this.state = {
       loaded: false,
@@ -78,6 +84,7 @@ class App extends React.Component<Props, AppState> {
         allianceName: '',
         allianceTicker: '',
       },
+      mapConnections: null,
     };
 
     this.domain = '';
@@ -94,7 +101,12 @@ class App extends React.Component<Props, AppState> {
     setupAxios(this);
     setInterval(this.fetchUser, 1000 * 60 * 10); // every 10 minutes
     this.fetchUser();
+    loadConnections(this);
   }
+
+  connectionChanged = () => {
+    loadConnections(this)
+  };
 
   logout() {
     axios.get(`${this.domain}/api/auth/logout`).then(() => {
@@ -141,5 +153,19 @@ const setupAxios = (app: App) => {
       app.logoutUser();
     }
     return Promise.reject(error);
+  });
+};
+
+/**
+ * Load Ansiblex and temporary connections.
+ */
+const loadConnections = (app: App) => {
+  axios.get<ResponseMapConnections>(`${app.domain}/api/route/map-connections`).then(r => {
+    if (r.data.code) { // error
+      console.log(app.t(`responseCode.${r.data.code}`));
+    }
+    app.setState({mapConnections: r.data});
+  }).catch(() => {
+    app.setState({mapConnections: {ansiblexes: [], temporary: [], code: null}});
   });
 };

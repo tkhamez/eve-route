@@ -1,10 +1,21 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppBar, Button, Container, Slide, Toolbar, Typography, useScrollTrigger } from '@material-ui/core';
+import {
+  AppBar,
+  Button,
+  Container,
+  Slide,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useScrollTrigger
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
-import LanguageSwitcher from './LanguageSwitcher';
 import { GlobalDataContext } from '../GlobalDataContext';
+import LanguageSwitcher from './LanguageSwitcher';
+import HeaderModalButtons from './HeaderModalButtons';
 
 interface HideOnScrollProps {
   children: React.ReactElement;
@@ -24,51 +35,70 @@ function HideOnScroll(props: HideOnScrollProps) {
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: theme.palette.background.default,
+    position: "sticky",
   },
   toolbar: {
     flexWrap: 'wrap',
     paddingLeft: 0,
     paddingRight: 0,
   },
-  toolbarTitle: {
+  toolbarSpace: {
     flexGrow: 1,
   },
   logout: {
-    margin: theme.spacing(0, 1.5),
+    minWidth: 0,
   },
 }));
 
-export default function Header() {
+type Props = {
+  connectionChanged: Function,
+}
+
+export default function Header(props: Props) {
   const { t } = useTranslation();
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
 
   return (
     <HideOnScroll>
-      <AppBar position="sticky" color="default" elevation={8} className={classes.appBar}>
+      <AppBar color="default" elevation={8} className={classes.appBar}>
         <Container maxWidth="lg">
           <Toolbar className={classes.toolbar} variant="dense">
             <LocationOnOutlinedIcon style={{color: '#90caf9', fontSize: '1.75rem', marginRight: '4px'}}/>
-            <Typography variant="h6" noWrap className={classes.toolbarTitle}>{t('app.name')}</Typography>
+            <Typography variant="h6" noWrap style={{marginRight: '16px'}}>{t('app.name')}</Typography>
 
-            { globalData.user.name &&
-              <div style={{marginLeft: '5px'}}>
-                [
-                {globalData.user.allianceTicker &&
-                  <span data-title={globalData.user.allianceName} aria-label={globalData.user.allianceName}>
-                    {globalData.user.allianceTicker}</span>
-                }
-                {! globalData.user.allianceTicker && t('header.no-alliance') }
-                ]
-                {' '}
-                {globalData.user.name}
-                <Button onClick={globalData.logoutUser} color="secondary" variant="outlined" className={classes.logout}>
-                  {t('header.logout')}
-                </Button>
-              </div>
+            {globalData.user.name &&
+              <HeaderModalButtons connectionChanged={props.connectionChanged}/>
             }
 
-            <LanguageSwitcher />
+            <span className={classes.toolbarSpace} />
+
+            <div style={{marginLeft: '5px'}}>
+              { globalData.user.name &&
+                <span style={{position: 'relative', top: '1px'}}>
+                  <span style={{marginRight: '8px', position: 'relative', top: '2px'}}>
+                    [
+                    {globalData.user.allianceTicker &&
+                      <span data-title={globalData.user.allianceName} aria-label={globalData.user.allianceName}>
+                        {globalData.user.allianceTicker}
+                      </span>
+                    }
+                    {! globalData.user.allianceTicker && t('header.no-alliance') }
+                    ]
+                    {' '}
+                    {globalData.user.name}
+                  </span>
+
+                  <Tooltip title={t('header.logout').toString()}>
+                    <Button size="medium" color="secondary" className={classes.logout} onClick={globalData.logoutUser}>
+                      <ExitToAppIcon />
+                    </Button>
+                  </Tooltip>
+                </span>
+              }
+              <LanguageSwitcher />
+            </div>
+
           </Toolbar>
         </Container>
       </AppBar>

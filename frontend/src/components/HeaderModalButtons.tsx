@@ -11,12 +11,12 @@ import UpdateGates from '../modals/UpdateGates';
 import AddConnection from '../modals/AddConnection';
 
 const useStyles = makeStyles((theme) => ({
-  topButton: {
+  toolbarButton: {
     display: "inline",
-    margin: theme.spacing(0, 1),
     textTransform: 'none',
+    //fontWeight: 'normal',
   },
-  topButtonIcon: {
+  toolbarButtonIcon: {
     position: "relative",
     top: "5px",
     marginRight: "3px",
@@ -33,11 +33,11 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2),
   },
-  closeButton: {
+  modalCloseButton: {
     position: 'relative',
     top: '-5px',
   },
-  body: {
+  modalBody: {
     maxHeight: 'calc(100vh - 30px - 15px - 68px)',
     overflow: 'auto',
     marginTop: '10px',
@@ -48,7 +48,7 @@ type Props = {
   connectionChanged: Function,
 }
 
-export default function NavModal(props: Props) {
+export default function HeaderModalButtons(props: Props) {
   const { t } = useTranslation();
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -56,7 +56,7 @@ export default function NavModal(props: Props) {
 
   const handleOpen = (content: string) => {
     setOpen(true);
-    setContent(content)
+    setContent(content);
   };
 
   const handleClose = () => {
@@ -65,31 +65,22 @@ export default function NavModal(props: Props) {
 
   return (
     <div>
-      <Grid container spacing={2} className='card'>
-        <Grid item xs={5} style={{paddingTop: '6px', paddingBottom: '6px'}}>
-          <Box display="flex" justifyContent="flex-start">
-            <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('HowItWorks')}>
-              <HelpOutlineIcon fontSize="small" className={classes.topButtonIcon} />
-              {t('navModal.how-it-works')}
-            </Button>
-          </Box>
-        </Grid>
-        <Grid item xs={7} style={{paddingTop: '6px', paddingBottom: '6px'}}>
-          <Box display="flex" justifyContent="flex-end">
-            <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('UpdateGates')}>
-              <SyncIcon fontSize="small" className={classes.topButtonIcon} />
-              {t('navModal.update-gates')}
-            </Button>
-            <Button size="small" className={classes.topButton} color="primary" disableRipple
-                    onClick={() => handleOpen('AddConnection')}>
-              <AddCircleOutlineIcon fontSize="small" className={classes.topButtonIcon} />
-              {t('navModal.add-connection')}
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
+      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
+              onClick={() => handleOpen('HowItWorks')}>
+        <HelpOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
+        {t('navModal.how-it-works')}
+      </Button>
+      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
+              onClick={() => handleOpen('UpdateGates')}>
+        <SyncIcon fontSize="small" className={classes.toolbarButtonIcon}/>
+        {t('navModal.update-gates')}
+      </Button>
+      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
+              onClick={() => handleOpen('AddConnection')}>
+        <AddCircleOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
+        {t('navModal.add-connection')}
+      </Button>
+
       <Modal open={open} onClose={handleClose}>
         <div className={classes.modal}>
           <Grid container style={{borderBottom: "1px solid black"}}>
@@ -106,13 +97,13 @@ export default function NavModal(props: Props) {
             </Grid>
             <Grid item xs={2}>
               <Box display="flex" justifyContent="flex-end">
-                <IconButton size="small" className={classes.closeButton} onClick={handleClose}>
+                <IconButton size="small" className={classes.modalCloseButton} onClick={handleClose}>
                   <CloseRoundedIcon/>
                 </IconButton>
               </Box>
             </Grid>
           </Grid>
-          <div className={classes.body}>
+          <div className={classes.modalBody}>
             {content === 'HowItWorks' && <HowItWorks />}
             {content === 'UpdateGates' && <UpdateGates />}
             {content === 'AddConnection' && <AddConnection connectionChanged={props.connectionChanged} />}

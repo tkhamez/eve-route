@@ -85,7 +85,7 @@ export default function Map(props: Props) {
    * Configure map and add data.
    */
   useEffect(() => {
-    if (!mapData || !svgLoaded || !props.mapConnections) {
+    if (!mapData || !svgLoaded || !globalData.mapConnections) {
       return
     }
     if (!SVG.init) {
@@ -95,16 +95,16 @@ export default function Map(props: Props) {
       SVG.makeDraggable();
       SVG.setupMouseZoom();
       SVG.addSystemsAndConnections(mapData, systemRadius);
-      SVG.updateConnections(props.mapConnections);
+      SVG.updateConnections(globalData.mapConnections);
       ResizeMap.init();
     }
-  }, [props.mapConnections, mapData, svgLoaded]);
+  }, [globalData.mapConnections, mapData, svgLoaded]);
 
   useEffect(() => {
-    if (SVG.init && props.mapConnections) {
-      SVG.updateConnections(props.mapConnections);
+    if (SVG.init && globalData.mapConnections) {
+      SVG.updateConnections(globalData.mapConnections);
     }
-  }, [props.mapConnections]);
+  }, [globalData.mapConnections]);
 
   /**
    * Add and remove route from map.

@@ -7,5 +7,10 @@ export const GlobalDataContext = React.createContext({
         allianceName: '',
         allianceTicker: '',
     },
+    mapConnections: {
+        code: '',
+        ansiblexes: [],
+        temporary: [],
+    },
     logoutUser: function() {},
 });
