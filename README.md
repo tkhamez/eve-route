@@ -165,10 +165,13 @@ docker-compose up
 This provides a MongoDB Server at port 27017, Mongo Express at http://localhost:8081, a container with
 Gradle 6 and JDK 11 and one with Node.js 12 and Yarn.
 
-Create a shell to run commands for the frontend and backend:
+Create shells to run commands for the frontend and backend:
 ```shell script
 export UID && docker-compose run --service-ports node /bin/sh
 export UID && docker-compose run --service-ports gradle /bin/bash
+
+# second shell in the same grade container (adjust name, find name: $ docker ps)
+docker exec -it everoute_gradle_run_1 /bin/bash
 ```
 
 Set the necessary environment variables in the Gradle container:

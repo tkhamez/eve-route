@@ -93,8 +93,8 @@
       "This may not be true of course, but should be good enough for most use cases."
     ],
     "esi-results": [
-      "The EVE API (ESI) returns Ansiblex gates for which the character has \"docking access\" (deposit fuel). ",
-      "So it is possible that not all gates are returned that the character can use. ",
+      "Unfortunately the EVE API (ESI) does not always return all Ansiblex gates the character can use. ",
+      "Instead it seems to return only gates for which the character has \"docking access\". ",
       "See also <1>this ticket</1>."
     ],
     "unknown-gates": [
