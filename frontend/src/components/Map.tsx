@@ -210,7 +210,7 @@ const ResizeMap = (() => {
     }
 
     if (window.innerWidth < 600) {
-      ResizeMap.reset();
+      map.style.height = 'auto';
       return;
     }
 
@@ -220,10 +220,11 @@ const ResizeMap = (() => {
       newHeight -= offset;
     }
 
-    if (newHeight > 32) { // 32 = height of map icon bar
-      wrapper.style.height = 'auto';
-      map.style.height = `${newHeight - 10}px`; // -10 for a margin top/bottom
-    }
+    // min/max height
+    newHeight = newHeight < 240 ? 240 : newHeight;
+    newHeight = newHeight > 805 ? 805 : newHeight;
+
+    map.style.height = `${newHeight - 10}px`; // -10 for a margin top/bottom
   };
 
   return {
@@ -237,13 +238,6 @@ const ResizeMap = (() => {
       window.addEventListener('scroll', handleResize);
 
       handleResize();
-    },
-
-    reset() {
-      if (map && wrapper) {
-        wrapper.style.height = 'auto';
-        map.style.height = 'auto';
-      }
     },
   };
 })();

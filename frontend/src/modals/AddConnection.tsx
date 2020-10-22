@@ -137,7 +137,7 @@ export default function AddConnection(props: Props) {
           {fetchAllError}
         </Grid>
         <TableContainer component={Paper}>
-          <Table size="small">
+          <Table size="small" className="temporary-connections">
             <TableHead>
               <TableRow>
                 <TableCell>{t('addConnection.from')}</TableCell>

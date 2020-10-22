@@ -44,3 +44,8 @@
     font-size: 0.875rem;
     padding: 3px 5px;
 }
+
+.temporary-connections th,
+.temporary-connections td {
+    padding-right: 0;
+}

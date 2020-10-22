@@ -159,7 +159,7 @@ cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 This was only tested so far on Linux with Docker 19.03 and Docker Compose 1.17.
 
 ```shell script
-docker-compose up
+export UID && docker-compose up
 ```
 
 This provides a MongoDB Server at port 27017, Mongo Express at http://localhost:8081, a container with

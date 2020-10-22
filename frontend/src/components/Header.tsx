@@ -23,7 +23,10 @@ interface HideOnScrollProps {
 
 function HideOnScroll(props: HideOnScrollProps) {
   const { children } = props;
-  const trigger = useScrollTrigger({ threshold: 50 });
+  const trigger = useScrollTrigger({
+    threshold: 47,
+    disableHysteresis: true
+  });
 
   return (
     <Slide appear={false} direction="down" in={!trigger}>
