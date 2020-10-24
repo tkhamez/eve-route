@@ -31,6 +31,7 @@ data class Session(
     val avoidedSystems: MutableSet<Int>? = null,
     val removedConnections: MutableSet<ConnectedSystems>? = null,
     val csrfToken: String? = null,
+    val oAuthNonce: String? = null,
 )
 
 data class EveCharacter(

@@ -135,7 +135,8 @@ fun Application.module() {
                     clientId = config.clientId,
                     clientSecret = config.clientSecret,
                     defaultScopes = scopes[application.locations.resolve<Login>(Login::class, this).features] ?:
-                                    listOf()
+                                    listOf(),
+                    nonceManager = OAuthNonceManager(this),
                 )
             }
             urlProvider = {
