@@ -7,7 +7,7 @@ yyyy-mm-dd
 - Change: The map now sticks on top, and it's height is set automatically based on the viewport height.
 - [#4][i4] Moved navigation buttons to header (removes secondary bar).
 - Other small layout improvements.
-- Validation of the OAuth state param.
+- Validation of the OAuth state param and better error handling.
 - [#9][i9] Wrong in-game route: Added small delay between requests and debug messages.
 - [#7][i7] Docker container for a complete development environment added.
 - Added Dockerfile to run the jar file.

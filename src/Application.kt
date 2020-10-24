@@ -3,25 +3,25 @@ package net.tkhamez.everoute
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import io.ktor.application.*
-import io.ktor.response.*
-//import io.ktor.request.*
-import io.ktor.routing.*
-import io.ktor.http.*
+import io.ktor.auth.*
 //import io.ktor.content.*
+import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.locations.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
-import io.ktor.auth.*
-import io.ktor.features.*
+import io.ktor.util.*
+import java.io.File
 //import kotlinx.coroutines.*
-import io.ktor.util.KtorExperimentalAPI
 import net.tkhamez.everoute.data.Config
 import net.tkhamez.everoute.data.Session
 import net.tkhamez.everoute.routes.*
 import org.slf4j.LoggerFactory
-import java.io.File
 
 //fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @KtorExperimentalLocationsAPI
@@ -76,6 +76,16 @@ fun Application.module() {
             throw cause
         }
         status(HttpStatusCode.NotFound, HttpStatusCode.Unauthorized) {
+            // Handle OAuth callback URL
+            if (call.request.path() == "/api/auth/login") {
+                // This is a 401 error from the OAuth plugin, either wrong state param or a bad request to the access
+                // token URL.
+                // It's to late to set session values here, so an add error info to the redirect URL for the frontend.
+                call.respondRedirect("/#callback-error-401")
+                return@status
+            }
+
+            // Response text for Ajax calls
             call.respond(TextContent(
                 "${it.value} ${it.description}",
                 ContentType.Text.Plain.withCharset(Charsets.UTF_8),

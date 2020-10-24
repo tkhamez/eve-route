@@ -47,6 +47,7 @@
       "You need a character that is a member of an alliance to use all features. ",
       "It is also possible that the login is restricted to certain alliances."
     ],
+    "callback-error-401": "Authorization error.",
     "choose-features": "Choose features:",
     "find-route": "Find Route",
     "find-route-description": "This function does not require any ESI scopes.",

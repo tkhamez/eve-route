@@ -34,6 +34,13 @@ const Login = () => {
   const [features, setFeatures] = React.useState("");
 
   useEffect(() => {
+    // error from URL
+    if (window.location.hash === '#callback-error-401') {
+      window.location.hash = '';
+      setLoginResult(t('login.callback-error-401'));
+    }
+
+    // error from API
     axios.get<ResponseMessage>(`${globalData.domain}/api/auth/result`).then(r => {
       if (r.data.code) {
         setLoginResult(t(`responseCode.${r.data.code}`));
