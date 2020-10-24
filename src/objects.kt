@@ -22,7 +22,7 @@ val httpClient = HttpClient(Apache) {
         level = LogLevel.NONE
     }
     install(UserAgent) {
-        agent = "EVE Route/0.3.1 (https://github.com/tkhamez/eve-route) Ktor http-client/1.3.2"
+        agent = "EVE Route/0.4.0 (https://github.com/tkhamez/eve-route) Ktor http-client/1.3.2"
     }
 }
 

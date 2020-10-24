@@ -1,7 +1,7 @@
 
-## next
+## 0.4.0
 
-yyyy-mm-dd
+2020-10-24
 
 - Triglavian Invasion: Updated gates and systems.
 - Change: The map now sticks on top, and it's height is set automatically based on the viewport height.

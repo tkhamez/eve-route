@@ -140,15 +140,17 @@ IntelliJ Configuration (from Kotlin template):
 ```shell script
 ./gradlew shadowJar
 
-java -jar build/libs/eve-route-0.3.1.jar
+java -jar build/libs/eve-route-0.4.0.jar
 ```
+
+Note: Make sure the jar file contains the `graph.json` file, build it again if it is missing.
 
 #### WAR (Servlet Container)
 
 ```shell script
 ./gradlew war
 
-cd build/libs/ && jar -xvf eve-route-0.3.1.war
+cd build/libs/ && jar -xvf eve-route-0.4.0.war
 cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
 
@@ -185,12 +187,7 @@ Note: Use `gradle` instead of `./gradlew`, this saves a download of ~100MB.
 
 #### Production
 
-Build the application jar file. e.g. in the Gradle container from the development environment:
-```shell script
-gradle shadowJar
-```
-
-Build the Docker container:
+First build the frontend and the application jar file with the `shadowJar` task, then build the Docker container:
 ```shell script
 docker build -t everoute .
 ```
