@@ -12,14 +12,16 @@
   </head>
   <body dir="ltr">
     <h1 id="headline">A route planner for EVE Online that supports Ansiblex jump gates and wormhole connections.</h1>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>You need to enable JavaScript to run this application.</noscript>
     <div id="outdatedBrowser" style="display: none;">
       You are using an <strong>outdated</strong> browser. Please
       <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
-      to improve your experience and security.
+      to use this application.
     </div>
     <script type="text/javascript">
       document.getElementById('outdatedBrowser').style.display = 'block';
+    </script>
+    <script type="text/javascript">
       const supported = () => function () {};
       document.getElementById('headline').remove();
       document.getElementById('outdatedBrowser').remove();

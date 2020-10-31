@@ -1,4 +1,8 @@
 
+## next
+
+- Fixed check for supported browsers.
+
 ## 0.4.0
 
 2020-10-24
@@ -9,7 +13,7 @@
 - Other small layout improvements.
 - Validation of the OAuth state param and better error handling.
 - [#9][i9] Wrong in-game route: Added small delay between requests and debug messages.
-- [#7][i7] Docker container for a complete development environment added.
+- [#7][i7] Docker containers for a complete development environment added.
 - Added Dockerfile to run the jar file.
 
 [i9]: https://github.com/tkhamez/eve-route/issues/9
