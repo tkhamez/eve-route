@@ -60,8 +60,12 @@ fun Application.module() {
         cors = environment.config.property("app.corsDomain").getString(),
         alliances =
             if (environment.config.property("app.allianceAllowlist").getString().isNotEmpty())
-                environment.config.property("app.allianceAllowlist").getString().split(',')
-            else listOf()
+                environment.config.property("app.allianceAllowlist").getString().split(',').map { it.toInt() }
+            else listOf(),
+        roleImport =
+            if (environment.config.property("app.roleImport").getString().isNotEmpty())
+                environment.config.property("app.roleImport").getString().split(',').map { it.toInt() }
+            else listOf(),
     )
 
     // mongodb: Remove all those DEBUG messages from the console

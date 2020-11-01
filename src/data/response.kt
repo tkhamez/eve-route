@@ -37,6 +37,7 @@ data class ResponseAuthUser(
     val name: String,
     val allianceName: String,
     val allianceTicker: String,
+    val roles: List<String>,
     val csrfHeaderKey: String,
     val csrfToken: String,
 )

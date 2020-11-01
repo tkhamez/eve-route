@@ -19,7 +19,8 @@ data class Config(
     val esiDatasource: String,
     val secure: String,
     val cors: String,
-    val alliances: List<String>,
+    val alliances: List<Int>,
+    val roleImport: List<Int>,
     val csrfHeaderKey: String = "X-CSRF-Token",
 )
 
@@ -40,6 +41,7 @@ data class EveCharacter(
     val allianceId: Int,
     val allianceName: String,
     val allianceTicker: String,
+    val roles: List<String>,
 )
 
 data class System(

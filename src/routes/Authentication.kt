@@ -135,6 +135,7 @@ fun Route.authentication(config: Config) {
                 name = session.eveCharacter.name,
                 allianceName = session.eveCharacter.allianceName,
                 allianceTicker = session.eveCharacter.allianceTicker,
+                roles = session.eveCharacter.roles,
                 csrfHeaderKey = config.csrfHeaderKey,
                 csrfToken = session.csrfToken,
             )
@@ -194,7 +195,7 @@ private suspend fun getCharacter(tokenVerify: EsiTokenVerify, config: Config, ht
 
     if (allianceId == null) {
         getCharacterResult = ResponseCodes.LoginEsiErrorAlliance
-    } else if (config.alliances.isNotEmpty() && !config.alliances.contains(allianceId.toString())) {
+    } else if (config.alliances.isNotEmpty() && !config.alliances.contains(allianceId)) {
         getCharacterResult = ResponseCodes.LoginWrongAlliance
     } else {
         val alliance = httpRequest.get<EsiAlliance>(
@@ -202,11 +203,12 @@ private suspend fun getCharacter(tokenVerify: EsiTokenVerify, config: Config, ht
             "[$characterId]"
         )
         eveCharacter = EveCharacter(
-            characterId,
-            tokenVerify.name,
-            allianceId,
-            alliance?.name ?: "",
-            alliance?.ticker ?: "",
+            id = characterId,
+            name = tokenVerify.name,
+            allianceId = allianceId,
+            allianceName = alliance?.name ?: "",
+            allianceTicker = alliance?.ticker ?: "",
+            roles = if (config.roleImport.contains(characterId)) listOf("import") else listOf(),
         )
     }
 

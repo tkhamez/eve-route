@@ -15,6 +15,7 @@ export type ResponseAuthUser = {
   name: string,
   allianceName: string,
   allianceTicker: string,
+  roles: Array<string>,
   csrfHeaderKey: string,
   csrfToken: string,
 }

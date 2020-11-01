@@ -25,6 +25,7 @@
     "WrongSearchTerm": "Wrong search term, use »."
   },
   "header": {
+    "admin": "Admin",
     "no-alliance": "No alliance",
     "logout": "Logout",
     "change-language": "Change language",

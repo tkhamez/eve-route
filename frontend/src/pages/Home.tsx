@@ -52,69 +52,65 @@ class Home extends React.Component<Props, HomeState> {
     const { t } = this.props;
 
     return (
-      <div className='grid-spacing-2-wrapper'>
-
-        <Grid container spacing={2} className='card'>
-          <Grid item xs={12}>
-            <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
-          </Grid>
-
-          <Grid item sm={5} xs={12}>
-            <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}
-                           findRoute={this.calculateRoute} fieldValue={this.state.startSystemInput} />
-            </Box>
-          </Grid>
-          <Grid item sm={2} xs={12}>
-            <Box display="flex" justifyContent="center">
-              <IconButton color="primary" className={classes.swapButton} title={t('home.swap-systems')}
-                          onClick={this.swapSystems} disabled={this.state.buttonRouteFindDisabled}>
-                <SwapHorizIcon />
-              </IconButton>
-            </Box>
-          </Grid>
-          <Grid item sm={5} xs={12}>
-            <Box display="flex" justifyContent="center">
-              <SystemInput fieldId="end-system" fieldName={t('home.end-system')} onChange={this.endChanged}
-                           findRoute={this.calculateRoute} fieldValue={this.state.endSystemInput} />
-            </Box>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button variant="contained" color="primary" onClick={() => this.routeFind()}
-                      disabled={this.state.buttonRouteFindDisabled}>
-                {t('home.find-route')}
-              </Button>
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box display="flex" justifyContent="flex-start">
-              <Typography>
-                <Button variant="contained" color="primary" onClick={this.routeSet}
-                        disabled={this.state.buttonRouteSetDisabled}>
-                  {t('home.set-route')}
-                </Button>
-                {' '}{this.state.routeSetResult}
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item sm={4} xs={12}>
-            <RouteList waypoints={this.state.routeFindResultWaypoints}
-                       message={this.state.routeFindResultMessage}
-                       numberOfRoutes={this.state.numberOfRoutes}
-                       activeRoute={this.state.activeRoute}
-                       recalculateRoute={this.calculateRoute}
-                       chooseRoute={this.chooseRoute}
-            />
-          </Grid>
-          <Grid item sm={8} xs={12}>
-            <Map waypoints={this.state.routeFindResultWaypoints} mapConnections={this.state.mapConnections}  />
-          </Grid>
+      <Grid container spacing={2} className='card'>
+        <Grid item xs={12}>
+          <Typography variant="h6" align="center">{t('home.select-systems')}</Typography>
         </Grid>
 
-      </div>
+        <Grid item sm={5} xs={12}>
+          <Box display="flex" justifyContent="center">
+            <SystemInput fieldId="start-system" fieldName={t('home.start-system')} onChange={this.startChanged}
+                         findRoute={this.calculateRoute} fieldValue={this.state.startSystemInput} />
+          </Box>
+        </Grid>
+        <Grid item sm={2} xs={12}>
+          <Box display="flex" justifyContent="center">
+            <IconButton color="primary" className={classes.swapButton} title={t('home.swap-systems')}
+                        onClick={this.swapSystems} disabled={this.state.buttonRouteFindDisabled}>
+              <SwapHorizIcon />
+            </IconButton>
+          </Box>
+        </Grid>
+        <Grid item sm={5} xs={12}>
+          <Box display="flex" justifyContent="center">
+            <SystemInput fieldId="end-system" fieldName={t('home.end-system')} onChange={this.endChanged}
+                         findRoute={this.calculateRoute} fieldValue={this.state.endSystemInput} />
+          </Box>
+        </Grid>
+
+        <Grid item xs={6}>
+          <Box display="flex" justifyContent="flex-end">
+            <Button variant="contained" color="primary" onClick={() => this.routeFind()}
+                    disabled={this.state.buttonRouteFindDisabled}>
+              {t('home.find-route')}
+            </Button>
+          </Box>
+        </Grid>
+        <Grid item xs={6}>
+          <Box display="flex" justifyContent="flex-start">
+            <Typography>
+              <Button variant="contained" color="primary" onClick={this.routeSet}
+                      disabled={this.state.buttonRouteSetDisabled}>
+                {t('home.set-route')}
+              </Button>
+              {' '}{this.state.routeSetResult}
+            </Typography>
+          </Box>
+        </Grid>
+
+        <Grid item sm={4} xs={12}>
+          <RouteList waypoints={this.state.routeFindResultWaypoints}
+                     message={this.state.routeFindResultMessage}
+                     numberOfRoutes={this.state.numberOfRoutes}
+                     activeRoute={this.state.activeRoute}
+                     recalculateRoute={this.calculateRoute}
+                     chooseRoute={this.chooseRoute}
+          />
+        </Grid>
+        <Grid item sm={8} xs={12}>
+          <Map waypoints={this.state.routeFindResultWaypoints} mapConnections={this.state.mapConnections}  />
+        </Grid>
+      </Grid>
     );
   }
 

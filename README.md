@@ -74,6 +74,7 @@ The following variables are optional, see resources/application.conf for their d
 - EVE_ROUTE_CORS_DOMAIN - Set this if the frontend and backend run on different domains or ports,
   it includes http and https.
 - EVE_ROUTE_ALLIANCE_ALLOWLIST - A comma separated list of EVE alliances to restrict the login to their members.
+- EVE_ROUTE_ROLE_IMPORT - A comma separated list of character IDs that can import Ansiblex gates.
 
 ## Run the application
 

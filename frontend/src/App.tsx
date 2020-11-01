@@ -4,11 +4,12 @@ import { TFunction } from "i18next";
 import { createStyles, Theme, Container } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
-import { GlobalDataContext } from './GlobalDataContext';
+import { GlobalDataContext, emptyUser, userType } from './GlobalDataContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Admin from './pages/Admin';
 import './App.css';
 import { ResponseAuthUser, ResponseMapConnections } from "./response";
 
@@ -33,11 +34,8 @@ interface Props extends WithTranslation {
 
 type AppState = {
   loaded: boolean,
-  user: {
-    name: string,
-    allianceName: string,
-    allianceTicker: string,
-  },
+  user: userType,
+  page: string,
   mapConnections: any, // ResponseMapConnections|null
 }
 
@@ -61,8 +59,13 @@ class App extends React.Component<Props, AppState> {
           <Header connectionChanged={this.connectionChanged}/>
 
           <Container component="main" maxWidth="lg">
-            { this.state.loaded && this.state.user.name === '' && <Login /> }
-            { this.state.loaded && this.state.user.name        && <Home /> }
+            { this.state.loaded &&
+              <div className='grid-spacing-2-wrapper'>
+                { this.state.user.name === '' && <Login /> }
+                { this.state.user.name && this.state.page === 'Home' && <Home /> }
+                { this.state.user.name && this.state.page === 'Admin' && <Admin /> }
+              </div>
+            }
           </Container>
 
           <footer className={classes.footer}>
@@ -79,11 +82,8 @@ class App extends React.Component<Props, AppState> {
 
     this.state = {
       loaded: false,
-      user: {
-        name: '',
-        allianceName: '',
-        allianceTicker: '',
-      },
+      user: emptyUser,
+      page: getPage(),
       mapConnections: null,
     };
 
@@ -98,6 +98,7 @@ class App extends React.Component<Props, AppState> {
   }
 
   componentDidMount() {
+    window.addEventListener('hashchange', () => setPage(this));
     setupAxios(this);
     setInterval(this.fetchUser, 1000 * 60 * 10); // every 10 minutes
     this.fetchUser();
@@ -133,11 +134,7 @@ class App extends React.Component<Props, AppState> {
   logoutUser() {
     this.setState({
       loaded: true,
-      user: {
-        name: '',
-        allianceName: '',
-        allianceTicker: '',
-      }
+      user: emptyUser
     });
   }
 }
@@ -167,5 +164,21 @@ const loadConnections = (app: App) => {
     app.setState({mapConnections: r.data});
   }).catch(() => {
     app.setState({mapConnections: {ansiblexes: [], temporary: [], code: null}});
+  });
+};
+
+const getPage = (): string => {
+  const validPages = ['Home', 'Admin'];
+  const page = window.location.hash.substring(1);
+  if (validPages.indexOf(page) !== -1) {
+    return page;
+  } else {
+    return 'Home';
+  }
+};
+
+const setPage = (app: App) => {
+  app.setState({
+    page: getPage(),
   });
 };

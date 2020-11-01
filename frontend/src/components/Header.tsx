@@ -45,6 +45,14 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 0,
     paddingRight: 0,
   },
+  toolbarTitle: {
+    marginRight: '8px',
+    cursor: 'pointer',
+  },
+  toolbarButton: {
+    position: "relative",
+    top: "3px",
+  },
   toolbarSpace: {
     flexGrow: 1,
   },
@@ -62,13 +70,26 @@ export default function Header(props: Props) {
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
 
+  const openPage = (page: string) => {
+    window.location.hash = page;
+  };
+
   return (
     <HideOnScroll>
       <AppBar color="default" elevation={8} className={classes.appBar}>
         <Container maxWidth="lg">
           <Toolbar className={classes.toolbar} variant="dense">
             <LocationOnOutlinedIcon style={{color: '#90caf9', fontSize: '1.75rem', marginRight: '4px'}}/>
-            <Typography variant="h6" noWrap style={{marginRight: '16px'}}>{t('app.name')}</Typography>
+            <Typography variant="h6" noWrap className={classes.toolbarTitle} onClick={() => openPage('Home')}>
+              {t('app.name')}
+            </Typography>
+
+            {globalData.user.name && globalData.user.roles.indexOf('import') !== -1 &&
+              <Button size="small" color="primary" disableRipple className={classes.toolbarButton}
+                      onClick={() => openPage('Admin')}>
+                {t('header.admin')}
+              </Button>
+            }
 
             <HeaderModalButtons connectionChanged={props.connectionChanged}/>
 

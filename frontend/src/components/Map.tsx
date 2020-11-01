@@ -98,6 +98,10 @@ export default function Map(props: Props) {
       SVG.updateConnections(globalData.mapConnections);
       ResizeMap.init();
     }
+
+    return function cleanup() {
+      SVG.init = false;
+    };
   }, [globalData.mapConnections, mapData, svgLoaded]);
 
   useEffect(() => {
