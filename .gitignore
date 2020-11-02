@@ -11,3 +11,5 @@
 /resources/graph.json
 /resources/public/*
 !/resources/public/.gitkeep
+/notes.txt
+/sqlite.db
