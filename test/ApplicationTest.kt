@@ -27,7 +27,7 @@ class ApplicationTest {
         with(engine) {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                //assertEquals("HELLO WORLD!", response.content)
+                assertTrue(response.content?.contains("EVE Route Planner")!!); // "File not found." without frontend
             }
         }
     }
