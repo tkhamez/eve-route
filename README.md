@@ -6,16 +6,20 @@ https://eve-route.herokuapp.com
 
 <!-- toc -->
 
-- [Setup](#setup)
-  * [Git](#git)
-  * [EVE App](#eve-app)
+- [Prerequisites](#prerequisites)
+  * [EVE Application](#eve-application)
   * [Database](#database)
-- [Build and Run](#build-and-run)
+  * [Configuration with Environment Variables](#configuration-with-environment-variables)
+- [Run the application](#run-the-application)
+  * [Run the JAR file](#run-the-jar-file)
+  * [Run with Docker](#run-with-docker)
+  * [Deploy on Heroku](#deploy-on-heroku)
+- [Development Environment](#development-environment)
+  * [Git](#git)
+  * [Docker](#docker)
   * [Frontend](#frontend)
   * [Backend](#backend)
-  * [Docker](#docker)
-- [Deploy](#deploy)
-  * [Heroku](#heroku)
+  * [Build Distribution](#build-distribution)
 - [Final Notes](#final-notes)
   * [Contact](#contact)
   * [Donations](#donations)
@@ -23,19 +27,11 @@ https://eve-route.herokuapp.com
 
 <!-- tocstop -->
 
-## Setup
+## Prerequisites
 
-### Git
+### EVE Application
 
-```shell script
-git clone https://github.com/tkhamez/eve-route.git
-cd eve-route
-git submodule update --init
-```
-
-### EVE App
-
-Create an EVE app at https://developers.eveonline.com with the following scopes
+Create an EVE application at https://developers.eveonline.com with the following scopes
 - esi-location.read_location.v1
 - esi-search.search_structures.v1
 - esi-universe.read_structures.v1
@@ -47,121 +43,116 @@ Set the Callback URL to https://your.domain.tld/api/auth/login
 
 The application needs a MongoDB, PostgreSQL, MySQL, MariaDB, SQLite or H2 (embedded mode) database.
 
-## Build and Run
+### Configuration with Environment Variables
 
-### Frontend
+The application is configured with environment variables. You can simply set them with `export VAR=value` for the
+development environment or add them to your .bashrc file for example.
 
-Requires [Node.js](https://nodejs.org/) 12 and [Yarn](https://yarnpkg.com/).
+The following variables are required:
+- EVE_ROUTE_DB
+- EVE_ROUTE_CLIENT_ID - Your EVE application client ID.
+- EVE_ROUTE_CLIENT_SECRET - Your EVE application secret.
+- EVE_ROUTE_CALLBACK - The callback URL for your EVE application: https://your.domain/api/auth/login
 
-```shell script
-cd frontend
-yarn install
-```
-
-Dev: build map data and start server:
-```shell script
-npx ts-node src/scripts/map.ts
-yarn start
-```
-
-Prod: build (files are copied to the backend into resources/public):
-```shell script
-yarn build
-```
-
-### Backend
-
-Requires [JDK](https://openjdk.java.net/) 11.
-
-Make sure the necessary environment variables are set, e.g.:
-```shell script
-export EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route
-export EVE_ROUTE_CLIENT_ID=ab12
-export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
-
-# the following are optional (default values are defined in resources/application.conf):
-export EVE_ROUTE_SECURE=1
-export EVE_ROUTE_CORS_DOMAIN=localhost:3000
-export EVE_ROUTE_ALLIANCE_ALLOWLIST=99003214,99010079
-export EVE_ROUTE_OAUTH_AUTHORIZE=https://login.eveonline.com/v2/oauth/authorize
-export EVE_ROUTE_OAUTH_TOKEN=https://login.eveonline.com/v2/oauth/token
-export EVE_ROUTE_OAUTH_KEY_SET=https://login.eveonline.com/oauth/jwks
-export EVE_ROUTE_OAUTH_ISSUER=login.eveonline.com
-export EVE_ROUTE_ESI_DOMAIN=https://esi.evetech.net
-export EVE_ROUTE_ESI_DATASOURCE=tranquility
-```
-
-Example connection strings for other databases: 
+Example connection strings for EVE_ROUTE_DB:
+- mongodb://eve-route:password@localhost:27017/eve-route
 - jdbc:postgresql://user:pass@localhost:5432/db
 - jdbc:mysql://user:pass@localhost/db?serverTimezone=UTC
 - jdbc:mariadb://user:pass@localhost/db
 - jdbc:sqlite:/data/data.db
 - jdbc:h2:./h2file
 
-The CORS domain setting includes http and https.
+The following variables are optional, see resources/application.conf for their default values:
+- EVE_ROUTE_PORT
+- EVE_ROUTE_OAUTH_AUTHORIZE
+- EVE_ROUTE_OAUTH_TOKEN
+- EVE_ROUTE_OAUTH_KEY_SET
+- EVE_ROUTE_OAUTH_ISSUER
+- EVE_ROUTE_ESI_DOMAIN
+- EVE_ROUTE_ESI_DATASOURCE
+- EVE_ROUTE_SECURE - Value 1 enables the secure flag for the session cookie.
+- EVE_ROUTE_CORS_DOMAIN - Set this if the frontend and backend run on different domains or ports,
+  it includes http and https.
+- EVE_ROUTE_ALLIANCE_ALLOWLIST - A comma separated list of EVE alliances to restrict the login to their members.
 
-EVE_ROUTE_SECURE=1 enables the secure flag for the session cookie.
+## Run the application
 
-#### Generate Graph from ESI Data
+You can download the fat JAR and WAR files from a [GitHub Release](https://github.com/tkhamez/eve-route/releases) 
+or build it yourself (see [Development Environment](#development-environment)).
 
-Generate `resources/graph.json`:
+### Run the JAR file
+
+This needs a Java 11 runtime.
+
+Run the application - adjust the value to match your environment:
 ```shell script
-./gradlew buildGraph
+java \
+  -DEVE_ROUTE_DB=jdbc:sqlite:$PWD/sqlite.db \
+  -DEVE_ROUTE_CLIENT_ID=ab12 \
+  -DEVE_ROUTE_CLIENT_SECRET=12ab \
+  -DEVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
+  -jar eve-route.jar
 ```
 
-#### Dev
+### Run with Docker
 
-Run the app:
+This runs the JAR file with Docker.
+
+Make sure the fat JAR file exists in ./build/libs/eve-route-*.jar, then build the Docker container:
 ```shell script
-./gradlew run
+docker build -t everoute .
 ```
 
-To continuously rebuild on change, execute in a second console: 
+Run the container, with a SQLite DB:
 ```shell script
-./gradlew build -t -x test -x shadowJar -x war
+docker run \
+  --env EVE_ROUTE_DB=jdbc:sqlite:/data/sqlite.db \
+  --env EVE_ROUTE_CLIENT_ID=ab12 \
+  --env EVE_ROUTE_CLIENT_SECRET=12ab \
+  --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
+  --mount type=bind,source="$(pwd)",target=/data \
+  -p 8080:8080 --rm everoute
+```
+or with the MongoDB from the Docker development environment for example:
+```shell script
+docker run \
+  --env EVE_ROUTE_DB=mongodb://eve-route:password@localhost:27017/eve-route \
+  --env EVE_ROUTE_CLIENT_ID=ab12 \
+  --env EVE_ROUTE_CLIENT_SECRET=12ab \
+  --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
+  --network host \
+  -p 8080:8080 --rm everoute
 ```
 
-#### Tests
+### Deploy on Heroku
 
+You need the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+
+Create an app and add the Heroku Postgres addon or setup another database.
+
+Heroku needs to build the frontend first, so add build packs in this order:
 ```shell script
-./gradlew test
+heroku buildpacks:add heroku/nodejs
+heroku buildpacks:add heroku/gradle
 ```
 
-#### Debug
+Set the EVE_ROUTE_CORS_DOMAIN to your domain (e. g. eve-route.herokuapp.com), or some POST requests may not work.
 
-IntelliJ Configuration (from Kotlin template):
-- Main class: io.ktor.server.netty.EngineMain
-- Add environment variables
-- Use classpath of module: eve-route.main
+## Development Environment
 
-#### Fat JAR
+### Git
 
 ```shell script
-./gradlew buildGraph
-./gradlew shadowJar
-
-java -jar build/libs/eve-route-0.4.0.jar
-```
-
-Note: Make sure the jar file contains the `graph.json` file, build it again if it is missing.
-
-#### WAR (Servlet Container)
-
-```shell script
-./gradlew buildGraph
-./gradlew war
-
-cd build/libs/ && jar -xvf eve-route-0.4.0.war
-cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
+git clone https://github.com/tkhamez/eve-route.git
+cd eve-route
+git submodule update --init
 ```
 
 ### Docker
 
-#### Development Environment
+This was only tested so far on Linux with Docker 19.03 and [Docker Compose](https://docs.docker.com/compose/) 1.17.
 
-This was only tested so far on Linux with Docker 19.03 and Docker Compose 1.17.
-
+Run the containers:
 ```shell script
 export UID && docker-compose up
 ```
@@ -174,47 +165,81 @@ Create shells to run commands for the frontend and backend:
 export UID && docker-compose run --service-ports node /bin/sh
 export UID && docker-compose run --service-ports gradle /bin/bash
 
-# second shell in the same grade container (adjust name, find name: $ docker ps)
+# second shell in the same Grade container (adjust name, find name: $ docker ps)
 docker exec -it everoute_gradle_run_1 /bin/bash
 ```
 
-Set the necessary environment variables in the Gradle container:
+Note: You can use `gradle` instead of `./gradlew` to save ~100MB download.
+
+### Frontend
+
+Requires [Node.js](https://nodejs.org/) 12 and [Yarn](https://yarnpkg.com/) 1.
+
+Install dependencies:
 ```shell script
-export EVE_ROUTE_CLIENT_ID=ab12
-export EVE_ROUTE_CLIENT_SECRET=12ab
-export EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login
+cd frontend
+yarn install
 ```
 
-Note: Use `gradle` instead of `./gradlew`, this saves a download of ~100MB.
-
-#### Production
-
-First build the frontend and the application jar file with the `shadowJar` task, then build the Docker container:
+Build map data and start the development server:
 ```shell script
-docker build -t everoute .
+npx ts-node src/scripts/map.ts
+yarn start
 ```
 
-Run the container, this example uses the Mongo database from docker-compose:
+### Backend
+
+Requires [JDK](https://openjdk.java.net/) 11.
+
+Generate `resources/graph.json` from ESI data:
 ```shell script
-docker run \
-  --env EVE_ROUTE_DB=mongodb://eve-route:password@127.0.0.1:27017/eve-route \
-  --env EVE_ROUTE_CLIENT_ID=ab12 \
-  --env EVE_ROUTE_CLIENT_SECRET=12ab \
-  --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
-  --network host -m512M --cpus 2 -it -p 8080:8080 --rm everoute
+./gradlew buildGraph
 ```
 
-See also https://ktor.io/docs/docker.html.
-
-## Deploy
-
-### Heroku
-
-Add build packs in this order:
-
+Set the environment variables for your EVE application, then run the app:
 ```shell script
-heroku buildpacks:add heroku/nodejs
-heroku buildpacks:add heroku/gradle
+./gradlew run
+```
+
+To continuously rebuild on change, execute in a second console: 
+```shell script
+./gradlew build -t -x test -x shadowJar -x war
+```
+
+Tests:
+```shell script
+./gradlew test
+```
+
+IntelliJ debug configuration (from Kotlin template):
+- Main class: io.ktor.server.netty.EngineMain
+- Add environment variables
+- Use classpath of module: eve-route.main
+
+### Build Distribution
+
+Build the frontend first, the files are copied to the backend into resources/public:
+```shell script
+cd frontend && yarn install
+yarn build
+```
+
+Build the fat JAR
+```shell script
+./gradlew buildGraph
+./gradlew shadowJar
+```
+
+Build the WAR file
+```shell script
+./gradlew buildGraph
+./gradlew war
+```
+
+Test the WAR file:
+```shell script
+cd build/libs/ && jar -xvf eve-route-*.war
+cd WEB-INF && java -classpath "lib/*:classes/." io.ktor.server.netty.EngineMain
 ```
 
 ## Final Notes
