@@ -1,5 +1,7 @@
 
-## next
+## 0.4.1
+
+2020-11-02
 
 - New: For each release, the fat JAR and WAR files are now built and can be downloaded from GitHub.
 - Small text and usability improvements.
