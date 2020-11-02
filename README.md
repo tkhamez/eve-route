@@ -63,7 +63,7 @@ Example connection strings for EVE_ROUTE_DB:
 - jdbc:h2:./h2file
 
 The following variables are optional, see resources/application.conf for their default values:
-- EVE_ROUTE_PORT
+- PORT
 - EVE_ROUTE_OAUTH_AUTHORIZE
 - EVE_ROUTE_OAUTH_TOKEN
 - EVE_ROUTE_OAUTH_KEY_SET
