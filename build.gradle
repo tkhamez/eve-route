@@ -110,6 +110,7 @@ task prepareKotlinHome(type: Copy) {
     }
 }
 
+// Task to build the resources/graph.json file
 task buildGraph(type: JavaExec) {
     dependsOn prepareKotlinHome
     dependsOn classes
@@ -125,14 +126,12 @@ task buildGraph(type: JavaExec) {
 
 // This task will generate your fat JAR and put it in the ./build/libs/ directory
 shadowJar {
-    dependsOn buildGraph
     manifest {
         attributes 'Main-Class': "io.ktor.server.netty.EngineMain"
     }
 }
 
-war.dependsOn buildGraph
-
+// Task for Heroku
 task stage {
     dependsOn buildGraph
     dependsOn installDist

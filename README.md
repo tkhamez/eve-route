@@ -138,6 +138,7 @@ IntelliJ Configuration (from Kotlin template):
 #### Fat JAR
 
 ```shell script
+./gradlew buildGraph
 ./gradlew shadowJar
 
 java -jar build/libs/eve-route-0.4.0.jar
@@ -148,6 +149,7 @@ Note: Make sure the jar file contains the `graph.json` file, build it again if i
 #### WAR (Servlet Container)
 
 ```shell script
+./gradlew buildGraph
 ./gradlew war
 
 cd build/libs/ && jar -xvf eve-route-0.4.0.war
