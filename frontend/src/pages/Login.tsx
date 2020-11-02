@@ -101,6 +101,7 @@ const Login = () => {
               <Typography className={classes.row3} variant={"caption"}>
                 {t('login.update-gates-description')}
               </Typography>
+              <Typography variant={"body2"}>{t('login.token-deletion')}</Typography>
             </FormGroup>
 
             <Link className={classes.row}
@@ -108,6 +109,7 @@ const Login = () => {
                   rel="noopener noreferrer">
               <img src="/eve-sso-login-black-large.png" alt={t('login.log-in')} title={t('login.log-in')}/>
             </Link>
+
             <Typography className={classes.row2} variant="body2" align="center">
               {t('login.login-restriction')}
             </Typography>

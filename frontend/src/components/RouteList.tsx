@@ -160,9 +160,11 @@ export default function RouteList(props: Props) {
           </IconButton>
           <small>
             {t('routeList.avoided-systems')}:{' '}
+            {avoidedSystems.length === 0 && t('routeList.none')}
             {avoidedSystems.map((system) => { return system.name }).join(', ')}
             <br/>
             {t('routeList.removed-connections')}:{' '}
+            {removedConnections.length === 0 && t('routeList.none')}
             {removedConnections.map((connection, index) => {
               return (
                 <span key={index}>

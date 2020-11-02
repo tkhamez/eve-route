@@ -4,7 +4,7 @@
     "error": "Error."
   },
   "responseCode": {
-    "AlreadyUpdated": "Gates were already updated within the last hour.",
+    "AlreadyUpdated": "Gates for your alliance were already updated within the last hour.",
     "AuthError": "Authentication or ESI token error.",
     "ConnectionStored": "Connection successfully stored.",
     "FailedToStoreData": "Failed to store data.",
@@ -22,7 +22,7 @@
     "SetWaypointsSuccess": "Waypoints successfully set.",
     "SetWaypointsFailure": "Failed to set waypoints: {{message}}.",
     "SystemNotFound": "System(s) not found.",
-    "WrongSearchTerm": "Wrong search term."
+    "WrongSearchTerm": "Wrong search term, use »."
   },
   "header": {
     "no-alliance": "No alliance",
@@ -60,7 +60,8 @@
     "update-gates-description": [
       "Update Ansiblex jump gates for your alliance, requires: ",
       "esi-search.search_structures.v1, esi-universe.read_structures.v1"
-    ]
+    ],
+    "token-deletion": "Only you can use your ESI tokens while logged in. They are deleted when you log out."
   },
   "home": {
     "select-systems": "Enter your start and end system:",
@@ -88,13 +89,16 @@
     "delete": "Delete"
   },
   "howItWorks": {
+    "gate-sources": [
+      "The application finds Ansiblex gates with the <1>EVE API (ESI)</1> search. They must be updated manually."
+    ],
     "gates-alliance": [
-      "The application stores one set of Ansiblex gates per EVE alliance. ",
+      "For each alliance a set of Ansiblex gates is stored. ",
       "So it is assumed that everyone in the same alliance can use the same gates. ",
       "This may not be true of course, but should be good enough for most use cases."
     ],
     "esi-results": [
-      "Unfortunately the EVE API (ESI) does not always return all Ansiblex gates the character can use. ",
+      "Unfortunately the API does not always return all Ansiblex gates the character can use. ",
       "Instead it seems to return only gates for which the character has \"docking access\". ",
       "See also <1>this ticket</1>."
     ],
@@ -111,6 +115,10 @@
       "For the in-game route, a waypoint is set for the system where the wormhole is located. ",
       "The wormhole system itself cannot be set as a waypoint."
     ],
+    "pochven": [
+      "It is also not possible to set waypoints to Pochven systems (Triglavian space), ",
+      "unless you are in that region."
+    ],
     "several-routes": [
       "Sometimes there are several routes with the same number of jumps. ",
       "In this case the application will randomly return one of them."
@@ -122,6 +130,7 @@
       "Unfortunately CCP does not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
       "But a manually initiated search <3>seems to be ok</3>."
     ],
+    "update-hint": "The gates can only be updated once per hour for each alliance.",
     "last-update": "Last update:",
     "esi-search-label": "ESI search",
     "esi-search-help": "Search for: »",
@@ -138,6 +147,7 @@
     "route": "Route",
     "avoided-systems": "Avoided systems",
     "removed-connections": "Removed connections",
+    "none": "none",
     "reset": "Reset",
     "dotlan": "Show on <1>DOTLAN EveMaps</1>",
     "unknown-ansiblex": "Unknown Ansiblex",

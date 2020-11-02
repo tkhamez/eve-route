@@ -8,6 +8,12 @@ export default function HowItWorks() {
   return (
     <div className="grid-spacing-2-wrapper modal">
       <Typography variant="body2">
+        <Trans i18nKey="howItWorks.gate-sources">
+          %<Link href="https://esi.evetech.net/ui/" target="_blank" rel="noopener noreferrer">%</Link>%
+        </Trans>
+      </Typography>
+      <br/>
+      <Typography variant="body2">
         {t('howItWorks.gates-alliance')}
       </Typography>
       <br/>
@@ -24,6 +30,10 @@ export default function HowItWorks() {
       <br/>
       <Typography variant="body2">
         {t('howItWorks.wormholes')}
+      </Typography>
+      <br/>
+      <Typography variant="body2">
+        {t('howItWorks.pochven')}
       </Typography>
       <br/>
       <Typography variant="body2">

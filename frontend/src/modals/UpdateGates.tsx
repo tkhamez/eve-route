@@ -12,7 +12,7 @@ export default function UpdateGates() {
   const globalData = useContext(GlobalDataContext);
   const [gatesUpdated, setGatesUpdated] = useState('');
   const [gatesResult, setGatesResult] = useState<Array<string>|null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('»');
   const [searchResult, setSearchResult] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
@@ -77,14 +77,18 @@ export default function UpdateGates() {
           <Typography variant="body2">
             <Trans i18nKey="updateGates.intro">
               %
-              <Link href="https://developers.eveonline.com/blog/article/the-esi-api-is-a-shared-resource-do-not-abuse-it"
-                    target="_blank" rel="noopener noreferrer">%</Link>
+              <Link target="_blank" rel="noopener noreferrer"
+                href="https://developers.eveonline.com/blog/article/the-esi-api-is-a-shared-resource-do-not-abuse-it"
+              >%</Link>
               %<Link href="https://github.com/esi/esi-issues/issues/1185"
                      target="_blank" rel="noopener noreferrer">%</Link>%
             </Trans>
           </Typography>
           <br/>
-          <Typography variant="body2">{t('updateGates.last-update')} {gatesUpdated}</Typography>
+          <Typography variant="body2">
+            {t('updateGates.update-hint')}<br/>
+            {t('updateGates.last-update')} {gatesUpdated}
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -94,6 +98,7 @@ export default function UpdateGates() {
             helperText={t('updateGates.esi-search-help')}
             onChange={e => setSearchTerm(e.target.value)}
             style={{verticalAlign: 'baseline'}}
+            defaultValue="»"
           />
           {' '}
           <Button variant="contained"  disabled={submitDisabled}

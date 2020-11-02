@@ -2,6 +2,7 @@
 ## next
 
 - New: For each release, the fat JAR and WAR files are now built and can be downloaded from GitHub.
+- Small text and usability improvements.
 - Fixed check for supported browsers.
 
 ## 0.4.0
