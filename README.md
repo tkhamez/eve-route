@@ -52,7 +52,7 @@ The following variables are required:
 - EVE_ROUTE_DB
 - EVE_ROUTE_CLIENT_ID - Your EVE application client ID.
 - EVE_ROUTE_CLIENT_SECRET - Your EVE application secret.
-- EVE_ROUTE_CALLBACK - The callback URL for your EVE application: https://your.domain/api/auth/login
+- EVE_ROUTE_CALLBACK - The callback URL from your EVE application.
 
 Example connection strings for EVE_ROUTE_DB:
 - mongodb://eve-route:password@localhost:27017/eve-route
@@ -63,7 +63,7 @@ Example connection strings for EVE_ROUTE_DB:
 - jdbc:h2:./h2file
 
 The following variables are optional, see resources/application.conf for their default values:
-- PORT
+- PORT - The HTTP port for the webserver.
 - EVE_ROUTE_OAUTH_AUTHORIZE
 - EVE_ROUTE_OAUTH_TOKEN
 - EVE_ROUTE_OAUTH_KEY_SET
@@ -84,7 +84,7 @@ or build it yourself (see [Development Environment](#development-environment)).
 
 This needs a Java 11 runtime.
 
-Run the application - adjust the value to match your environment:
+Run the application - adjust the values to match your environment:
 ```shell script
 java \
   -DEVE_ROUTE_DB=jdbc:sqlite:$PWD/sqlite.db \
@@ -98,7 +98,7 @@ java \
 
 This runs the JAR file with Docker.
 
-Make sure the fat JAR file exists in ./build/libs/eve-route-*.jar, then build the Docker container:
+Make sure there is exactly one fat JAR file at `./build/libs/eve-route-*.jar`, then build the Docker container:
 ```shell script
 docker build -t everoute .
 ```
@@ -196,7 +196,7 @@ Generate `resources/graph.json` from ESI data:
 ./gradlew buildGraph
 ```
 
-Set the environment variables for your EVE application, then run the app:
+Set the environment variables for the database and your EVE application, then run the app:
 ```shell script
 ./gradlew run
 ```
