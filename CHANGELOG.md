@@ -1,4 +1,8 @@
 
+## next
+
+- Fixed database migrations for H2
+
 ## 0.4.1
 
 2020-11-02

@@ -79,6 +79,7 @@ class Exposed(uri: String): DbInterface {
         if (vendor == "mariadb") {
             vendor = "mysql"
         }
+        val enc = if (vendor == "h2") "\"" else ""
         val flyway = Flyway
             .configure()
             .dataSource(url, user, password)
@@ -95,7 +96,7 @@ class Exposed(uri: String): DbInterface {
                 tablesAnsiblexExist = false
             }
             try {
-                TransactionManager.current().exec("SELECT 1 FROM flyway_schema_history")
+                TransactionManager.current().exec("SELECT 1 FROM ${enc}flyway_schema_history${enc}")
             } catch (e: Exception) {
                 tablesFlywayExist = false
             }
