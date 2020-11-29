@@ -12,6 +12,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
+import net.tkhamez.everoute.db
 import net.tkhamez.everoute.EsiToken
 import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.Login
@@ -109,6 +110,7 @@ fun Route.authentication(config: Config) {
                             csrfToken = randomString(),
                         )
                     )
+                    db(config.db).loginRegister(character.id)
                 }
 
                 call.respondRedirect("/")

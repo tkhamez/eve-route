@@ -32,3 +32,10 @@ data class MongoAlliance(
     val id: Int,
     val updated: Date,
 )
+
+data class MongoLogin(
+    val characterId: Int,
+    val year: Int,
+    val month: Int,
+    var count: Int,
+)

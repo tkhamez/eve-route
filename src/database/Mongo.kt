@@ -1,15 +1,15 @@
 package net.tkhamez.everoute.database
 
-import net.tkhamez.everoute.data.MongoAlliance
-import net.tkhamez.everoute.data.MongoAnsiblex
-import net.tkhamez.everoute.data.MongoAnsiblexV02
-import net.tkhamez.everoute.data.MongoTemporaryConnection
+import net.tkhamez.everoute.data.*
 import org.litote.kmongo.*
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.*
 
 private const val COLLECTION_ANSIBLEX = "ansiblex"
 private const val COLLECTION_TEMPORARY_CONNECTION = "temporary-connection"
 private const val COLLECTION_ALLIANCE = "alliance"
+private const val COLLECTION_LOGIN = "login"
 
 class Mongo(uri: String): DbInterface {
     private val dbName = uri.substring(uri.lastIndexOf('/') + 1)
@@ -130,6 +130,28 @@ class Mongo(uri: String): DbInterface {
             col.insertOne(alliance)
         } else {
             col.replaceOne(MongoAlliance::id eq alliance.id, alliance)
+        }
+    }
+
+    override fun loginRegister(characterId: Int) {
+        val col = database.getCollection<MongoLogin>(COLLECTION_LOGIN)
+        val today = LocalDate.now(ZoneOffset.UTC)
+        val filter = and(
+            MongoLogin::characterId eq characterId,
+            MongoLogin::year eq today.year,
+            MongoLogin::month eq today.monthValue,
+        )
+        val existingLogin = col.findOne(filter)
+        if (existingLogin == null) {
+            col.insertOne(MongoLogin(
+                characterId = characterId,
+                year = today.year,
+                month = today.monthValue,
+                count = 1,
+            ))
+        } else {
+            existingLogin.count ++
+            col.replaceOne(filter, existingLogin)
         }
     }
 }

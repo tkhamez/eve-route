@@ -1,6 +1,7 @@
 
 ## next
 
+- Added login statistics.
 - Fixed database migrations for H2
 
 ## 0.4.1

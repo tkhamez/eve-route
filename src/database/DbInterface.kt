@@ -24,4 +24,6 @@ interface DbInterface {
     fun allianceGet(allianceId: Int): MongoAlliance?
 
     fun allianceUpdate(alliance: MongoAlliance)
+
+    fun loginRegister(characterId: Int)
 }

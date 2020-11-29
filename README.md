@@ -206,7 +206,7 @@ To continuously rebuild on change, execute in a second console:
 ./gradlew build -t -x test -x shadowJar -x war
 ```
 
-Tests:
+Tests (needs environment variables):
 ```shell script
 ./gradlew test
 ```

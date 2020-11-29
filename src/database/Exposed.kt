@@ -12,8 +12,10 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.*
 
 class Exposed(uri: String): DbInterface {
@@ -48,7 +50,17 @@ class Exposed(uri: String): DbInterface {
         val system2Name = varchar("system2Name", 255)
         val created = datetime("created")
         init {
-            index(true, system1Id, system2Id, characterId)
+            index(isUnique = true, system1Id, system2Id, characterId)
+        }
+    }
+
+    object Login: IntIdTable() {
+        val characterId = integer("characterId")
+        val year = integer("year")
+        val month = integer("month")
+        val count = integer("count")
+        init {
+            index(isUnique = true, characterId, year, month)
         }
     }
 
@@ -73,7 +85,8 @@ class Exposed(uri: String): DbInterface {
     }
 
     override fun migrate() {
-        //transaction { SchemaUtils.create(Alliance, Ansiblex, AnsiblexAlliance, TemporaryConnection) }
+        // change log level to "debug" in logback.xml to see the SQL statements
+        //transaction { SchemaUtils.create(Alliance, Ansiblex, AnsiblexAlliance, TemporaryConnection, Login) }
 
         var vendor = url.substring(5, url.indexOf(":", 5))
         if (vendor == "mariadb") {
@@ -86,7 +99,7 @@ class Exposed(uri: String): DbInterface {
             .locations("db/migration/$vendor")
             .load()
 
-        // Check if V1 from v0.2.0 already exists
+        // Check if migration v1 from application v0.2.0 already exists
         var tablesAnsiblexExist = true
         var tablesFlywayExist = true
         transaction {
@@ -268,6 +281,29 @@ class Exposed(uri: String): DbInterface {
                 Alliance.update({ Alliance.id eq existing[Alliance.id] }) {
                     it[id] = alliance.id
                     it[updated] = localDateTime(alliance.updated)
+                }
+            }
+        }
+    }
+
+    override fun loginRegister(characterId: Int) {
+        val today = LocalDate.now(ZoneOffset.UTC)
+        transaction {
+            val existing = Login.select {
+                Login.characterId eq characterId and
+                    (Login.year eq today.year and
+                        (Login.month eq today.monthValue))
+            }.firstOrNull()
+            if (existing == null) {
+                Login.insert {
+                    it[Login.characterId] = characterId
+                    it[year] = today.year
+                    it[month] = today.monthValue
+                    it[count] = 1
+                }
+            } else {
+                Login.update({ Login.id eq existing[Login.id] }) {
+                    it[count] = existing[count] + 1
                 }
             }
         }
