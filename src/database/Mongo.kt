@@ -7,6 +7,10 @@ import net.tkhamez.everoute.data.MongoTemporaryConnection
 import org.litote.kmongo.*
 import java.util.*
 
+private const val COLLECTION_ANSIBLEX = "ansiblex"
+private const val COLLECTION_TEMPORARY_CONNECTION = "temporary-connection"
+private const val COLLECTION_ALLIANCE = "alliance"
+
 class Mongo(uri: String): DbInterface {
     private val dbName = uri.substring(uri.lastIndexOf('/') + 1)
     private val client = KMongo.createClient(uri)
@@ -14,8 +18,8 @@ class Mongo(uri: String): DbInterface {
 
     override fun migrate() {
         // 0.2.0 -> 0.3.0: copy "allianceId" to "alliances"
-        val col = database.getCollection<MongoAnsiblex>("ansiblex")
-        database.getCollection<MongoAnsiblexV02>("ansiblex").find(MongoAnsiblexV02::allianceId gt 0).forEach {
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
+        database.getCollection<MongoAnsiblexV02>(COLLECTION_ANSIBLEX).find(MongoAnsiblexV02::allianceId gt 0).forEach {
             val filter = and(MongoAnsiblex::id eq it.id, MongoAnsiblex::alliances exists true)
             var gateV03 = col.findOne(filter)
             if (gateV03 == null) {
@@ -36,14 +40,14 @@ class Mongo(uri: String): DbInterface {
 
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
         val gates = mutableListOf<MongoAnsiblex>()
-        database.getCollection<MongoAnsiblex>("ansiblex")
+        database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
             .find(MongoAnsiblex::alliances contains allianceId)
             .forEach { gates.add(it) }
         return gates
     }
 
     override fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int) {
-        val col = database.getCollection<MongoAnsiblex>("ansiblex")
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
         val existingAnsiblex: MongoAnsiblex? = col.findOne(MongoAnsiblex::id eq ansiblex.id)
         if (existingAnsiblex == null) {
             ansiblex.alliances.add(allianceId)
@@ -57,7 +61,7 @@ class Mongo(uri: String): DbInterface {
     }
 
     override fun gatesRemoveOther(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
-        val col = database.getCollection<MongoAnsiblex>("ansiblex")
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
 
         val ids: MutableList<Long> = mutableListOf()
         ansiblexes.forEach { ids.add(it.id) }
@@ -73,7 +77,7 @@ class Mongo(uri: String): DbInterface {
     }
 
     override fun temporaryConnectionsGet(characterId: Int): List<MongoTemporaryConnection> {
-        val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
+        val col = database.getCollection<MongoTemporaryConnection>(COLLECTION_TEMPORARY_CONNECTION)
 
         val existingConnections = mutableListOf<MongoTemporaryConnection>()
         col.find(MongoTemporaryConnection::characterId eq characterId).forEach {
@@ -84,7 +88,7 @@ class Mongo(uri: String): DbInterface {
     }
 
     override fun temporaryConnectionStore(tempConnection: MongoTemporaryConnection) {
-        val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
+        val col = database.getCollection<MongoTemporaryConnection>(COLLECTION_TEMPORARY_CONNECTION)
         val filter = and(
             MongoTemporaryConnection::system1Id eq tempConnection.system1Id,
             MongoTemporaryConnection::system2Id eq tempConnection.system2Id,
@@ -99,14 +103,14 @@ class Mongo(uri: String): DbInterface {
     }
 
     override fun temporaryConnectionsDeleteAllExpired() {
-        val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
+        val col = database.getCollection<MongoTemporaryConnection>(COLLECTION_TEMPORARY_CONNECTION)
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.add(Calendar.DAY_OF_YEAR, -2)
         col.deleteMany(MongoTemporaryConnection::created lt calendar.time)
     }
 
     override fun temporaryConnectionDelete(system1Id: Int, system2Id: Int, characterId: Int) {
-        val col = database.getCollection<MongoTemporaryConnection>("temporary-connection")
+        val col = database.getCollection<MongoTemporaryConnection>(COLLECTION_TEMPORARY_CONNECTION)
         col.deleteOne(
             MongoTemporaryConnection::system1Id eq system1Id,
             MongoTemporaryConnection::system2Id eq system2Id,
@@ -115,12 +119,12 @@ class Mongo(uri: String): DbInterface {
     }
 
     override fun allianceGet(allianceId: Int): MongoAlliance? {
-        val col = database.getCollection<MongoAlliance>("alliance")
+        val col = database.getCollection<MongoAlliance>(COLLECTION_ALLIANCE)
         return col.findOne(MongoAlliance::id eq allianceId)
     }
 
     override fun allianceUpdate(alliance: MongoAlliance) {
-        val col = database.getCollection<MongoAlliance>("alliance")
+        val col = database.getCollection<MongoAlliance>(COLLECTION_ALLIANCE)
         val existingAlliance = col.findOne(MongoAlliance::id eq alliance.id)
         if (existingAlliance == null) {
             col.insertOne(alliance)
