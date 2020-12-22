@@ -80,7 +80,7 @@ fun Application.module() {
             if (call.request.path() == "/api/auth/login") {
                 // This is a 401 error from the OAuth plugin, either wrong state param or a bad request to the access
                 // token URL.
-                // It's to late to set session values here, so an add error info to the redirect URL for the frontend.
+                // It's to late to set session values here, so add error info to the redirect URL for the frontend.
                 call.respondRedirect("/#callback-error-401")
                 return@status
             }

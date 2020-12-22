@@ -150,7 +150,7 @@ git submodule update --init
 
 ### Docker
 
-This was only tested so far on Linux with Docker 19.03 and [Docker Compose](https://docs.docker.com/compose/) 1.17.
+This was only tested so far on Linux with Docker 19.03 and [Docker Compose](https://docs.docker.com/compose/) 1.
 
 Run the containers:
 ```shell script
@@ -166,7 +166,7 @@ export UID && docker-compose run --service-ports node /bin/sh
 export UID && docker-compose run --service-ports gradle /bin/bash
 
 # second shell in the same Grade container (adjust name, find name: $ docker ps)
-docker exec -it everoute_gradle_run_1 /bin/bash
+docker exec -it eve-route_gradle_run_5b2f82b4f035 /bin/bash
 ```
 
 Note: You can use `gradle` instead of `./gradlew` to save ~100MB download.

@@ -3,7 +3,6 @@ version: '3.1'
 services:
 
   mongo:
-    container_name: everoute_mongo
     image: mongo:4.4-bionic
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -13,7 +12,6 @@ services:
     ports: [ "27017:27017" ]
 
   mongo-express:
-    container_name: everoute_mongo_express
     image: mongo-express
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
@@ -21,7 +19,6 @@ services:
     ports: [ "8081:8081" ]
 
   node:
-    container_name: everoute_node
     image: node:12-alpine3.12
     user: ${UID}
     volumes: [ ".:/opt/eve-route" ]
@@ -29,7 +26,6 @@ services:
     ports: [ "3000:3000" ]
 
   gradle:
-    container_name: everoute_gradle
     image: gradle:6.6.1-jdk11
     user: ${UID}
     environment:
