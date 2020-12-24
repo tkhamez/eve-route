@@ -11,8 +11,8 @@ https://eve-route.herokuapp.com
   * [Database](#database)
   * [Configuration with Environment Variables](#configuration-with-environment-variables)
 - [Run the application](#run-the-application)
-  * [Run the JAR file](#run-the-jar-file)
-  * [Run with Docker](#run-with-docker)
+  * [JAR file](#jar-file)
+  * [Docker Image](#docker-image)
   * [Deploy on Heroku](#deploy-on-heroku)
 - [Development Environment](#development-environment)
   * [Git](#git)
@@ -77,12 +77,12 @@ The following variables are optional, see resources/application.conf for their d
 
 ## Run the application
 
-You can download the fat JAR and WAR files from a [GitHub Release](https://github.com/tkhamez/eve-route/releases) 
-or build it yourself (see [Development Environment](#development-environment)).
-
-### Run the JAR file
+### JAR file
 
 This needs a Java 11 runtime.
+
+You can download the fat JAR file from a [GitHub Release](https://github.com/tkhamez/eve-route/releases)
+or build it yourself (see [Development Environment](#development-environment)).
 
 Run the application - adjust the values to match your environment:
 ```shell script
@@ -94,16 +94,13 @@ java \
   -jar eve-route.jar
 ```
 
-### Run with Docker
+### Docker Image
 
-This runs the JAR file with Docker.
+This need [Docker](https://www.docker.com/).
 
-Make sure there is exactly one fat JAR file at `./build/libs/eve-route-*.jar`, then build the Docker container:
-```shell script
-docker build -t everoute .
-```
+The image is available at https://hub.docker.com/r/tkhamez/eve-route.
 
-Run the container, with a SQLite DB:
+Run the application, for example with a SQLite DB:
 ```shell script
 docker run \
   --env EVE_ROUTE_DB=jdbc:sqlite:/data/sqlite.db \
@@ -111,9 +108,16 @@ docker run \
   --env EVE_ROUTE_CLIENT_SECRET=12ab \
   --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
   --mount type=bind,source="$(pwd)",target=/data \
-  -p 8080:8080 --rm everoute
+  -p 8080:8080 --rm tkhamez/eve-route:0.5.0
 ```
-or with the MongoDB from the Docker development environment for example:
+
+You can also build the image yourself. For this make sure there is exactly one fat JAR file at 
+`./build/libs/eve-route-*.jar`, then execute:
+```shell script
+docker build -t eve-route .
+```
+
+Run it, for example with the MongoDB from the Docker development environment:
 ```shell script
 docker run \
   --env EVE_ROUTE_DB=mongodb://eve-route:password@localhost:27017/eve-route \
@@ -121,7 +125,7 @@ docker run \
   --env EVE_ROUTE_CLIENT_SECRET=12ab \
   --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
   --network host \
-  -p 8080:8080 --rm everoute
+  -p 8080:8080 --rm eve-route
 ```
 
 ### Deploy on Heroku
