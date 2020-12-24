@@ -147,6 +147,7 @@
     "route": "Route",
     "avoided-systems": "Avoided systems",
     "removed-connections": "Removed connections",
+    "alternative-routes": "Alternative routes",
     "none": "none",
     "reset": "Reset",
     "dotlan": "Show on <1>DOTLAN EveMaps</1>",

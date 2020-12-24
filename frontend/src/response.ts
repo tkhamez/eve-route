@@ -55,7 +55,7 @@ export type ResponseSystemNames = {
 
 export type ResponseRouteFind = {
   code: string|null,
-  route: Array<Waypoint>,
+  routes: Array<Array<Waypoint>>,
 }
 
 export type ResponseRouteLocation = {

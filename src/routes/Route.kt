@@ -165,7 +165,7 @@ fun Route.route(config: Config) {
         val tempConnections = db.temporaryConnectionsGet(characterId)
         val avoidedSystems = session.avoidedSystems ?: mutableSetOf()
         val removedConnections = session.removedConnections ?: mutableSetOf()
-        response.route = EveRoute(gates, tempConnections, avoidedSystems, removedConnections).find(
+        response.routes = EveRoute(gates, tempConnections, avoidedSystems, removedConnections).find(
             call.parameters["from"].toString().trim(),
             call.parameters["to"].toString().trim()
         )

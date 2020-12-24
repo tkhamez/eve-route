@@ -59,7 +59,10 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   waypoints: Array<Waypoint>,
   message: string,
+  numberOfRoutes: number,
+  activeRoute: number,
   recalculateRoute: Function,
+  chooseRoute: Function,
 }
 
 export default function RouteList(props: Props) {
@@ -107,6 +110,11 @@ export default function RouteList(props: Props) {
         props.recalculateRoute();
       })
       .catch(() => {});
+  };
+
+  const chooseRoute = (event: React.SyntheticEvent, number: number) => {
+    event.preventDefault();
+    props.chooseRoute(number);
   };
 
   const removeConnection = (from: String, to: String) => {
@@ -174,6 +182,23 @@ export default function RouteList(props: Props) {
               )
             })}
           </small>
+        </ListItem>
+        <ListItem>
+          {props.numberOfRoutes > 1 &&
+            <span>
+              {t('routeList.alternative-routes')}:{' '}
+              {Array.from(Array(props.numberOfRoutes).keys()).map((item, index) => (
+                <span key={index}>
+                  {index === props.activeRoute
+                    ? <span>&nbsp;{index + 1}&nbsp;</span>
+                    : <Link href="#" onClick={(event: React.SyntheticEvent) => chooseRoute(event, index) } >
+                        &nbsp;{index + 1}&nbsp;
+                      </Link>
+                  }
+                </span>
+              ))}
+            </span>
+          }
         </ListItem>
         <ListItem>
           {props.waypoints.length > 0 &&

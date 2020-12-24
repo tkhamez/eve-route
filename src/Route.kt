@@ -1,6 +1,9 @@
 package net.tkhamez.everoute
 
-import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.data.ConnectedSystems
+import net.tkhamez.everoute.data.GraphSystem
+import net.tkhamez.everoute.data.MongoAnsiblex
+import net.tkhamez.everoute.data.MongoTemporaryConnection
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -39,49 +42,25 @@ class Route(
         addTempConnections(temporaryConnections)
     }
 
-    fun find(from: String, to: String): List<Waypoint> {
+    fun find(from: String, to: String): List<List<Waypoint>> {
         // find start and end system
-        val startSystem: GraphSystem? = graphHelper.findSystem(from)
-        val endSystem: GraphSystem? = graphHelper.findSystem(to)
+        val startSystem = graphHelper.findSystem(from)
+        val endSystem = graphHelper.findSystem(to)
         if (startSystem == null || endSystem == null) {
             return listOf()
         }
 
-        // Get start node, then from there search the end node - both should never be null here
+        // Get start node, then from there search the end node
         val startNode = allNodes[startSystem.id] ?: return listOf()
-        val lastConnection = search(endSystem, startNode) ?: return listOf()
+        val paths = search(endSystem, startNode)
 
-        // build path of waypoints from end to start
-        val path: MutableList<Waypoint> = mutableListOf()
-        var currentConnection: Connection<GraphSystem>? = lastConnection
-        var previousConnection: Connection<GraphSystem>? = null
-        while (currentConnection != null) {
-            val ansiblex = if (previousConnection?.type == Waypoint.Type.Ansiblex) {
-                allAnsiblexes[currentConnection.node.getValue().id]
-            } else {
-                null
-            }
-            var ansiblexId = ansiblex?.id
-            if (previousConnection?.type == Waypoint.Type.Ansiblex && ansiblex == null) {
-                // ESI returned only one Ansiblex from a pair - the one going the other direction
-                ansiblexId = -1
-            }
-            val id = currentConnection.node.getValue().id
-            path.add(Waypoint(
-                systemId = currentConnection.node.getValue().id,
-                systemName = currentConnection.node.getValue().name,
-                targetSystem = previousConnection?.node?.getValue()?.name,
-                wormhole = id in 31000000..32000000, // see https://docs.esi.evetech.net/docs/id_ranges.html
-                systemSecurity = currentConnection.node.getValue().security,
-                connectionType = previousConnection?.type,
-                ansiblexId = ansiblexId,
-                ansiblexName = ansiblex?.name
-            ))
-            previousConnection = currentConnection
-            currentConnection = currentConnection.node.predecessor
+        // build waypoints
+        val foundRoutes: MutableList<List<Waypoint>> = mutableListOf()
+        paths.forEach {
+            foundRoutes.add(buildWaypoints(it))
         }
 
-        return path.reversed()
+        return foundRoutes
     }
 
     /**
@@ -162,38 +141,99 @@ class Route(
         return allNodes[systemId]
     }
 
-    /**
-     * Breadth first search that keeps the predecessor of each vertex.
-     */
-    private fun <T> search(value: T, start: Node<T>): Connection<T>? {
-        // clear predecessors
-        allNodes.forEach { (_, value) -> value.predecessor = null }
+    private fun <T> search(value: T, start: Node<T>): List<List<Connection<T>>> {
+        val foundPaths: MutableList<List<Connection<T>>> = mutableListOf()
+        val visitedPaths: MutableList<List<Connection<T>>> = mutableListOf()
 
-        val queue: Queue<Connection<T>> = ArrayDeque()
-        queue.add(Connection(node = start))
-        var currentConnection: Connection<T>
+        // Breadth first search that finds multiple paths as long as they don't share any nodes
+        // (except start and end of course)
+        var lastRouteLength = 0
         val alreadyVisited: MutableSet<Connection<T>> = HashSet()
+        val queue: Queue<MutableList<Connection<T>>> = ArrayDeque()
+        queue.add(mutableListOf(Connection(node = start)))
         while (!queue.isEmpty()) {
-            currentConnection = queue.remove()
+            val currentPath = queue.remove()
+            val currentConnection = currentPath.last()
+            if (lastRouteLength > 0 && currentPath.size > lastRouteLength) {
+                // Already found a shorter path.
+                // This is possible because adjacent nodes are added to the queue before all of them were checked
+                continue
+            }
             if (currentConnection.node.getValue() == value) {
-                return currentConnection
-            } else {
+                foundPaths.add(currentPath)
+                lastRouteLength = currentPath.size
+            } else if (currentConnection in alreadyVisited) {
+                // Possible start of an alternative path with common nodes
+                visitedPaths.add(currentPath)
+            } else if (lastRouteLength == 0 || currentPath.size < lastRouteLength) {
                 currentConnection.node.getConnections().forEach { connection ->
-                    if (connection.node !== start && connection.node.predecessor == null) {
-                        connection.node.predecessor = currentConnection
-                    }
-                    queue.add(connection)
+                    val newPath = currentPath.toMutableList()
+                    newPath.add(connection)
+                    queue.add(newPath)
                 }
                 alreadyVisited.add(currentConnection)
-                queue.removeAll(alreadyVisited)
             }
         }
-        return null
+
+        // Check previously skipped paths with common nodes for alternative routes
+        val additionalPaths: MutableList<List<Connection<T>>> = mutableListOf()
+        visitedPaths.forEach {
+            val lastConnection = it.last()
+            for (foundPath in foundPaths) {
+                if (lastConnection in foundPath && foundPath.indexOf(lastConnection) == it.size - 1) {
+                    // The last node is at the same position in the other list.
+                    // Add the remaining nodes to a new path.
+                    val newPath = it.toMutableList() + foundPath.drop(it.size)
+                    additionalPaths.add(newPath)
+                }
+            }
+        }
+
+        return foundPaths + additionalPaths
+    }
+
+    private fun <T> buildWaypoints(path: List<Connection<T>>): List<Waypoint> {
+        val waypoints: MutableList<Waypoint> = mutableListOf()
+
+        val listIterator = path.reversed().listIterator()
+        var previousConnection: Connection<T>? = null
+        var previousSystem: GraphSystem? = null
+        var ansiblex: MongoAnsiblex? = null
+        while (listIterator.hasNext()) {
+            val connection = listIterator.next()
+            val system: GraphSystem = connection.node.getValue() as GraphSystem
+
+            if (previousConnection != null) {
+                previousSystem = previousConnection.node.getValue() as GraphSystem
+            }
+
+            if (previousConnection?.type == Waypoint.Type.Ansiblex) {
+                ansiblex = allAnsiblexes[system.id]
+            }
+            var ansiblexId = ansiblex?.id
+            if (previousConnection?.type == Waypoint.Type.Ansiblex && ansiblex == null) {
+                // ESI returned only one Ansiblex from a pair - the one going the other direction
+                ansiblexId = -1
+            }
+
+            waypoints.add(Waypoint(
+                systemId = system.id,
+                systemName = system.name,
+                targetSystem = previousSystem?.name,
+                wormhole = system.id in 31000000..32000000, // see https://docs.esi.evetech.net/docs/id_ranges.html
+                systemSecurity = system.security,
+                connectionType = previousConnection?.type,
+                ansiblexId = ansiblexId,
+                ansiblexName = ansiblex?.name
+            ))
+
+            previousConnection = connection
+        }
+
+        return waypoints.reversed()
     }
 
     private class Node<T>(private val value: T) {
-        var predecessor: Connection<T>? = null
-
         private val connections: MutableSet<Connection<T>> = HashSet() // mutableSetOf() seems to be ordered
 
         fun getValue(): T {

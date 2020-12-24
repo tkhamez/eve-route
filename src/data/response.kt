@@ -83,5 +83,5 @@ data class ResponseRouteLocation(
 
 data class ResponseRouteFind(
     var code: ResponseCodes? = null,
-    var route: List<Route.Waypoint> = listOf()
+    var routes: List<List<Route.Waypoint>> = listOf()
 )

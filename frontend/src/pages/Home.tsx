@@ -33,6 +33,8 @@ type HomeState = {
   buttonRouteFindDisabled: boolean,
   buttonRouteSetDisabled: boolean,
   routeFindResultMessage: string,
+  numberOfRoutes: number,
+  activeRoute: number,
   routeFindResultWaypoints: Array<Waypoint>,
   mapConnections: ResponseMapConnections|null,
   routeSetResult: string,
@@ -40,7 +42,8 @@ type HomeState = {
 
 class Home extends React.Component<Props, HomeState> {
   t: Function;
-  private esiRoute: Array<object> = [];
+  private esiRoute: Array<Waypoint> = [];
+  private routes: Array<Array<Waypoint>> = [];
 
   static contextType = GlobalDataContext;
 
@@ -100,7 +103,10 @@ class Home extends React.Component<Props, HomeState> {
           <Grid item sm={4} xs={12}>
             <RouteList waypoints={this.state.routeFindResultWaypoints}
                        message={this.state.routeFindResultMessage}
+                       numberOfRoutes={this.state.numberOfRoutes}
+                       activeRoute={this.state.activeRoute}
                        recalculateRoute={this.calculateRoute}
+                       chooseRoute={this.chooseRoute}
             />
           </Grid>
           <Grid item sm={8} xs={12}>
@@ -124,6 +130,8 @@ class Home extends React.Component<Props, HomeState> {
       buttonRouteFindDisabled: true,
       buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
+      numberOfRoutes: 0,
+      activeRoute: 0,
       routeFindResultWaypoints: [],
       mapConnections: null,
       routeSetResult: '',
@@ -131,6 +139,7 @@ class Home extends React.Component<Props, HomeState> {
 
     this.routeFind = this.routeFind.bind(this);
     this.routeSet = this.routeSet.bind(this);
+    this.chooseRoute = this.chooseRoute.bind(this);
   }
 
   startChanged = (value: string) => {
@@ -162,22 +171,24 @@ class Home extends React.Component<Props, HomeState> {
     app.setState({buttonRouteFindDisabled: true});
     app.setState({buttonRouteSetDisabled: true});
     app.setState({routeFindResultMessage: ''});
+    app.setState({numberOfRoutes: 0});
+    app.setState({activeRoute: 0});
     app.setState({routeFindResultWaypoints: []});
     app.setState({routeSetResult: ''});
     from = from || this.state.routeFrom;
     to = to || this.state.routeTo;
     const url = `${this.context.domain}/api/route/find/${from}/${to}`;
     axios.get<ResponseRouteFind>(url).then(response => {
-      if (response.data.route.length === 0) {
+      if (response.data.routes.length === 0) {
         if (response.data.code) {
           app.setState({routeFindResultMessage: app.t(`responseCode.${response.data.code}`)});
         } else {
           app.setState({routeFindResultMessage: app.t('home.no-route-found')});
         }
       } else {
-        app.esiRoute = response.data.route;
-        app.setState({routeFindResultWaypoints: response.data.route});
-        app.setState({buttonRouteSetDisabled: app.esiRoute.length <= 1});
+        app.routes = response.data.routes;
+        app.setState({numberOfRoutes: response.data.routes.length});
+        app.chooseRoute(0);
       }
     }).catch(() => {
       app.setState({routeFindResultMessage: app.t('app.error')});
@@ -202,6 +213,16 @@ class Home extends React.Component<Props, HomeState> {
       app.setState({buttonRouteSetDisabled: false});
     });
   }
+
+  chooseRoute = (number: number) => {
+    if (this.routes.length - 1 < number) {
+      return
+    }
+    this.esiRoute = this.routes[number];
+    this.setState({activeRoute: number});
+    this.setState({routeFindResultWaypoints: this.esiRoute});
+    this.setState({buttonRouteSetDisabled: this.esiRoute.length <= 1});
+  };
 }
 
 export default withTranslation()(withStyles(styles)(Home));
