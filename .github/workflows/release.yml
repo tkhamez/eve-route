@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 12
       - name: Build frontend
-        run: cd frontend && yarn install && yarn build
+        run: cd frontend && yarn install && CI=false yarn build
       - name: Build backend
         run: |
           ./gradlew buildGraph
