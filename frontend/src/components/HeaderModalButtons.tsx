@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Grid, IconButton, Modal, Toolbar, Typography } from '@material-ui/core';
+import { Box, Button, Grid, IconButton, Modal, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
