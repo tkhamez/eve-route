@@ -167,6 +167,8 @@ fun Application.module() {
         }
     }
 
+    install(Compression)
+
     install(Routing) {
         frontend()
         authentication(config)

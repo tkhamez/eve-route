@@ -5,6 +5,7 @@
 - Change: [#10][i10] Prefer route with fewer Ansiblex gates.
 - Change: Always show "How it works" button.
 - Added login statistics.
+- Enabled HTTP content compression.
 - Fixed database migrations for H2.
 
 [i10]: https://github.com/tkhamez/eve-route/issues/10
