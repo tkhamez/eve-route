@@ -2,8 +2,11 @@
 ## next
 
 - New: Alternative routes.
+- Change: [#10][i10] Prefer route with fewer Ansiblex gates.
 - Added login statistics.
 - Fixed database migrations for H2.
+
+[i10]: https://github.com/tkhamez/eve-route/issues/10
 
 ## 0.4.1
 

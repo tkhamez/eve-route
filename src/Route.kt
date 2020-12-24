@@ -52,15 +52,13 @@ class Route(
 
         // Get start node, then from there search the end node
         val startNode = allNodes[startSystem.id] ?: return listOf()
-        val paths = search(endSystem, startNode)
+        val connections = search(endSystem, startNode)
 
-        // build waypoints
-        val foundRoutes: MutableList<List<Waypoint>> = mutableListOf()
-        paths.forEach {
-            foundRoutes.add(buildWaypoints(it))
-        }
+        // build paths of waypoints and order by number of Ansiblexes in route
+        val paths = connections.map { Path(buildWaypoints(it)) }.toMutableList()
+        paths.sort()
 
-        return foundRoutes
+        return paths.map { it.waypoints }.toList()
     }
 
     /**
@@ -249,6 +247,22 @@ class Route(
                 // This does *not* add the same node twice, even if the connection object is different
                 connections.add(Connection(node, type))
                 node.connections.add(Connection(this, type))
+            }
+        }
+    }
+
+    private class Path(val waypoints: List<Waypoint>): Comparable<Path> {
+        override fun compareTo(other: Path): Int {
+            val numberOfAnsiblexes1 = waypoints.fold(0) {
+                sum, waypoint -> if (waypoint.connectionType === Waypoint.Type.Ansiblex) sum + 1 else sum
+            }
+            val numberOfAnsiblexes2 = other.waypoints.fold(0) {
+                sum, waypoint -> if (waypoint.connectionType === Waypoint.Type.Ansiblex) sum + 1 else sum
+            }
+            return when {
+                numberOfAnsiblexes1 > numberOfAnsiblexes2 -> 1
+                numberOfAnsiblexes1 < numberOfAnsiblexes2 -> -1
+                else -> 0
             }
         }
     }

@@ -120,8 +120,8 @@
       "unless you are in that region."
     ],
     "several-routes": [
-      "Sometimes there are several routes with the same number of jumps. ",
-      "In this case the application will randomly return one of them."
+      "If there are several routes with the same number of jump, ",
+      "then the one with fewer Ansiblex gates is preferred."
     ]
   },
   "updateGates": {
