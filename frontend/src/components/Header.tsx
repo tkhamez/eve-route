@@ -70,9 +70,7 @@ export default function Header(props: Props) {
             <LocationOnOutlinedIcon style={{color: '#90caf9', fontSize: '1.75rem', marginRight: '4px'}}/>
             <Typography variant="h6" noWrap style={{marginRight: '16px'}}>{t('app.name')}</Typography>
 
-            {globalData.user.name &&
-              <HeaderModalButtons connectionChanged={props.connectionChanged}/>
-            }
+            <HeaderModalButtons connectionChanged={props.connectionChanged}/>
 
             <span className={classes.toolbarSpace} />
 

@@ -3,6 +3,7 @@
 
 - New: Alternative routes.
 - Change: [#10][i10] Prefer route with fewer Ansiblex gates.
+- Change: Always show "How it works" button.
 - Added login statistics.
 - Fixed database migrations for H2.
 

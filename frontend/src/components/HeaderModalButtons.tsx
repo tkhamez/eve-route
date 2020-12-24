@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Grid, IconButton, Modal, Typography } from '@material-ui/core';
+import { Box, Button, Grid, IconButton, Modal, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import SyncIcon from '@material-ui/icons/Sync';
+import { GlobalDataContext } from "../GlobalDataContext";
 import HowItWorks from '../modals/HowItWorks';
 import UpdateGates from '../modals/UpdateGates';
 import AddConnection from '../modals/AddConnection';
@@ -50,6 +51,7 @@ type Props = {
 
 export default function HeaderModalButtons(props: Props) {
   const { t } = useTranslation();
+  const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [content, setContent] = React.useState('');
@@ -70,16 +72,21 @@ export default function HeaderModalButtons(props: Props) {
         <HelpOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
         {t('navModal.how-it-works')}
       </Button>
-      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
-              onClick={() => handleOpen('UpdateGates')}>
-        <SyncIcon fontSize="small" className={classes.toolbarButtonIcon}/>
-        {t('navModal.update-gates')}
-      </Button>
-      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
-              onClick={() => handleOpen('AddConnection')}>
-        <AddCircleOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
-        {t('navModal.add-connection')}
-      </Button>
+
+      {globalData.user.name &&
+        <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
+                onClick={() => handleOpen('UpdateGates')}>
+          <SyncIcon fontSize="small" className={classes.toolbarButtonIcon}/>
+          {t('navModal.update-gates')}
+        </Button>
+      }
+      {globalData.user.name &&
+        <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
+                onClick={() => handleOpen('AddConnection')}>
+          <AddCircleOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
+          {t('navModal.add-connection')}
+        </Button>
+      }
 
       <Modal open={open} onClose={handleClose}>
         <div className={classes.modal}>
