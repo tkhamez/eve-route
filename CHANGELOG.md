@@ -1,5 +1,7 @@
 
-## next
+## 0.5.0
+
+2020-12-24
 
 - New: Alternative routes.
 - Change: [#10][i10] Prefer route with fewer Ansiblex gates.
