@@ -1,8 +1,10 @@
 package net.tkhamez.everoute
 
+import io.ktor.client.features.*
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.http.HttpMethod
+import io.ktor.utils.io.*
 import net.tkhamez.everoute.data.Config
 import org.slf4j.Logger
 
@@ -35,8 +37,8 @@ class HttpRequest(val config: Config, val log: Logger) {
                 if (authToken != null) header("Authorization", "$authType $authToken")
                 if (requestBody != null) body = requestBody
             }
-        } catch (e: Exception) {
-            log.error(e.message)
+        } catch (e: ResponseException) {
+            log.error(e.message +"\n"+ e.response.content.readRemaining().readText())
         }
         return result
     }
