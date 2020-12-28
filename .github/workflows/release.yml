@@ -3,7 +3,7 @@ on:
     tags:
       - '*'
 
-name: Upload Release Assets
+name: Create Release
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-      - name: Release
+      - name: GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -44,3 +44,9 @@ jobs:
             build/libs/eve-route-${{ steps.get_version.outputs.VERSION }}.war
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker image
+        run: docker build --no-cache -t tkhamez/eve-route:${{ steps.get_version.outputs.VERSION }} .
+      - name: Publish Docker image
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u tkhamez --password-stdin
+          docker push tkhamez/eve-route:${{ steps.get_version.outputs.VERSION }}
