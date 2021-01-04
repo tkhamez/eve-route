@@ -92,7 +92,9 @@
   },
   "howItWorks": {
     "gate-sources": [
-      "The application finds Ansiblex gates with the <1>EVE API (ESI)</1> search. They must be updated manually."
+      "Ansiblex jump gates can be imported manually using the in-game structure browser. ",
+      "The application can also find them using the <1>EVE API (ESI)</1> search, ",
+      "but this must also be initiated manually."
     ],
     "gates-alliance": [
       "For each alliance a set of Ansiblex gates is stored. ",

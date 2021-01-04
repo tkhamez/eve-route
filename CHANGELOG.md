@@ -1,6 +1,9 @@
 
-## next
+## 0.6.0
 
+2021-01-04
+
+- Added manual import of Ansiblex jump gates.
 - HTTP requests: Log response body on error.
 
 ## 0.5.0
