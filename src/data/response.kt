@@ -25,6 +25,7 @@ enum class ResponseCodes {
     SetWaypointsFailure,
     SystemNotFound,
     WrongSearchTerm,
+    ImportedGates,
 }
 
 data class ResponseMessage(

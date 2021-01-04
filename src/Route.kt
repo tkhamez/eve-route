@@ -82,7 +82,7 @@ class Route(
         ansiblexes.forEach { gate ->
             allAnsiblexes[gate.solarSystemId] = gate
 
-            val endSystemId = graphHelper.getEndSystem(gate)?.id
+            val endSystemId = graphHelper.getEndSystem(gate.name)?.id
 
             // connect nodes
             val startSystemNode = allNodes[gate.solarSystemId]

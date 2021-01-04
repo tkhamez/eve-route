@@ -10,6 +10,7 @@ import net.tkhamez.everoute.GraphHelper
 import net.tkhamez.everoute.data.*
 import net.tkhamez.everoute.db
 import net.tkhamez.everoute.gson
+import org.slf4j.Logger
 
 fun Route.import(config: Config) {
     post("/api/import/from-game") {
@@ -17,12 +18,14 @@ fun Route.import(config: Config) {
 
         val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
         if (allianceId == null) {
+            response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@post
         }
 
-        val ansiblexes = parse(call.receiveText())
+        val ansiblexes = parse(call.receiveText(), call.application.environment.log)
 
+        var numImported = 0
         if (ansiblexes.isNotEmpty()) {
             val regionId = ansiblexes[0].regionId
             if (regionId != null) {
@@ -31,41 +34,58 @@ fun Route.import(config: Config) {
                 db.gatesRemoveRegion(regionId, allianceId)
                 for (ansiblex in ansiblexes) {
                     db.gateStore(ansiblex, allianceId)
+                    numImported ++
                 }
             }
         }
 
         response.success = true
+        response.code = ResponseCodes.ImportedGates
+        response.param = numImported.toString()
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 }
 
-private fun parse(input: String): List<MongoAnsiblex> {
-    val result = mutableListOf<MongoAnsiblex>()
-
-    println(input)
-    // TODO parse input into
-    val data = mapOf(
-        //1032197413122 to "3-OKDA » V2-VC2 - GO WEST",
-        1033044488259 to "4M-HGL » KH0Z-0 - Staq &amp; Still",
-    )
-
-    val graphHelper = GraphHelper()
-
-    for ((id, name) in data) {
-        val startSystem = graphHelper.getStartSystem(name)
-
-        // TODO find region and make sure all gates belong to the same region
-        val regionId = 99
-
-        if (startSystem != null) {
-            result.add(MongoAnsiblex(
-                id = id,
-                name = name,
-                solarSystemId = startSystem.id,
-                regionId = regionId,
-            ))
+private fun parse(input: String, log: Logger): List<MongoAnsiblex> {
+    // parse input
+    val parsedInput = mutableMapOf<Long, String>()
+    // Tag is e.g. <a href="showinfo:35841//1034848981067">C9N-CC » 6EK-BV - one more</a>
+    val tags = Regex("(?i)<a href=\"showinfo:35841//([^>]+)\">(.+?)</a>", setOf(RegexOption.IGNORE_CASE))
+    for (matchedTag in tags.findAll(input)) {
+        if (
+            matchedTag.groupValues.size == 3 &&
+            matchedTag.groupValues[2].contains(" » ") &&
+            matchedTag.groupValues[2].contains(" - ")
+        ) {
+            // Ansiblex ID = Ansiblex name
+            parsedInput[matchedTag.groupValues[1].toLong()] = matchedTag.groupValues[2]
         }
+    }
+
+    // build result
+    val result = mutableListOf<MongoAnsiblex>()
+    val graphHelper = GraphHelper()
+    var regionId :Int? = null
+    for ((id, name) in parsedInput) {
+        val startSystem = graphHelper.getStartSystem(name)
+        val endSystem = graphHelper.getEndSystem(name)
+        if (startSystem == null || endSystem == null) {
+            log.error("Error: Could not find start and/or end system for Ansiblex \"$name\"")
+            continue
+        }
+        if (regionId == null) {
+            regionId = startSystem.regionId
+        }
+        if (startSystem.regionId != regionId) {
+            log.error("Error: System \"${startSystem.name}\" in another region.")
+            continue
+        }
+        result.add(MongoAnsiblex(
+            id = id,
+            name = name,
+            solarSystemId = startSystem.id,
+            regionId = regionId,
+        ))
     }
 
     return result

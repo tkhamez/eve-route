@@ -22,7 +22,8 @@
     "SetWaypointsSuccess": "Waypoints successfully set.",
     "SetWaypointsFailure": "Failed to set waypoints: {{message}}.",
     "SystemNotFound": "System(s) not found.",
-    "WrongSearchTerm": "Wrong search term, use »."
+    "WrongSearchTerm": "Wrong search term, use ».",
+    "ImportedGates": "Imported {{number}} Ansiblex jump gates."
   },
   "header": {
     "admin": "Admin",
@@ -141,10 +142,15 @@
     "num-gates": "{{number}} gates:"
   },
   "import": {
+    "headline": "Ansiblex Import",
+    "description": [
+      "This will import Ansiblex jump gates from one region and deletes all existing gates from that region. ",
+      "If the gates from the input are from different region, only the region from the first gate will be processed."
+    ],
     "instruction": [
-      "Copy from game, one region at a time: ",
+      "How-to: Copy from game: ",
       "Utilities -> Structure Browser, choose Structure Type \"Ansiblex Jump Gate\", ",
-      "select all and drag into a new e-mail, select all text in the e-mail, right click and click ",
+      "select all and drag into a new mail, select all text in the mail, right click and click ",
       "\"Copy Selected With Formatting\" and paste that into the input field."
     ],
     "submit": "Submit"

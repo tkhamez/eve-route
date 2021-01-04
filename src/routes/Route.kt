@@ -67,7 +67,7 @@ fun Route.route(config: Config) {
                 var endSystem: GraphSystem? = null
                 if (connection is MongoAnsiblex) {
                     startSystem = graphHelper.findSystem(connection.solarSystemId)
-                    endSystem = graphHelper.getEndSystem(connection)
+                    endSystem = graphHelper.getEndSystem(connection.name)
                 } else if (connection is MongoTemporaryConnection) {
                     startSystem = graphHelper.findSystem(connection.system1Id)
                     endSystem = graphHelper.findSystem(connection.system2Id)

@@ -20,12 +20,13 @@ const Admin = () => {
     axios.post<ResponseMessage>(
       `${globalData.domain}/api/import/from-game`,
       input,
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' } },
     ).then(r => {
       if (r.data.success) {
         setInput('');
-        setResult('OK');
+        setResult(t(`responseCode.${r.data.code}`, {number: r.data.param}));
       } else {
-        setResult('NOK');
+        setResult(t(`responseCode.${r.data.code}`));
       }
     }).catch(() => {
         setResult('Error');
@@ -35,9 +36,11 @@ const Admin = () => {
   return (
     <Grid container spacing={2} className='card'>
       <Grid item xs={12}>
+        <h3>{t('import.headline')}</h3>
+        <p>{t('import.description')}</p>
         <p>{t('import.instruction')}</p>
-        <TextField value={input} onChange={handleInput} multiline rows={4} variant="filled"/>
-        <Button variant="contained" color="primary" onClick={submit}>{t('import.submit')}</Button>
+        <TextField value={input} onChange={handleInput} multiline rows={6} fullWidth variant="filled"/><br/>
+        <Button variant="contained" color="primary" onClick={submit}>{t('import.submit')}</Button><br/>
         {result}
       </Grid>
     </Grid>

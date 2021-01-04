@@ -7,6 +7,9 @@ import net.tkhamez.everoute.data.GraphSystem
 import java.io.File
 import kotlin.math.round
 
+val dataPath = "esi-data/json/universe/"
+val constellationsByRegion = mutableMapOf<String, Array<Constellation>>()
+
 val graph = readData()
 writeJsonFile(graph)
 
@@ -18,7 +21,6 @@ fun readData(): Graph {
         "PR-01" // unknown
     )
     // const regionDenyListSubString = '-R00'; Wormholes
-    val dataPath = "esi-data/json/universe/"
 
     val graph = Graph()
 
@@ -39,7 +41,13 @@ fun readData(): Graph {
             } else {
                 round(system.securityStatus * 10) / 10
             }
-            graph.systems.add(GraphSystem(system.id, system.name, security, system.position))
+            graph.systems.add(GraphSystem(
+                id = system.id,
+                name = system.name,
+                security = security,
+                position = system.position,
+                regionId = findRegion(region.name, system.constellationId)
+            ))
         }
 
         val stargateJson = File(dataPath + "stargates/" + region.name + "-stargates.json").readText()
@@ -67,7 +75,33 @@ fun writeJsonFile(graph: Graph) {
     file.writeText(json)
 }
 
+fun findRegion(regionName: String, constellationId: Int): Int {
+    if (!constellationsByRegion.containsKey(regionName)) {
+        val constellationJson = File(dataPath + "constellations/" + regionName + "-constellations.json").readText()
+        val constellations = Gson().fromJson(constellationJson, Array<Constellation>::class.java)
+        constellationsByRegion[regionName] = constellations
+    }
+
+    val constellations = constellationsByRegion[regionName]
+    if (constellations != null) {
+        for (constellation in constellations) {
+            if (constellation.id == constellationId) {
+                return constellation.regionId
+            }
+        }
+    }
+
+    throw Exception("Error, region not found.")
+}
+
 data class Destination(val systemId: Int)
 data class Stargate(val systemId: Int, val destination: Destination)
-data class System(val id: Int, val name: String, val securityStatus: Double, val position: GraphPosition)
+data class System(
+    val id: Int,
+    val name: String,
+    val constellationId: Int,
+    val securityStatus: Double,
+    val position: GraphPosition
+)
+data class Constellation(val id: Int, val regionId: Int)
 data class Region(val name: String)

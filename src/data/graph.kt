@@ -14,7 +14,8 @@ data class GraphSystem(
     val id: Int,
     val name: String,
     val security: Double,
-    val position: GraphPosition
+    val position: GraphPosition,
+    val regionId: Int,
 )
 
 data class Graph(

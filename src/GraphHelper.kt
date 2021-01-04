@@ -53,8 +53,8 @@ class GraphHelper {
     /**
      * Find end system from Ansiblex name (full gate name e.g.: "5ELE-A » AZN-D2 - Easy Route")
      */
-    fun getEndSystem(ansiblex: MongoAnsiblex): GraphSystem? {
-        val systemNames = ansiblex.name.substring(0, ansiblex.name.indexOf(" - ")) // e.g. "5ELE-A » AZN-D2"
+    fun getEndSystem(ansiblexName: String): GraphSystem? {
+        val systemNames = ansiblexName.substring(0, ansiblexName.indexOf(" - ")) // e.g. "5ELE-A » AZN-D2"
         val endSystemName = systemNames.substring(systemNames.indexOf(" » ") + 3)
         return findSystem(endSystemName)
     }
