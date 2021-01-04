@@ -16,8 +16,8 @@ fun Route.import(config: Config) {
     post("/api/import/from-game") {
         val response = ResponseMessage(success = false)
 
-        val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
-        if (allianceId == null) {
+        val eveCharacter = call.sessions.get<Session>()?.eveCharacter
+        if (eveCharacter?.allianceId == null || !eveCharacter.roles.contains("import")) {
             response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@post
@@ -30,10 +30,10 @@ fun Route.import(config: Config) {
             val regionId = ansiblexes[0].regionId
             if (regionId != null) {
                 val db = db(config.db)
-                db.allianceAdd(allianceId)
-                db.gatesRemoveRegion(regionId, allianceId)
+                db.allianceAdd(eveCharacter.allianceId)
+                db.gatesRemoveRegion(regionId, eveCharacter.allianceId)
                 for (ansiblex in ansiblexes) {
-                    db.gateStore(ansiblex, allianceId)
+                    db.gateStore(ansiblex, eveCharacter.allianceId)
                     numImported ++
                 }
             }
