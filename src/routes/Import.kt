@@ -85,6 +85,7 @@ private fun parse(input: String, log: Logger): List<MongoAnsiblex> {
             name = name,
             solarSystemId = startSystem.id,
             regionId = regionId,
+            source = MongoAnsiblex.Source.Import,
         ))
     }
 

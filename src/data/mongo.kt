@@ -18,7 +18,10 @@ data class MongoAnsiblex( // added in v0.3.0
     var name: String,
     val solarSystemId: Int,
     var regionId: Int? = null, // added in v0.6.0
-)
+    var source: Source? = null, // added in v0.6.0
+) {
+    enum class Source { Import, ESI }
+}
 
 data class MongoTemporaryConnection(
     val system1Id: Int, // unique together with system2Id and characterId

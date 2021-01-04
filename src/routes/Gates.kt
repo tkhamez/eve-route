@@ -4,12 +4,15 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import io.ktor.routing.*
+import io.ktor.routing.Route
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import kotlinx.coroutines.launch
-import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.EsiToken
+import net.tkhamez.everoute.GraphHelper
+import net.tkhamez.everoute.HttpRequest
 import net.tkhamez.everoute.data.*
+import net.tkhamez.everoute.database.DbInterface
 import net.tkhamez.everoute.db
 import net.tkhamez.everoute.gson
 import org.slf4j.Logger
@@ -73,8 +76,11 @@ fun Route.gates(config: Config) {
             // Set update date now to prevent a second parallel update.
             db.allianceUpdate(MongoAlliance(id = allianceId, updated = Date()))
 
+            // delete all "ESI" gates
+            db.gatesRemoveSourceESI(allianceId)
+
             // fetch all gates in the background
-            launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log) }
+            launch { fetchAndStoreGates(allianceId, esiSearchStructure.structure, accessToken, config, log, db) }
         }
 
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
@@ -103,10 +109,11 @@ private suspend fun fetchAndStoreGates(
     structures: List<Long>,
     accessToken: String,
     config: Config,
-    log: Logger
+    log: Logger,
+    db: DbInterface
 ) {
+    val graphHelper = GraphHelper()
     val httpRequest = HttpRequest(config, log)
-    val db = db(config.db)
 
     val gates = mutableListOf<MongoAnsiblex>()
     val failed = mutableListOf<Long>()
@@ -117,18 +124,24 @@ private suspend fun fetchAndStoreGates(
             accessToken
         )
         if (gate == null) {
-            failed.add(id)
+            failed.add(id) // TODO retry
             continue
         }
-        if (gate.type_id == 35841) {
-            fetched ++
-            val ansiblex = MongoAnsiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id)
-            gates.add(ansiblex)
-            db.gateStore(ansiblex, allianceId)
+        if (gate.type_id != 35841) {
+            continue
         }
+        val system = graphHelper.findSystem(gate.solar_system_id) ?: continue
+        fetched ++
+        val ansiblex = MongoAnsiblex(
+            id = id,
+            name = gate.name,
+            solarSystemId = gate.solar_system_id,
+            regionId = system.regionId,
+            source = MongoAnsiblex.Source.ESI,
+        )
+        gates.add(ansiblex)
+        db.gateStore(ansiblex, allianceId)
     }
-
-    db.gatesRemoveOtherWithoutRegion(gates, allianceId)
 
     log.info("Fetched and stored $fetched Ansiblexes.")
     if (failed.size > 0) {

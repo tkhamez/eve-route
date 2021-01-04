@@ -146,14 +146,18 @@
   "import": {
     "headline": "Ansiblex Import",
     "description": [
-      "This will import Ansiblex jump gates from one region and deletes all existing gates from that region. ",
-      "If the gates from the input are from different region, only the region from the first gate will be processed."
+      "This imports Ansiblex jump gates from a region and deletes all existing gates from that region beforehand. ",
+      "If the gates from the input are from different regions, only the region of the first gate is processed."
     ],
     "instruction": [
       "How-to: Copy from game: ",
-      "Utilities -> Structure Browser, choose Structure Type \"Ansiblex Jump Gate\", ",
+      "Utilities -> Structure Browser, choose \"Region\" and Structure Type \"Ansiblex Jump Gate\", ",
       "select all and drag into a new mail, select all text in the mail, right click and click ",
-      "\"Copy Selected With Formatting\" and paste that into the input field."
+      "\"Copy Selected With Formatting\" and paste that into the input field below."
+    ],
+    "warning": [
+      "WARNING: Make sure the character that copies the data from the game is in the same alliance as the character ",
+      "that is logged in here."
     ],
     "submit": "Submit"
   },

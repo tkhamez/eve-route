@@ -12,10 +12,9 @@ interface DbInterface {
     fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int)
 
     /**
-     * Delete all Ansiblexes that were not found with the last ESI search
-     * and were not imported manually/have a region ID.
+     * Delete all Ansiblexes that were added by an ESI search.
      */
-    fun gatesRemoveOtherWithoutRegion(ansiblexes: List<MongoAnsiblex>, allianceId: Int)
+    fun gatesRemoveSourceESI(allianceId: Int)
 
     /**
      * Remove all Ansiblexes from one region and alliance

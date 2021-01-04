@@ -58,19 +58,16 @@ class Mongo(uri: String): DbInterface {
             }
             existingAnsiblex.name = ansiblex.name
             existingAnsiblex.regionId = ansiblex.regionId
+            existingAnsiblex.source = ansiblex.source
             col.replaceOne(MongoAnsiblex::id eq ansiblex.id, existingAnsiblex)
         }
     }
 
-    override fun gatesRemoveOtherWithoutRegion(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
+    override fun gatesRemoveSourceESI(allianceId: Int) {
         val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
-
-        val ids: MutableList<Long> = mutableListOf()
-        ansiblexes.forEach { ids.add(it.id) }
-
-        col.find(and(
-            MongoAnsiblex::id nin ids,
-            or(MongoAnsiblex::regionId eq null, MongoAnsiblex::regionId exists false)
+        col.find(or(
+            MongoAnsiblex::source eq MongoAnsiblex.Source.ESI,
+            MongoAnsiblex::source exists false
         )).forEach {
             it.alliances.remove(allianceId)
             if (it.alliances.size > 0) {
