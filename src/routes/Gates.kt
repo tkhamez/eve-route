@@ -16,7 +16,7 @@ import org.slf4j.Logger
 import java.util.*
 
 fun Route.gates(config: Config) {
-        get("/api/gates/fetch") {
+    get("/api/gates/fetch") {
         val response = ResponseGates()
         val allianceId = call.sessions.get<Session>()?.eveCharacter?.allianceId
 
@@ -122,13 +122,13 @@ private suspend fun fetchAndStoreGates(
         }
         if (gate.type_id == 35841) {
             fetched ++
-            val ansiblex = MongoAnsiblex(id = id, name = gate.name,solarSystemId = gate.solar_system_id)
+            val ansiblex = MongoAnsiblex(id = id, name = gate.name, solarSystemId = gate.solar_system_id)
             gates.add(ansiblex)
             db.gateStore(ansiblex, allianceId)
         }
     }
 
-    db.gatesRemoveOther(gates, allianceId)
+    db.gatesRemoveOtherWithoutRegion(gates, allianceId)
 
     log.info("Fetched and stored $fetched Ansiblexes.")
     if (failed.size > 0) {

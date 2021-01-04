@@ -27,6 +27,7 @@ class Exposed(uri: String): DbInterface {
         override val id = long("id").entityId()
         val name = varchar("name", 255)
         val solarSystemId = integer("solarSystemId")
+        val regionId = integer("regionId").nullable()
         override val primaryKey = PrimaryKey(id, name = "PK_Ansiblex")
     }
 
@@ -86,7 +87,9 @@ class Exposed(uri: String): DbInterface {
 
     override fun migrate() {
         // change log level to "debug" in logback.xml to see the SQL statements
-        //transaction { SchemaUtils.create(Alliance, Ansiblex, AnsiblexAlliance, TemporaryConnection, Login) }
+        //transaction { SchemaUtils.createMissingTablesAndColumns(
+        //    Alliance, Ansiblex, AnsiblexAlliance, TemporaryConnection, Login
+        //) }
 
         var vendor = url.substring(5, url.indexOf(":", 5))
         if (vendor == "mariadb") {
@@ -152,6 +155,7 @@ class Exposed(uri: String): DbInterface {
                     it[id] = ansiblex.id
                     it[name] = ansiblex.name
                     it[solarSystemId] = ansiblex.solarSystemId
+                    it[regionId] = ansiblex.regionId
                 }
                 AnsiblexAlliance.insert {
                     it[ansiblexId] = newAnsiblexId
@@ -162,6 +166,7 @@ class Exposed(uri: String): DbInterface {
                     it[id] = ansiblex.id
                     it[name] = ansiblex.name
                     it[solarSystemId] = ansiblex.solarSystemId
+                    it[regionId] = ansiblex.regionId
                 }
                 AnsiblexAlliance.insertIgnore {
                     it[ansiblexId] = existingAnsiblex[Ansiblex.id]
@@ -171,17 +176,51 @@ class Exposed(uri: String): DbInterface {
         }
     }
 
-    override fun gatesRemoveOther(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
+    override fun gatesRemoveOtherWithoutRegion(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
         transaction {
-            // Delete relations
+            // IDs not to delete
             val ids: MutableList<Long> = mutableListOf()
             ansiblexes.forEach { ids.add(it.id) }
+
+            // Find IDs to delete
+            val idsNoRegion = mutableListOf<Long>()
+            Ansiblex
+                .select { Ansiblex.id notInList ids and (Ansiblex.regionId eq null) }
+                .forEach { idsNoRegion.add(it[Ansiblex.id].value) }
+
+            // Delete relations
             AnsiblexAlliance.deleteWhere {
                 AnsiblexAlliance.allianceId eq allianceId and
-                    (AnsiblexAlliance.ansiblexId notInList ids)
+                    (AnsiblexAlliance.ansiblexId inList idsNoRegion)
             }
 
             // Delete Ansiblex gates without any relation
+            val withRelation = mutableSetOf<Long>()
+            AnsiblexAlliance.selectAll().forEach { withRelation.add(it[AnsiblexAlliance.ansiblexId].value) }
+            Ansiblex.deleteWhere { Ansiblex.id notInList withRelation }
+        }
+    }
+
+    override fun gatesRemoveRegion(regionId: Int, allianceId: Int) {
+        transaction {
+            // Find all Ansiblex from alliance
+            val idsAlliance = mutableListOf<Long>()
+            AnsiblexAlliance
+                .select { AnsiblexAlliance.allianceId eq allianceId }
+                .forEach { idsAlliance.add(it[AnsiblexAlliance.ansiblexId].value) }
+
+            // Find all from alliance and region
+            val ids = mutableListOf<Long>()
+            Ansiblex
+                .select { Ansiblex.id inList idsAlliance and (Ansiblex.regionId eq regionId) }
+                .forEach { ids.add(it[Ansiblex.id].value) }
+
+            // Delete relations
+            AnsiblexAlliance.deleteWhere {
+                AnsiblexAlliance.allianceId eq allianceId and (AnsiblexAlliance.ansiblexId inList ids)
+            }
+
+            // Delete Ansiblex gates without a relation
             val withRelation = mutableSetOf<Long>()
             AnsiblexAlliance.selectAll().forEach { withRelation.add(it[AnsiblexAlliance.ansiblexId].value) }
             Ansiblex.deleteWhere { Ansiblex.id notInList withRelation }
@@ -254,6 +293,18 @@ class Exposed(uri: String): DbInterface {
                 TemporaryConnection.system1Id eq system1Id and
                     (TemporaryConnection.system2Id eq system2Id and
                         (TemporaryConnection.characterId eq characterId))
+            }
+        }
+    }
+
+    override fun allianceAdd(allianceId: Int) {
+        transaction {
+            val existing = Alliance.select { Alliance.id eq allianceId }.firstOrNull()
+            if (existing == null) {
+                Alliance.insert {
+                    it[id] = allianceId
+                    it[updated] = localDateTime(Date(0))
+                }
             }
         }
     }

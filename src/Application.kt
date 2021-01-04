@@ -180,5 +180,6 @@ fun Application.module() {
         route(config)
         systems()
         connection(config)
+        import(config)
     }
 }

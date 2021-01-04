@@ -12,11 +12,12 @@ data class MongoAnsiblexV02(
     val name: String,
     val solarSystemId: Int,
 )
-data class MongoAnsiblex(
+data class MongoAnsiblex( // added in v0.3.0
     val id: Long,
     var alliances: MutableSet<Int> = mutableSetOf(),
-    val name: String,
+    var name: String,
     val solarSystemId: Int,
+    var regionId: Int? = null, // added in v0.6.0
 )
 
 data class MongoTemporaryConnection(

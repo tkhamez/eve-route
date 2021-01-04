@@ -56,17 +56,34 @@ class Mongo(uri: String): DbInterface {
             if (!existingAnsiblex.alliances.contains(allianceId)) {
                 existingAnsiblex.alliances.add(allianceId)
             }
+            existingAnsiblex.name = ansiblex.name
+            existingAnsiblex.regionId = ansiblex.regionId
             col.replaceOne(MongoAnsiblex::id eq ansiblex.id, existingAnsiblex)
         }
     }
 
-    override fun gatesRemoveOther(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
+    override fun gatesRemoveOtherWithoutRegion(ansiblexes: List<MongoAnsiblex>, allianceId: Int) {
         val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
 
         val ids: MutableList<Long> = mutableListOf()
         ansiblexes.forEach { ids.add(it.id) }
 
-        col.find(MongoAnsiblex::id nin ids).forEach {
+        col.find(and(
+            MongoAnsiblex::id nin ids,
+            or(MongoAnsiblex::regionId eq null, MongoAnsiblex::regionId exists false)
+        )).forEach {
+            it.alliances.remove(allianceId)
+            if (it.alliances.size > 0) {
+                col.replaceOne(MongoAnsiblex::id eq it.id, it)
+            } else {
+                col.deleteOne(MongoAnsiblex::id eq it.id)
+            }
+        }
+    }
+
+    override fun gatesRemoveRegion(regionId: Int, allianceId: Int) {
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
+        col.find(MongoAnsiblex::regionId eq regionId).forEach {
             it.alliances.remove(allianceId)
             if (it.alliances.size > 0) {
                 col.replaceOne(MongoAnsiblex::id eq it.id, it)
@@ -116,6 +133,14 @@ class Mongo(uri: String): DbInterface {
             MongoTemporaryConnection::system2Id eq system2Id,
             MongoTemporaryConnection::characterId eq characterId,
         )
+    }
+
+    override fun allianceAdd(allianceId: Int) {
+        val col = database.getCollection<MongoAlliance>(COLLECTION_ALLIANCE)
+        val existingAlliance = col.findOne(MongoAlliance::id eq allianceId)
+        if (existingAlliance == null) {
+            col.insertOne(MongoAlliance(id = allianceId, updated = Date(0)))
+        }
     }
 
     override fun allianceGet(allianceId: Int): MongoAlliance? {

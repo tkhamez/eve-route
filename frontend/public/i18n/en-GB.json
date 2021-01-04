@@ -140,6 +140,15 @@
     "show-gates": "Show Gates",
     "num-gates": "{{number}} gates:"
   },
+  "import": {
+    "instruction": [
+      "Copy from game, one region at a time: ",
+      "Utilities -> Structure Browser, choose Structure Type \"Ansiblex Jump Gate\", ",
+      "select all and drag into a new e-mail, select all text in the e-mail, right click and click ",
+      "\"Copy Selected With Formatting\" and paste that into the input field."
+    ],
+    "submit": "Submit"
+  },
   "systemInput": {
     "clear": "Clear",
     "current-location": "Set to current location"

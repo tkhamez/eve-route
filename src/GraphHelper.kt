@@ -34,11 +34,20 @@ class GraphHelper {
 
     fun findSystem(systemName: String): GraphSystem? {
         for (system in getGraph().systems) {
-            if (system.name.toLowerCase() == systemName.toLowerCase()) {
+            if (system.name.equals(systemName, ignoreCase = true)) {
                 return system
             }
         }
         return null
+    }
+
+    /**
+     * Find start system from Ansiblex name
+     */
+    fun getStartSystem(ansiblexName: String): GraphSystem? {
+        // name is e.g. "5ELE-A » AZN-D2 - Easy Route"
+        val startSystemName = ansiblexName.substring(0, ansiblexName.indexOf(" » "))
+        return findSystem(startSystemName)
     }
 
     /**
