@@ -146,7 +146,7 @@
   "import": {
     "headline": "Ansiblex Import",
     "description": [
-      "This imports Ansiblex jump gates from a region and deletes all existing gates from that region beforehand. ",
+      "This imports Ansiblex jump gates from one region and deletes all existing gates from that region beforehand. ",
       "If the gates from the input are from different regions, only the region of the first gate is processed."
     ],
     "instruction": [
