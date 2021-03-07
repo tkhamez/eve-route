@@ -60,6 +60,7 @@ fun Route.route(config: Config) {
 
         val graphHelper = GraphHelper()
 
+        val ansiblexStartSystems: MutableSet<Int> = mutableSetOf()
         for (connectionType in listOf(gates, tempConnections)) {
             val addedConnections = mutableListOf<String>()
             connectionType.forEach { connection ->
@@ -80,7 +81,10 @@ fun Route.route(config: Config) {
                     addedConnections.add("${startSystem.name} - ${endSystem.name}")
                     addedConnections.add("${endSystem.name} - ${startSystem.name}")
                     if (connection is MongoAnsiblex) {
-                        response.ansiblexes.add(ConnectedSystems(startSystem.name, endSystem.name))
+                        ansiblexStartSystems.add(startSystem.id)
+                        if (ansiblexStartSystems.contains(endSystem.id)) { // true for the second gate of a connection
+                            response.ansiblexes.add(ConnectedSystems(startSystem.name, endSystem.name))
+                        }
                     } else { // MongoTemporaryConnection
                         response.temporary.add(ConnectedSystems(startSystem.name, endSystem.name))
                     }
@@ -204,7 +208,7 @@ fun Route.route(config: Config) {
             }
             incomingTemporary = value.connectionType == EveRoute.Waypoint.Type.Temporary
 
-            // Ansiblex ID = -1: there is a connection but ESI returned only the other gate
+            // Ansiblex ID = -1 should no longer happen
             val id = if (value.ansiblexId != null && value.ansiblexId > 0) {
                 value.ansiblexId
             } else {

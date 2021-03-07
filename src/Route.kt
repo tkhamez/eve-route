@@ -88,7 +88,10 @@ class Route(
             val startSystemNode = allNodes[gate.solarSystemId]
             val endSystemNode = allNodes[endSystemId]
             if (startSystemNode != null && endSystemNode != null) { // system can be null if it is avoided
-                if (!isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name)) {
+                if (
+                    !isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name) &&
+                    allAnsiblexes[endSystemNode.getValue().id] !== null // true for the second gate of a connection
+                ) {
                     startSystemNode.connect(endSystemNode, Waypoint.Type.Ansiblex)
                 }
             }
@@ -210,7 +213,7 @@ class Route(
             }
             var ansiblexId = ansiblex?.id
             if (previousConnection?.type == Waypoint.Type.Ansiblex && ansiblex == null) {
-                // ESI returned only one Ansiblex from a pair - the one going the other direction
+                // This should no longer happen
                 ansiblexId = -1
             }
 

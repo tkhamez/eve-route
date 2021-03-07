@@ -25,10 +25,6 @@ export default function HowItWorks() {
       </Typography>
       <br/>
       <Typography variant="body2">
-        {t('howItWorks.unknown-gates')}
-      </Typography>
-      <br/>
-      <Typography variant="body2">
         {t('howItWorks.wormholes')}
       </Typography>
       <br/>

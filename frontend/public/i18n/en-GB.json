@@ -106,13 +106,6 @@
       "Instead it seems to return only gates for which the character has \"docking access\". ",
       "See also <1>this ticket</1>."
     ],
-    "unknown-gates": [
-      "Since the API does not always return all the gates it should return, it is assumed that if there is a ",
-      "gate from system A to B, there is also a usable gate from system B to A. ",
-      "These gates are labeled \"Unknown Ansiblex\". ",
-      "Of course it is not possible to set a waypoint for an unknown gate, instead it is set to the system ",
-      "where the gate should be."
-    ],
     "wormholes": [
       "If the route contains wormholes (temporary connection), they cannot be displayed on the map and are ",
       "simply skipped. ",
