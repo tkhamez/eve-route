@@ -2,6 +2,7 @@
 ## next
 
 - New: Read start and end systems from URL, e.g. domain.tdl/#Home;HED-GP;GE-8JV
+- Small bug fixes
 
 ## 0.6.0
 

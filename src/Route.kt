@@ -195,9 +195,9 @@ class Route(
 
         val listIterator = path.reversed().listIterator()
         var previousConnection: Connection<T>? = null
-        var previousSystem: GraphSystem? = null
-        var ansiblex: MongoAnsiblex? = null
         while (listIterator.hasNext()) {
+            var previousSystem: GraphSystem? = null
+            var ansiblex: MongoAnsiblex? = null
             val connection = listIterator.next()
             val system: GraphSystem = connection.node.getValue() as GraphSystem
 
