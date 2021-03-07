@@ -26,8 +26,6 @@ interface Props extends WithTranslation {
 }
 
 type HomeState = {
-  routeFrom: string,
-  routeTo: string,
   startSystemInput: string,
   endSystemInput: string,
   buttonRouteFindDisabled: boolean,
@@ -118,11 +116,10 @@ class Home extends React.Component<Props, HomeState> {
     super(props);
     this.t = props.t;
 
+    const route = this.getRouteFromURL();
     this.state = {
-      routeFrom: '',
-      routeTo: '',
-      startSystemInput: '',
-      endSystemInput: '',
+      startSystemInput: route[0],
+      endSystemInput: route[1],
       buttonRouteFindDisabled: true,
       buttonRouteSetDisabled: true,
       routeFindResultMessage: '',
@@ -138,22 +135,27 @@ class Home extends React.Component<Props, HomeState> {
     this.chooseRoute = this.chooseRoute.bind(this);
   }
 
+  getRouteFromURL = () => {
+    const params = window.location.hash.substring(1).split(';');
+    return [params[1] ? params[1] : '', params[2] ? params[2] : ''];
+  };
+
   startChanged = (value: string) => {
-    this.setState({routeFrom: value});
     this.setState({startSystemInput: value});
-    this.setState({buttonRouteFindDisabled: !(value !== '' && this.state.routeTo !== '')});
+    this.setState({buttonRouteFindDisabled: !(value !== '' && this.state.endSystemInput !== '')});
   };
 
   endChanged = (value: string) => {
-    this.setState({routeTo: value});
     this.setState({endSystemInput: value});
-    this.setState({buttonRouteFindDisabled: !(this.state.routeFrom !== '' && value !== '')});
+    this.setState({buttonRouteFindDisabled: !(this.state.startSystemInput !== '' && value !== '')});
   };
 
   swapSystems = () => {
-    this.routeFind(this.state.routeTo, this.state.routeFrom); /// reload route with already swapped systems
-    this.setState({startSystemInput: this.state.routeTo});
-    this.setState({endSystemInput: this.state.routeFrom});
+    const newStart = this.state.endSystemInput;
+    const newEnd = this.state.startSystemInput;
+    this.setState({startSystemInput: newStart});
+    this.setState({endSystemInput: newEnd});
+    this.routeFind(newStart, newEnd);
   };
 
   calculateRoute = () => {
@@ -171,8 +173,8 @@ class Home extends React.Component<Props, HomeState> {
     app.setState({activeRoute: 0});
     app.setState({routeFindResultWaypoints: []});
     app.setState({routeSetResult: ''});
-    from = from || this.state.routeFrom;
-    to = to || this.state.routeTo;
+    from = from || this.state.startSystemInput;
+    to = to || this.state.endSystemInput;
     const url = `${this.context.domain}/api/route/find/${from}/${to}`;
     axios.get<ResponseRouteFind>(url).then(response => {
       if (response.data.routes.length === 0) {

@@ -114,8 +114,10 @@ export default forwardRef((props: Props, ref: any) => {
     if (props.fieldId !== startSystemId) {
       return;
     }
-    fetchLocation();
-  }, [fetchLocation, props.fieldId]);
+    if (!props.fieldValue) {
+      fetchLocation();
+    }
+  }, [fetchLocation, props.fieldId, props.fieldValue]);
 
   /**
    * Handle system input from parent component.

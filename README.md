@@ -2,7 +2,7 @@
 
 A route planner for [EVE Online](https://www.eveonline.com/) that supports Ansiblex jump gates and wormhole connections.
 
-https://eve-route.herokuapp.com
+Demo: https://eve-route.herokuapp.com
 
 <!-- toc -->
 
@@ -141,7 +141,7 @@ heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/gradle
 ```
 
-Set the EVE_ROUTE_CORS_DOMAIN to your domain (e. g. eve-route.herokuapp.com), or some POST requests may not work.
+Set the EVE_ROUTE_CORS_DOMAIN to your domain (e.g. eve-route.herokuapp.com), or some POST requests may not work.
 
 ## Development Environment
 

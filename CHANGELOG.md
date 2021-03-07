@@ -1,4 +1,8 @@
 
+## next
+
+- New: Read start and end systems from URL, e.g. domain.tdl/#Home;HED-GP;GE-8JV
+
 ## 0.6.0
 
 2021-01-04

@@ -169,9 +169,9 @@ const loadConnections = (app: App) => {
 
 const getPage = (): string => {
   const validPages = ['Home', 'Admin'];
-  const page = window.location.hash.substring(1);
-  if (validPages.indexOf(page) !== -1) {
-    return page;
+  const params = window.location.hash.substring(1).split(';');
+  if (validPages.indexOf(params[0]) !== -1) {
+    return params[0];
   } else {
     return 'Home';
   }
