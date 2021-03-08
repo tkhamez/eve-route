@@ -2,7 +2,8 @@
 ## next
 
 - New: Read start and end systems from URL, e.g. domain.tdl/#Home;HED-GP;GE-8JV
-- Change: No more "Unknown Ansiblex", if an Ansiblex of a pair is missing, this connection is now ignored.
+- Change: The search result now lists systems first that start with the search term.
+- Change: No more "Unknown Ansiblex" when an Ansiblex of a pair is missing, these connections are now ignored.
 - Small bug fixes
 
 ## 0.6.0

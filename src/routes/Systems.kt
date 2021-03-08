@@ -10,26 +10,27 @@ import net.tkhamez.everoute.gson
 
 fun Route.systems() {
     get("/api/systems/find/{search}") {
-        val response = getResponse(call.parameters["search"].toString().trim())
+        val search = call.parameters["search"].toString().trim()
 
-        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
-    }
-
-    get("/api/systems/fetch") {
-        val response = getResponse("")
-
-        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
-    }
-}
-
-private fun getResponse(search: String): ResponseSystemNames {
-    val response = ResponseSystemNames()
-    GraphHelper().getGraph().systems.forEach {
-        if (search == "" || it.name.toLowerCase().contains(search.toLowerCase())) {
-            response.systems.add(it.name)
+        val listA: MutableList<String> = mutableListOf()
+        val listB: MutableList<String> = mutableListOf()
+        GraphHelper().getGraph().systems.forEach {
+            if (search == "" || it.name.toLowerCase().contains(search.toLowerCase())) {
+                if (it.name.startsWith(search, true)) {
+                    listA.add(it.name)
+                } else {
+                    listB.add(it.name)
+                }
+            }
         }
-    }
-    response.systems.sort()
 
-    return response
+        listA.sort();
+        listB.sort();
+
+        val response = ResponseSystemNames()
+        response.systems.addAll(listA)
+        response.systems.addAll(listB)
+
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
+    }
 }
