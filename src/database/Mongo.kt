@@ -17,25 +17,8 @@ class Mongo(uri: String): DbInterface {
     private val database = client.getDatabase(dbName)
 
     override fun migrate() {
-        // 0.2.0 -> 0.3.0: copy "allianceId" to "alliances"
-        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
-        database.getCollection<MongoAnsiblexV02>(COLLECTION_ANSIBLEX).find(MongoAnsiblexV02::allianceId gt 0).forEach {
-            val filter = and(MongoAnsiblex::id eq it.id, MongoAnsiblex::alliances exists true)
-            var gateV03 = col.findOne(filter)
-            if (gateV03 == null) {
-                gateV03 = MongoAnsiblex(
-                    id = it.id,
-                    name = it.name,
-                    solarSystemId = it.solarSystemId,
-                )
-                gateV03.alliances.add(it.allianceId)
-                col.insertOne(gateV03)
-            } else {
-                gateV03.alliances.add(it.allianceId)
-                col.replaceOne(filter, gateV03)
-            }
-        }
-        col.deleteMany(MongoAnsiblex::alliances exists false)
+        migrate030()
+        migrate070()
     }
 
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
@@ -175,5 +158,34 @@ class Mongo(uri: String): DbInterface {
             existingLogin.count ++
             col.replaceOne(filter, existingLogin)
         }
+    }
+
+    private fun migrate030() {
+        // 0.2.0 -> 0.3.0: copy "allianceId" to "alliances"
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
+        database.getCollection<MongoAnsiblexV02>(COLLECTION_ANSIBLEX).find(MongoAnsiblexV02::allianceId gt 0).forEach {
+            val filter = and(MongoAnsiblex::id eq it.id, MongoAnsiblex::alliances exists true)
+            var gateV03 = col.findOne(filter)
+            if (gateV03 == null) {
+                gateV03 = MongoAnsiblex(
+                    id = it.id,
+                    name = it.name,
+                    solarSystemId = it.solarSystemId,
+                )
+                gateV03.alliances.add(it.allianceId)
+                col.insertOne(gateV03)
+            } else {
+                gateV03.alliances.add(it.allianceId)
+                col.replaceOne(filter, gateV03)
+            }
+        }
+        col.deleteMany(MongoAnsiblex::alliances exists false)
+    }
+
+    private fun migrate070() {
+        // 0.6.0 -> 0.7.0 delete gates without region
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
+        col.deleteMany(MongoAnsiblex::regionId exists false)
+        col.deleteMany(MongoAnsiblex::regionId eq null)
     }
 }

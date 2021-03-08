@@ -123,6 +123,8 @@ class Exposed(uri: String): DbInterface {
         }
 
         flyway.migrate()
+
+        migrate070()
     }
 
     override fun gatesGet(allianceId: Int): List<MongoAnsiblex> {
@@ -192,10 +194,7 @@ class Exposed(uri: String): DbInterface {
                 AnsiblexAlliance.allianceId eq allianceId and (AnsiblexAlliance.ansiblexId inList ids)
             }
 
-            // Delete Ansiblex gates without a relation
-            val withRelation = mutableSetOf<Long>()
-            AnsiblexAlliance.selectAll().forEach { withRelation.add(it[AnsiblexAlliance.ansiblexId].value) }
-            Ansiblex.deleteWhere { Ansiblex.id notInList withRelation }
+            deleteAnsiblexWithoutRelation()
         }
     }
 
@@ -212,10 +211,7 @@ class Exposed(uri: String): DbInterface {
                 AnsiblexAlliance.allianceId eq allianceId and (AnsiblexAlliance.ansiblexId inList ids)
             }
 
-            // Delete Ansiblex gates without a relation
-            val withRelation = mutableSetOf<Long>()
-            AnsiblexAlliance.selectAll().forEach { withRelation.add(it[AnsiblexAlliance.ansiblexId].value) }
-            Ansiblex.deleteWhere { Ansiblex.id notInList withRelation }
+            deleteAnsiblexWithoutRelation()
         }
     }
 
@@ -349,6 +345,28 @@ class Exposed(uri: String): DbInterface {
                     it[count] = existing[count] + 1
                 }
             }
+        }
+    }
+
+    private fun deleteAnsiblexWithoutRelation() {
+        val withRelation = mutableSetOf<Long>()
+        AnsiblexAlliance.selectAll().forEach { withRelation.add(it[AnsiblexAlliance.ansiblexId].value) }
+        Ansiblex.deleteWhere { Ansiblex.id notInList withRelation }
+    }
+
+    private fun migrate070() {
+        // 0.6.0 -> 0.7.0 delete gates without region
+        transaction {
+            // Find all without region
+            val ids = mutableListOf<Long>()
+            Ansiblex
+                .select { Ansiblex.regionId eq null }
+                .forEach { ids.add(it[Ansiblex.id].value) }
+
+            // Delete relations
+            AnsiblexAlliance.deleteWhere { AnsiblexAlliance.ansiblexId inList ids }
+
+            deleteAnsiblexWithoutRelation()
         }
     }
 }
