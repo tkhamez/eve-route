@@ -177,7 +177,9 @@ export default forwardRef((props: Props, ref: any) => {
   };
 
   const selectSystem = (e: React.MouseEvent) => {
-    const system = e.currentTarget.textContent || '';
+    const text = e.currentTarget.textContent || '';
+    const system = text.substring(0, text.indexOf(' - '));
+
     setOpen(false);
     setInputValue(system);
     setSearchTerm('');

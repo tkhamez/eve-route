@@ -8,7 +8,6 @@ import java.io.File
 import kotlin.math.round
 
 val dataPath = "esi-data/json/universe/"
-val constellationsByRegion = mutableMapOf<String, Array<Constellation>>()
 
 val graph = readData()
 writeJsonFile(graph)
@@ -46,8 +45,11 @@ fun readData(): Graph {
                 name = system.name,
                 security = security,
                 position = system.position,
-                regionId = findRegion(region.name, system.constellationId)
+                regionId = region.id
             ))
+            if (!graph.regions.containsKey(region.id)) {
+                graph.regions[region.id] = region.name
+            }
         }
 
         val stargateJson = File(dataPath + "stargates/" + region.name + "-stargates.json").readText()
@@ -75,25 +77,6 @@ fun writeJsonFile(graph: Graph) {
     file.writeText(json)
 }
 
-fun findRegion(regionName: String, constellationId: Int): Int {
-    if (!constellationsByRegion.containsKey(regionName)) {
-        val constellationJson = File(dataPath + "constellations/" + regionName + "-constellations.json").readText()
-        val constellations = Gson().fromJson(constellationJson, Array<Constellation>::class.java)
-        constellationsByRegion[regionName] = constellations
-    }
-
-    val constellations = constellationsByRegion[regionName]
-    if (constellations != null) {
-        for (constellation in constellations) {
-            if (constellation.id == constellationId) {
-                return constellation.regionId
-            }
-        }
-    }
-
-    throw Exception("Error, region not found.")
-}
-
 data class Destination(val systemId: Int)
 data class Stargate(val systemId: Int, val destination: Destination)
 data class System(
@@ -103,5 +86,4 @@ data class System(
     val securityStatus: Double,
     val position: GraphPosition
 )
-data class Constellation(val id: Int, val regionId: Int)
-data class Region(val name: String)
+data class Region(val id: Int, val name: String)

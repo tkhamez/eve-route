@@ -14,18 +14,20 @@ fun Route.systems() {
 
         val listA: MutableList<String> = mutableListOf()
         val listB: MutableList<String> = mutableListOf()
-        GraphHelper().getGraph().systems.forEach {
+        val graph = GraphHelper().getGraph()
+        graph.systems.forEach {
             if (search == "" || it.name.toLowerCase().contains(search.toLowerCase())) {
+                val name = "${it.name} - ${graph.regions[it.regionId]} (${it.security})"
                 if (it.name.startsWith(search, true)) {
-                    listA.add(it.name)
+                    listA.add(name)
                 } else {
-                    listB.add(it.name)
+                    listB.add(name)
                 }
             }
         }
 
-        listA.sort();
-        listB.sort();
+        listA.sort()
+        listB.sort()
 
         val response = ResponseSystemNames()
         response.systems.addAll(listA)

@@ -20,5 +20,6 @@ data class GraphSystem(
 
 data class Graph(
     val systems: MutableList<GraphSystem> = mutableListOf(),
-    val connections: MutableList<IntArray> = mutableListOf()
+    val connections: MutableList<IntArray> = mutableListOf(),
+    val regions: MutableMap<Int, String> = mutableMapOf(),
 )
