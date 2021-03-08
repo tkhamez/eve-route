@@ -62,7 +62,6 @@ fun Route.route(config: Config) {
 
         val ansiblexStartSystems: MutableSet<Int> = mutableSetOf()
         for (connectionType in listOf(gates, tempConnections)) {
-            val addedConnections = mutableListOf<String>()
             connectionType.forEach { connection ->
                 var startSystem: GraphSystem? = null
                 var endSystem: GraphSystem? = null
@@ -73,13 +72,7 @@ fun Route.route(config: Config) {
                     startSystem = graphHelper.findSystem(connection.system1Id)
                     endSystem = graphHelper.findSystem(connection.system2Id)
                 }
-                if (
-                    startSystem != null &&
-                    endSystem != null &&
-                    !addedConnections.contains("${startSystem.name} - ${endSystem.name}")
-                ) {
-                    addedConnections.add("${startSystem.name} - ${endSystem.name}")
-                    addedConnections.add("${endSystem.name} - ${startSystem.name}")
+                if (startSystem != null && endSystem != null) {
                     if (connection is MongoAnsiblex) {
                         ansiblexStartSystems.add(startSystem.id)
                         if (ansiblexStartSystems.contains(endSystem.id)) { // true for the second gate of a connection
