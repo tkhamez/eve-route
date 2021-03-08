@@ -68,6 +68,12 @@ export default function Map(props: Props) {
   const [svgLoaded, setSvgLoaded] = useState(false);
   const [mapError, setMapError] = useState('');
 
+  useEffect(() => {
+    return () => {
+      SVG.init = false;
+    };
+  }, []);
+
   /**
    * Load JSON file.
    */
@@ -98,10 +104,6 @@ export default function Map(props: Props) {
       SVG.updateConnections(globalData.mapConnections);
       ResizeMap.init();
     }
-
-    return function cleanup() {
-      SVG.init = false;
-    };
   }, [globalData.mapConnections, mapData, svgLoaded]);
 
   useEffect(() => {
