@@ -4,13 +4,6 @@
 
 package net.tkhamez.everoute.data
 
-data class EsiVerify(
-    val CharacterID: Int,
-    val CharacterName: String,
-    val ExpiresOn: String,
-    val Scopes: String
-)
-
 data class EsiTokenVerify(
     //val scp: List<String>,
     //val jti: String,
