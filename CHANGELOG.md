@@ -1,5 +1,7 @@
 
-## next
+## 0.7.0
+
+2021-03-08
 
 - New: Read start and end systems from URL, e.g. domain.tdl/#Home;HED-GP;GE-8JV
 - New: The system search result now includes the region name and system security level.
