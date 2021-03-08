@@ -5,7 +5,11 @@ import axios from "axios";
 import { ResponseMessage } from "../response";
 import { GlobalDataContext } from "../GlobalDataContext";
 
-const Admin = () => {
+type Props = {
+  connectionChanged: Function,
+}
+
+const Admin = (props: Props) => {
   const { t } = useTranslation();
   const globalData = useContext(GlobalDataContext);
   const [input, setInput] = useState('');
@@ -27,6 +31,7 @@ const Admin = () => {
       if (r.data.success) {
         setInput('');
         setResult(t(`responseCode.${r.data.code}`, {number: r.data.param}));
+        props.connectionChanged();
       } else {
         setResult(t(`responseCode.${r.data.code}`));
       }

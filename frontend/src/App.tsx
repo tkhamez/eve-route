@@ -63,7 +63,9 @@ class App extends React.Component<Props, AppState> {
               <div className='grid-spacing-2-wrapper'>
                 { this.state.user.name === '' && <Login /> }
                 { this.state.user.name && this.state.page === 'Home' && <Home /> }
-                { this.state.user.name && this.state.page === 'Admin' && <Admin /> }
+                { this.state.user.name && this.state.page === 'Admin' &&
+                  <Admin connectionChanged={this.connectionChanged} />
+                }
               </div>
             }
           </Container>
