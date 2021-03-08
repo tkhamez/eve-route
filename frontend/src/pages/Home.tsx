@@ -135,6 +135,12 @@ class Home extends React.Component<Props, HomeState> {
     this.chooseRoute = this.chooseRoute.bind(this);
   }
 
+  componentDidMount() {
+    if (this.state.startSystemInput !== '' && this.state.endSystemInput !== '') {
+      this.routeFind();
+    }
+  };
+
   getRouteFromURL = () => {
     const params = window.location.hash.substring(1).split(';');
     return [params[1] ? params[1] : '', params[2] ? params[2] : ''];
