@@ -2,7 +2,8 @@
 ## next
 
 - New: Read start and end systems from URL, e.g. domain.tdl/#Home;HED-GP;GE-8JV
-- New: The search result now includes the region name and system security level.
+- New: The system search result now includes the region name and system security level.
+- New: The list of systems on the route now includes the region name.
 - Change: The search result now lists systems first that start with the search term.
 - Change: No more "Unknown Ansiblex" when an Ansiblex of a pair is missing, these connections are now ignored.
 - This update deletes all Ansiblex gates without a region ID. These gates are from ESI searches before version 0.6.0.

@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'start',
   },
   listItem: {
+    display: 'block',
+  },
+  listItemRow: {
+    display: 'flex',
+    justifyContent: 'flex-start',
     alignItems: 'start',
   },
   listIcon: {
@@ -31,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
   listText: {
     marginTop: 0,
     marginBottom: 0,
+  },
+  listRegionText: {
+    position: 'relative',
+    top: '-4px',
+    marginLeft: '30px',
   },
   listTextContent: {
     display: 'flex',
@@ -72,6 +82,8 @@ export default function RouteList(props: Props) {
   const [avoidedSystems, setAvoidedSystems] = useState<System[]>([]);
   const [removedConnections, setRemovedConnections] = useState<ConnectedSystems[]>([]);
   const [resetDisabled, setResetDisabled] = useState(true);
+
+  let lastRegionName = '';
 
   // build Dotlan link
   let dotlanHref = 'https://evemaps.dotlan.net/route/';
@@ -212,57 +224,64 @@ export default function RouteList(props: Props) {
             (value.connectionType === RouteType.Temporary ? t('routeList.temporary-connection') : '');
           return (
             <ListItem key={index} className={classes.listItem}>
-              {! last && value.connectionType === RouteType.Temporary &&
-                <ListItemIcon className={classes.listIcon}>
-                  <SlowMotionVideoTwoToneIcon style={{transform: "rotate(90deg)", color: "darkgrey"}} />
-                </ListItemIcon>
+              {lastRegionName !== value.regionName &&
+                <div className={classes.listItemRow}>
+                  <div className={classes.listRegionText}>{lastRegionName = value.regionName}</div>
+                </div>
               }
-              {! last && value.connectionType === RouteType.Ansiblex &&
-                <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleTwoToneIcon /></ListItemIcon>
-              }
-              {! last && value.connectionType === RouteType.Stargate &&
-                <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleOutlinedIcon/></ListItemIcon>
-              }
-              {last &&
-                <ListItemIcon className={classes.listIcon}><AdjustOutlinedIcon /></ListItemIcon>
-              }
-              <ListItemText className={classes.listText}
-                primary={
-                  <span className={classes.listTextContent}>
-                    {!last && index !== 0 &&
-                      <IconButton className={`${classes.actionButton} ${classes.primaryActionButton}`}
-                                  aria-label={t('routeList.avoid-system')}
-                                  data-title={t('routeList.avoid-system')}
-                                  size="small" onClick={() => avoidSystem(value.systemId)}>
-                        <RemoveCircleOutlineIcon fontSize="inherit"/>
-                      </IconButton>
-                    }
-                    {(last || index === 0) &&
-                      <IconButton disabled={true}/>
-                    }
-                    <span>
-                      {value.systemName}
-                      <small className={classes.security}>{' ' + value.systemSecurity}</small>
-                    </span>
-                  </span>
+              <div className={classes.listItemRow}>
+                {! last && value.connectionType === RouteType.Temporary &&
+                  <ListItemIcon className={classes.listIcon}>
+                    <SlowMotionVideoTwoToneIcon style={{transform: "rotate(90deg)", color: "darkgrey"}} />
+                  </ListItemIcon>
                 }
-                secondary={
-                  <small>
-                    {(value.connectionType === RouteType.Ansiblex || value.connectionType === RouteType.Temporary) &&
-                      <span className={classes.secondary}>
-                        <IconButton className={`${classes.actionButton} ${classes.secondaryActionButton}`}
-                                    aria-label={t('routeList.remove-connection')}
-                                    data-title={t('routeList.remove-connection')}
-                                    size="small"
-                                    onClick={() => removeConnection(value.systemName, value.targetSystem)}>
-                          <HighlightOffSharpIcon fontSize="inherit" />
+                {! last && value.connectionType === RouteType.Ansiblex &&
+                  <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleTwoToneIcon /></ListItemIcon>
+                }
+                {! last && value.connectionType === RouteType.Stargate &&
+                  <ListItemIcon className={classes.listIcon}><ArrowDropDownCircleOutlinedIcon/></ListItemIcon>
+                }
+                {last &&
+                  <ListItemIcon className={classes.listIcon}><AdjustOutlinedIcon /></ListItemIcon>
+                }
+                <ListItemText className={classes.listText}
+                  primary={
+                    <span className={classes.listTextContent}>
+                      {!last && index !== 0 &&
+                        <IconButton className={`${classes.actionButton} ${classes.primaryActionButton}`}
+                                    aria-label={t('routeList.avoid-system')}
+                                    data-title={t('routeList.avoid-system')}
+                                    size="small" onClick={() => avoidSystem(value.systemId)}>
+                          <RemoveCircleOutlineIcon fontSize="inherit"/>
                         </IconButton>
-                        <span>{secondaryName}</span>
+                      }
+                      {(last || index === 0) &&
+                        <IconButton disabled={true}/>
+                      }
+                      <span>
+                        {value.systemName}
+                        <small className={classes.security}>{' ' + value.systemSecurity}</small>
                       </span>
-                    }
-                  </small>
-                }
-              />
+                    </span>
+                  }
+                  secondary={
+                    <small>
+                      {(value.connectionType === RouteType.Ansiblex || value.connectionType === RouteType.Temporary) &&
+                        <span className={classes.secondary}>
+                          <IconButton className={`${classes.actionButton} ${classes.secondaryActionButton}`}
+                                      aria-label={t('routeList.remove-connection')}
+                                      data-title={t('routeList.remove-connection')}
+                                      size="small"
+                                      onClick={() => removeConnection(value.systemName, value.targetSystem)}>
+                            <HighlightOffSharpIcon fontSize="inherit" />
+                          </IconButton>
+                          <span>{secondaryName}</span>
+                        </span>
+                      }
+                    </small>
+                  }
+                />
+              </div>
             </ListItem>
           )
         })}

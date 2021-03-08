@@ -3,7 +3,6 @@ package net.tkhamez.everoute
 import com.google.gson.Gson
 import net.tkhamez.everoute.data.Graph
 import net.tkhamez.everoute.data.GraphSystem
-import net.tkhamez.everoute.data.MongoAnsiblex
 import java.io.File
 
 class GraphHelper {

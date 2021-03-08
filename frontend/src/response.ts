@@ -82,6 +82,7 @@ export type Waypoint = {
   connectionType: RouteType|null,
   ansiblexId: number|null,
   ansiblexName: string|null,
+  regionName: string,
 }
 
 export enum RouteType {

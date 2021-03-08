@@ -225,7 +225,8 @@ class Route(
                 systemSecurity = system.security,
                 connectionType = previousConnection?.type,
                 ansiblexId = ansiblexId,
-                ansiblexName = ansiblex?.name
+                ansiblexName = ansiblex?.name,
+                regionName = graphHelper.getGraph().regions[system.regionId] ?: "",
             ))
 
             previousConnection = connection
@@ -283,7 +284,8 @@ class Route(
         val systemSecurity: Double,
         val connectionType: Type?, // the type of the outgoing connection, null for the end system
         val ansiblexId: Long?,
-        val ansiblexName: String?
+        val ansiblexName: String?,
+        val regionName: String,
     ) {
         enum class Type { Stargate, Ansiblex, Temporary }
     }
