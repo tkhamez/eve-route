@@ -1,4 +1,8 @@
 
+## next
+
+- Manual Gate Import: It is now possible to import gates without replacing all from one region.
+
 ## 0.7.0
 
 2021-03-08

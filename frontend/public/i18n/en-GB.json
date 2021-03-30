@@ -138,20 +138,31 @@
   },
   "import": {
     "headline": "Ansiblex Import",
-    "description": [
+    "importMode": "Import mode",
+    "replaceRegion": "Replace all gates in one region",
+    "replaceDescription": [
       "This imports Ansiblex jump gates from one region and deletes all existing gates from that region beforehand. ",
       "If the gates from the input are from different regions, only the region of the first gate is processed."
     ],
-    "instruction": [
-      "How-to: Copy from game: ",
-      "Utilities -> Structure Browser, choose \"Region\" and Structure Type \"Ansiblex Jump Gate\", ",
-      "select all and drag into a new mail, select all text in the mail, right click and click ",
-      "\"Copy Selected With Formatting\" and paste that into the input field below."
+    "addGates": "Add gates",
+    "addDescription": "Only add gates, do not remove other existing gates.",
+    "howTo": "How-to:",
+    "copy1Label": "Copy multiple gates",
+    "copy1Instruction": [
+      "Open Utilities -> Structure Browser, choose \"Region\" and Structure Type \"Ansiblex Jump Gate\", select ",
+      "all and drag into a new mail. Select all text in the mail, right click and click \"Copy Selected With ",
+      "Formatting\" and paste that into the input field below."
+    ],
+    "copy2Label": "Copy a single gate",
+    "copy2Instruction": [
+      "Open the \"Solar System: Information\" window for a system, select the \"Structures\" tab and drag ",
+      "the Ansiblex gate into a new mail. Then continue as above."
     ],
     "warning": [
       "WARNING: Make sure the character that copies the data from the game is in the same alliance as the character ",
       "that is logged in here."
     ],
+    "textFieldLabel": "Copy/paste from game",
     "submit": "Submit"
   },
   "systemInput": {

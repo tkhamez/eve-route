@@ -12,6 +12,9 @@ import net.tkhamez.everoute.db
 import net.tkhamez.everoute.gson
 import org.slf4j.Logger
 
+private const val IMPORT_MODE_REPLACE_REGION = "replace-region"
+private const val IMPORT_MODE_ADD_GATES = "add-gates"
+
 fun Route.import(config: Config) {
     post("/api/import/from-game") {
         val response = ResponseMessage(success = false)
@@ -24,20 +27,8 @@ fun Route.import(config: Config) {
         }
 
         val ansiblexes = parse(call.receiveText(), call.application.environment.log)
-
-        var numImported = 0
-        if (ansiblexes.isNotEmpty()) {
-            val regionId = ansiblexes[0].regionId
-            if (regionId != null) {
-                val db = db(config.db)
-                db.allianceAdd(eveCharacter.allianceId)
-                db.gatesRemoveRegion(regionId, eveCharacter.allianceId)
-                for (ansiblex in ansiblexes) {
-                    db.gateStore(ansiblex, eveCharacter.allianceId)
-                    numImported ++
-                }
-            }
-        }
+        val mode = call.parameters["mode"].toString()
+        val numImported = import(ansiblexes, config.db, eveCharacter.allianceId, mode)
 
         response.success = true
         response.code = ResponseCodes.ImportedGates
@@ -90,4 +81,34 @@ private fun parse(input: String, log: Logger): List<MongoAnsiblex> {
     }
 
     return result
+}
+
+private fun import(ansiblexes: List<MongoAnsiblex>, dbConfig: String, allianceId: Int, mode: String): Int {
+    if (ansiblexes.isEmpty()) {
+        return 0
+    }
+
+    val db = db(dbConfig)
+    db.allianceAdd(allianceId)
+
+    var add = false
+    if (mode == IMPORT_MODE_REPLACE_REGION) {
+        val regionId = ansiblexes[0].regionId
+        if (regionId != null) {
+            db.gatesRemoveRegion(regionId, allianceId)
+            add = true
+        }
+    } else if (mode == IMPORT_MODE_ADD_GATES) {
+        add = true
+    }
+
+    var numImported = 0
+    if (add) {
+        for (ansiblex in ansiblexes) {
+            db.gateStore(ansiblex, allianceId)
+            numImported ++
+        }
+    }
+
+    return numImported
 }
