@@ -54,14 +54,14 @@
     "find-route": "Find Route",
     "find-route-description": "This function does not require any ESI scopes.",
     "write-route": "Write Route",
-    "write-route-description": "Set route in the game, requires: esi-ui.write_waypoint.v1",
+    "write-route-description": "Set route in the game, requires esi-ui.write_waypoint.v1.",
     "read-location": "Read Location",
     "read-location-description":
-      "Set the start system to your current location, requires: esi-location.read_location.v1",
+      "Set the start system to your current location, requires esi-location.read_location.v1.",
     "update-gates": "Update Gates",
     "update-gates-description": [
-      "Update Ansiblex jump gates for your alliance, requires: ",
-      "esi-search.search_structures.v1, esi-universe.read_structures.v1"
+      "Update Ansiblex jump gates for your alliance from ESI, requires ",
+      "esi-search.search_structures.v1 and esi-universe.read_structures.v1."
     ],
     "token-deletion": "Only you can use your ESI tokens while logged in. They are deleted when you log out."
   },
@@ -75,9 +75,9 @@
     "no-route-found": "No route found."
   },
   "navModal": {
-    "how-it-works": "How it works",
-    "update-gates": "Update Gates",
-    "add-connection": "Add Connection"
+    "esi-update": "ESI Update",
+    "add-connection": "Add Connection",
+    "how-it-works": "How it works"
   },
   "addConnection":  {
     "from": "From",
@@ -86,15 +86,14 @@
       "Choose systems for a wormhole connection or missing Ansiblexes. ",
       "The connection is temporarily added <1>for your character only</1> and removed after 2 days."
     ],
+    "submit": "Submit",
     "your-connections": "Your connections",
     "expires": "Expires",
     "delete": "Delete"
   },
   "howItWorks": {
     "gate-sources": [
-      "Ansiblex jump gates can be imported manually using the in-game structure browser. ",
-      "The application can also find them using the <1>EVE API (ESI)</1> search, ",
-      "but this must also be initiated manually."
+      "Ansiblex jump gates can be imported manually from the game or found using the EVE API (ESI) search."
     ],
     "gates-alliance": [
       "For each alliance a set of Ansiblex gates is stored. ",
@@ -107,10 +106,9 @@
       "See also <1>this ticket</1>."
     ],
     "wormholes": [
-      "If the route contains wormholes (temporary connection), they cannot be displayed on the map and are ",
-      "simply skipped. ",
-      "For the in-game route, a waypoint is set for the system where the wormhole is located. ",
-      "The wormhole system itself cannot be set as a waypoint."
+      "If a route contains wormholes (temporary connection), they cannot be displayed on the map and are ",
+      "simply skipped. In this case, for the in-game route, a waypoint is set for the system where the wormhole ",
+      "is located. The wormhole system itself cannot be set as a waypoint."
     ],
     "pochven": [
       "It is also not possible to set waypoints to Pochven systems (Triglavian space), ",
@@ -121,7 +119,7 @@
       "then the one with fewer Ansiblex gates is preferred."
     ]
   },
-  "updateGates": {
+  "esiUpdate": {
     "intro": [
       "Ansiblex jump gates can be found by normal characters only with the ESI search. ",
       "Unfortunately CCP does not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
@@ -136,8 +134,9 @@
     "show-gates": "Show Gates",
     "num-gates": "{{number}} gates:"
   },
-  "import": {
+  "adminImport": {
     "headline": "Ansiblex Import",
+    "missingRole": "Note: The form is disabled because you do not have the required role.",
     "importMode": "Import mode",
     "replaceRegion": "Replace all gates in one region",
     "replaceDescription": [
@@ -164,6 +163,9 @@
     ],
     "textFieldLabel": "Copy/paste from game",
     "submit": "Submit"
+  },
+  "adminGates": {
+    "headline": "All Ansiblexes"
   },
   "systemInput": {
     "clear": "Clear",

@@ -124,7 +124,7 @@ export default function AddConnection(props: Props) {
         </Grid>
         <Grid item xs={12}>
           <Button variant="contained" color="primary" disabled={submitDisabled}
-                  onClick={submit}>{t('updateGates.submit')}</Button>
+                  onClick={submit}>{t('addConnection.submit')}</Button>
           {' '}{submitError}
         </Grid>
         <Grid item xs={12}>

@@ -84,7 +84,7 @@ export default function Header(props: Props) {
               {t('app.name')}
             </Typography>
 
-            {globalData.user.name && globalData.user.roles.indexOf('import') !== -1 &&
+            {globalData.user.name &&
               <Button size="small" color="primary" disableRipple className={classes.toolbarButton}
                       onClick={() => openPage('Admin')}>
                 {t('header.admin')}

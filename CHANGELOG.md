@@ -1,7 +1,9 @@
 
 ## next
 
-- Manual Gate Import: It is now possible to import gates without replacing all from one region.
+- It is now possible to manually import gates without replacing all from one region.
+- The list of Ansiblexes has been moved to the ADMIN page.
+- The ADMIN page is now visible to all, the import functionality is disabled without the required role.
 
 ## 0.7.0
 

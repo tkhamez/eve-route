@@ -8,7 +8,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import SyncIcon from '@material-ui/icons/Sync';
 import { GlobalDataContext } from "../GlobalDataContext";
 import HowItWorks from '../modals/HowItWorks';
-import UpdateGates from '../modals/UpdateGates';
+import EsiUpdate from '../modals/EsiUpdate';
 import AddConnection from '../modals/AddConnection';
 
 const useStyles = makeStyles((theme) => ({
@@ -67,19 +67,14 @@ export default function HeaderModalButtons(props: Props) {
 
   return (
     <div>
-      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
-              onClick={() => handleOpen('HowItWorks')}>
-        <HelpOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
-        {t('navModal.how-it-works')}
-      </Button>
-
       {globalData.user.name &&
         <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
-                onClick={() => handleOpen('UpdateGates')}>
+                onClick={() => handleOpen('EsiUpdate')}>
           <SyncIcon fontSize="small" className={classes.toolbarButtonIcon}/>
-          {t('navModal.update-gates')}
+          {t('navModal.esi-update')}
         </Button>
       }
+
       {globalData.user.name &&
         <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
                 onClick={() => handleOpen('AddConnection')}>
@@ -88,6 +83,12 @@ export default function HeaderModalButtons(props: Props) {
         </Button>
       }
 
+      <Button size="small" className={classes.toolbarButton} color="primary" disableRipple
+              onClick={() => handleOpen('HowItWorks')}>
+        <HelpOutlineIcon fontSize="small" className={classes.toolbarButtonIcon}/>
+        {t('navModal.how-it-works')}
+      </Button>
+
       <Modal open={open} onClose={handleClose}>
         <div className={classes.modal}>
           <Grid container style={{borderBottom: "1px solid black"}}>
@@ -95,9 +96,9 @@ export default function HeaderModalButtons(props: Props) {
               <Box display="flex" justifyContent="flex-start">
                 <Typography>
                   <strong>
-                    {content === 'HowItWorks' && t('navModal.how-it-works')}
-                    {content === 'UpdateGates' && t('navModal.update-gates')}
+                    {content === 'EsiUpdate' && t('navModal.esi-update')}
                     {content === 'AddConnection' && t('navModal.add-connection')}
+                    {content === 'HowItWorks' && t('navModal.how-it-works')}
                   </strong>
                 </Typography>
               </Box>
@@ -111,9 +112,9 @@ export default function HeaderModalButtons(props: Props) {
             </Grid>
           </Grid>
           <div className={classes.modalBody}>
-            {content === 'HowItWorks' && <HowItWorks />}
-            {content === 'UpdateGates' && <UpdateGates />}
+            {content === 'EsiUpdate' && <EsiUpdate />}
             {content === 'AddConnection' && <AddConnection connectionChanged={props.connectionChanged} />}
+            {content === 'HowItWorks' && <HowItWorks />}
           </div>
         </div>
       </Modal>
