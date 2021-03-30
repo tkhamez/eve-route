@@ -258,10 +258,10 @@ class Route(
     private class Path(val waypoints: List<Waypoint>): Comparable<Path> {
         override fun compareTo(other: Path): Int {
             val numberOfAnsiblexes1 = waypoints.fold(0) {
-                sum, waypoint -> if (waypoint.connectionType === Waypoint.Type.Ansiblex) sum + 1 else sum
+                sum, waypoint -> if (waypoint.connectionType == Waypoint.Type.Ansiblex) sum + 1 else sum
             }
             val numberOfAnsiblexes2 = other.waypoints.fold(0) {
-                sum, waypoint -> if (waypoint.connectionType === Waypoint.Type.Ansiblex) sum + 1 else sum
+                sum, waypoint -> if (waypoint.connectionType == Waypoint.Type.Ansiblex) sum + 1 else sum
             }
             return when {
                 numberOfAnsiblexes1 > numberOfAnsiblexes2 -> 1
