@@ -50,7 +50,7 @@ The application is configured with environment variables. You can simply set the
 development environment or add them to your .bashrc file for example.
 
 The following variables are required:
-- EVE_ROUTE_DB
+- EVE_ROUTE_DB - The database connection string.
 - EVE_ROUTE_CLIENT_ID - Your EVE application client ID.
 - EVE_ROUTE_CLIENT_SECRET - Your EVE application secret.
 - EVE_ROUTE_CALLBACK - The callback URL from your EVE application.
@@ -72,10 +72,10 @@ The following variables are optional, see resources/application.conf for their d
 - EVE_ROUTE_ESI_DOMAIN
 - EVE_ROUTE_ESI_DATASOURCE
 - EVE_ROUTE_SECURE - Value 1 enables the secure flag for the session cookie.
-- EVE_ROUTE_CORS_DOMAIN - Set this if the frontend and backend run on different domains or ports,
-  it includes http and https.
+- EVE_ROUTE_CORS_DOMAIN - Set this to the domain of the frontend if it is running on a different domain or port than
+  the backend, it includes http and https.
 - EVE_ROUTE_ALLIANCE_ALLOWLIST - A comma separated list of EVE alliances to restrict the login to their members.
-- EVE_ROUTE_ROLE_IMPORT - A comma separated list of character IDs that can import Ansiblex gates.
+- EVE_ROUTE_ROLE_IMPORT - A comma separated list of character IDs that can manually import Ansiblex gates.
 
 ## Run the application
 
