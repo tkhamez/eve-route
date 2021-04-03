@@ -1,4 +1,10 @@
 
+## next
+
+yyy-mm-dd
+
+- Fix: The start position was always set to the current position of the character if the field was empty.
+
 ## 0.8.0
 
 2021-04-03

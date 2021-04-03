@@ -117,7 +117,9 @@ export default forwardRef((props: Props, ref: any) => {
     if (!props.fieldValue) {
       fetchLocation();
     }
-  }, [fetchLocation, props.fieldId, props.fieldValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchLocation, props.fieldId]); // Do not add "props.fieldValue", otherwise the location will be read even
+                                      // if the field was deleted manually.
 
   /**
    * Handle system input from parent component.
