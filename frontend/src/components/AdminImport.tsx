@@ -24,6 +24,7 @@ const useStyles = makeStyles(() => ({
 type Props = {
   disabled: boolean,
   connectionChanged: Function,
+  ansiblexesChanged: Function,
 }
 
 const AdminImport = (props: Props) => {
@@ -57,6 +58,7 @@ const AdminImport = (props: Props) => {
       if (r.data.success) {
         setInput('');
         setResult(t(`responseCode.${r.data.code}`, {number: r.data.param}));
+        props.ansiblexesChanged();
         props.connectionChanged();
       } else {
         setResult(t(`responseCode.${r.data.code}`));

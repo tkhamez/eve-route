@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import axios from "axios";
-import { Ansiblex, ResponseGates, ResponseMessage } from "../response";
+import { Ansiblex,  ResponseMessage } from "../response";
 import { GlobalDataContext } from "../GlobalDataContext";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -22,49 +22,18 @@ const useStyles = makeStyles(() => ({
 
 type Props = {
   disabled: boolean,
+  connectionChanged: Function,
+  ansiblexesChanged: Function,
+  gatesPerRegion: Array<Ansiblex[]>,
 }
 
 const AdminList = (props: Props) => {
   const { t } = useTranslation();
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
-  const [gatesPerRegion, setGatesPerRegion] = useState<Array<Ansiblex[]>>([]);
   const [message, setMessage] = useState('');
   const [askDeleteGateOpen, setAskDeleteGateOpen] = React.useState(false);
   const [ansiblexDelete, setAnsiblexDelete] = React.useState<Ansiblex|null>(null);
-
-  const fetchGates = useCallback(() => {
-    setMessage('');
-    axios.get<ResponseGates>(`${globalData.domain}/api/gates/fetch`).then(response => {
-      if (response.data.code) {
-        setMessage(t(`responseCode.${response.data.code}`));
-      } else {
-        let lastRegionName = '';
-        let gates: Array<Ansiblex> = [];
-        let gatesGrouped: Array<Ansiblex[]> = [];
-        response.data.ansiblexes.forEach((gate) => {
-          if (lastRegionName !== gate.regionName) {
-            lastRegionName = gate.regionName;
-            if (gates.length > 0) {
-              gatesGrouped.push(gates);
-            }
-            gates = [];
-          }
-          gates.push(gate);
-        });
-        if (gates.length > 0) {
-          gatesGrouped.push(gates);
-        }
-        setGatesPerRegion(gatesGrouped);
-      }
-    }).catch(() => {
-      setMessage(t('app.error'));
-    });
-  }, [globalData.domain, t]);
-
-  useEffect(() => {
-    fetchGates();
-  }, [fetchGates]);
 
   const askDeleteGateClose = (deleteAnsiblex: boolean) => {
     setAskDeleteGateOpen(false);
@@ -90,8 +59,8 @@ const AdminList = (props: Props) => {
           setMessage(t(`responseCode.${response.data.code}`));
         } else {
           if (response.data.success) {
-            setGatesPerRegion([]);
-            fetchGates();
+            props.ansiblexesChanged();
+            props.connectionChanged();
             setMessage(t('adminGates.deleteSuccess'));
           } else {
             setMessage(t('adminGates.deleteError'));
@@ -108,7 +77,7 @@ const AdminList = (props: Props) => {
       <h3>{t('adminGates.headline')}</h3>
       <Typography color="primary">{message}</Typography>
 
-      {gatesPerRegion.map((gates) => {
+      {props.gatesPerRegion.map((gates) => {
         return (
           <Table size="small">
             <TableHead>

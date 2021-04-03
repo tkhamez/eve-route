@@ -56,7 +56,7 @@ class App extends React.Component<Props, AppState> {
     return (
       <GlobalDataContext.Provider value={globalData}>
         <div className={classes.root}>
-          <Header connectionChanged={this.connectionChanged}/>
+          <Header connectionChanged={this.connectionChanged} />
 
           <Container component="main" maxWidth="lg">
             { this.state.loaded &&
