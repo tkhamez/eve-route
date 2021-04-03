@@ -146,7 +146,7 @@
     "replaceDescription": [
       "This imports Ansiblex jump gates from one region and deletes all existing gates from that region beforehand. ",
       "If the gates from the input are from different regions, only the region of the first gate is processed. ",
-      "This also deletes gates that were found via ESI."
+      "This also deletes gates that were found via ESI from that region."
     ],
     "addGates": "Add gates",
     "addDescription": "Only add gates, do not remove other existing gates.",
