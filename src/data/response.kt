@@ -45,7 +45,7 @@ data class ResponseAuthUser(
 
 data class ResponseGates(
     var code: ResponseCodes? = null,
-    var ansiblexes: MutableList<MongoAnsiblex> = mutableListOf()
+    var ansiblexes: MutableList<Ansiblex> = mutableListOf()
 )
 
 data class ResponseSystems(

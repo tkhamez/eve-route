@@ -1,5 +1,6 @@
 package net.tkhamez.everoute.database
 
+import com.mongodb.client.MongoCollection
 import net.tkhamez.everoute.data.*
 import org.litote.kmongo.*
 import java.time.LocalDate
@@ -46,6 +47,16 @@ class Mongo(uri: String): DbInterface {
         }
     }
 
+    override fun gateDelete(ansiblexId: Long, allianceId: Int): Boolean {
+        val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
+        val ansiblex: MongoAnsiblex? = col.findOne(MongoAnsiblex::id eq ansiblexId)
+        if (ansiblex != null) {
+            ansiblex.alliances.remove(allianceId)
+            replaceOrDelete(col, ansiblex)
+        }
+        return true
+    }
+
     override fun gatesRemoveSourceESI(allianceId: Int) {
         val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
         col.find(or(
@@ -53,11 +64,7 @@ class Mongo(uri: String): DbInterface {
             MongoAnsiblex::source exists false
         )).forEach {
             it.alliances.remove(allianceId)
-            if (it.alliances.size > 0) {
-                col.replaceOne(MongoAnsiblex::id eq it.id, it)
-            } else {
-                col.deleteOne(MongoAnsiblex::id eq it.id)
-            }
+            replaceOrDelete(col, it)
         }
     }
 
@@ -65,11 +72,7 @@ class Mongo(uri: String): DbInterface {
         val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
         col.find(MongoAnsiblex::regionId eq regionId).forEach {
             it.alliances.remove(allianceId)
-            if (it.alliances.size > 0) {
-                col.replaceOne(MongoAnsiblex::id eq it.id, it)
-            } else {
-                col.deleteOne(MongoAnsiblex::id eq it.id)
-            }
+            replaceOrDelete(col, it)
         }
     }
 
@@ -160,25 +163,35 @@ class Mongo(uri: String): DbInterface {
         }
     }
 
+    private fun replaceOrDelete(col: MongoCollection<MongoAnsiblex>, ansiblex: MongoAnsiblex) {
+        if (ansiblex.alliances.size > 0) {
+            col.replaceOne(MongoAnsiblex::id eq ansiblex.id, ansiblex)
+        } else {
+            col.deleteOne(MongoAnsiblex::id eq ansiblex.id)
+        }
+    }
+
     private fun migrate030() {
         // 0.2.0 -> 0.3.0: copy "allianceId" to "alliances"
         val col = database.getCollection<MongoAnsiblex>(COLLECTION_ANSIBLEX)
-        database.getCollection<MongoAnsiblexV02>(COLLECTION_ANSIBLEX).find(MongoAnsiblexV02::allianceId gt 0).forEach {
-            val filter = and(MongoAnsiblex::id eq it.id, MongoAnsiblex::alliances exists true)
-            var gateV03 = col.findOne(filter)
-            if (gateV03 == null) {
-                gateV03 = MongoAnsiblex(
-                    id = it.id,
-                    name = it.name,
-                    solarSystemId = it.solarSystemId,
-                )
-                gateV03.alliances.add(it.allianceId)
-                col.insertOne(gateV03)
-            } else {
-                gateV03.alliances.add(it.allianceId)
-                col.replaceOne(filter, gateV03)
+        database.getCollection<MongoAnsiblexV02>(COLLECTION_ANSIBLEX)
+            .find(MongoAnsiblexV02::allianceId gt 0)
+            .forEach {
+                val filter = and(MongoAnsiblex::id eq it.id, MongoAnsiblex::alliances exists true)
+                var gateV03 = col.findOne(filter)
+                if (gateV03 == null) {
+                    gateV03 = MongoAnsiblex(
+                        id = it.id,
+                        name = it.name,
+                        solarSystemId = it.solarSystemId,
+                    )
+                    gateV03.alliances.add(it.allianceId)
+                    col.insertOne(gateV03)
+                } else {
+                    gateV03.alliances.add(it.allianceId)
+                    col.replaceOne(filter, gateV03)
+                }
             }
-        }
         col.deleteMany(MongoAnsiblex::alliances exists false)
     }
 

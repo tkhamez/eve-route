@@ -165,7 +165,14 @@
     "submit": "Submit"
   },
   "adminGates": {
-    "headline": "All Ansiblexes"
+    "headline": "All Ansiblexes",
+    "delete-ansiblex": "Delete Ansiblex",
+    "confirm-delete-title": "Confirm deletion",
+    "confirm-delete-text": "Are you sure that you want to delete this Ansiblex gate?",
+    "yes": "Yes, delete.",
+    "no": "No, cancel.",
+    "deleteSuccess": "Ansiblex successfully deleted.",
+    "deleteError": "Failed to delete Ansiblex."
   },
   "systemInput": {
     "clear": "Clear",

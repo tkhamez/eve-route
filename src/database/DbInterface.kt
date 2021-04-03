@@ -12,6 +12,13 @@ interface DbInterface {
     fun gateStore(ansiblex: MongoAnsiblex, allianceId: Int)
 
     /**
+     * Delete one gate for one alliance.
+     *
+     * Returns true if gate for the alliance was deleted of does not exist.
+     */
+    fun gateDelete(ansiblexId: Long, allianceId: Int): Boolean
+
+    /**
      * Delete all Ansiblexes that were added by an ESI search.
      */
     fun gatesRemoveSourceESI(allianceId: Int)

@@ -29,7 +29,36 @@ fun Route.gates(config: Config) {
             return@get
         }
 
-        db(config.db).gatesGet(allianceId).forEach { response.ansiblexes.add(it) }
+        val graphHelper = GraphHelper()
+        db(config.db).gatesGet(allianceId).forEach {
+            response.ansiblexes.add(Ansiblex(
+                id = it.id,
+                name = it.name,
+                regionName = graphHelper.getGraph().regions[it.regionId] ?: "",
+            ))
+        }
+
+        response.ansiblexes = response.ansiblexes
+            .sortedWith(compareBy({ it.regionName }, { it.name }))
+            .toMutableList()
+
+        call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
+    }
+
+    post("/api/gates/delete/{ansiblexId}") {
+        val response = ResponseMessage()
+
+        val eveCharacter = call.sessions.get<Session>()?.eveCharacter
+        if (eveCharacter?.allianceId == null || !eveCharacter.roles.contains(ROLE_IMPORT)) {
+            response.code = ResponseCodes.AuthError
+            call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
+            return@post
+        }
+
+        val ansiblexId = call.parameters["ansiblexId"]?.toLong()
+        if (ansiblexId !== null && db(config.db).gateDelete(ansiblexId, eveCharacter.allianceId)) {
+            response.success = true
+        }
 
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }

@@ -17,6 +17,10 @@ import net.tkhamez.everoute.GraphHelper
 import net.tkhamez.everoute.data.*
 
 fun Route.route(config: Config) {
+
+    /**
+     * Returns user's location
+     */
     get("/api/route/location") {
         val response = ResponseRouteLocation()
 
@@ -88,6 +92,9 @@ fun Route.route(config: Config) {
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
+    /**
+     * Returns avoided systems.
+     */
     get("/api/route/avoided-systems") {
         val response = ResponseSystems()
         val avoidedSystems = call.sessions.get<Session>()?.avoidedSystems ?: mutableSetOf()
@@ -101,6 +108,9 @@ fun Route.route(config: Config) {
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
+    /**
+     * Returns removed connections.
+     */
     get("/api/route/removed-connections") {
         val response = ResponseConnectedSystems()
         val removedConnections = call.sessions.get<Session>()?.removedConnections ?: mutableSetOf()
@@ -115,6 +125,9 @@ fun Route.route(config: Config) {
         call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
     }
 
+    /**
+     * Set avoid system.
+     */
     post("/api/route/avoid-system/{id}") {
         val session = call.sessions.get<Session>()
         val avoidedSystems = session?.avoidedSystems ?: mutableSetOf()
@@ -126,6 +139,9 @@ fun Route.route(config: Config) {
         call.respondText("", contentType = ContentType.Application.Json)
     }
 
+    /**
+     * Set removed connection.
+     */
     post("/api/route/remove-connection/{from}/{to}") {
         val session = call.sessions.get<Session>()
         val removedConnections = session?.removedConnections ?: mutableSetOf()
@@ -138,12 +154,18 @@ fun Route.route(config: Config) {
         call.respondText("", contentType = ContentType.Application.Json)
     }
 
+    /**
+     * Removes all avoided system and removed connection.
+     */
     post("/api/route/reset-avoided-system-and-removed-connection") {
         call.sessions.set(call.sessions.get<Session>()?.copy(removedConnections = mutableSetOf()))
         call.sessions.set(call.sessions.get<Session>()?.copy(avoidedSystems = mutableSetOf()))
         call.respondText("", contentType = ContentType.Application.Json)
     }
 
+    /**
+     * Calculate routes.
+     */
     get("/api/route/find/{from}/{to}") {
         val response = ResponseRouteFind()
         val session = call.sessions.get<Session>()

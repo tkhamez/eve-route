@@ -1,9 +1,12 @@
 
 ## next
 
+yyyy-mm-dd
+
 - It is now possible to manually import gates without replacing all from one region.
+- Ansiblex gates can now be deleted individually.
 - The list of Ansiblexes has been moved to the ADMIN page.
-- The ADMIN page is now visible to all, the import functionality is disabled without the required role.
+- The ADMIN page is now visible to all, the editing functions are disabled without the required role.
 
 ## 0.7.0
 

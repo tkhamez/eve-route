@@ -20,7 +20,7 @@ fun Route.import(config: Config) {
         val response = ResponseMessage(success = false)
 
         val eveCharacter = call.sessions.get<Session>()?.eveCharacter
-        if (eveCharacter?.allianceId == null || !eveCharacter.roles.contains("import")) {
+        if (eveCharacter?.allianceId == null || !eveCharacter.roles.contains(ROLE_IMPORT)) {
             response.code = ResponseCodes.AuthError
             call.respondText(gson.toJson(response), contentType = ContentType.Application.Json)
             return@post

@@ -53,3 +53,9 @@ data class ConnectedSystems(
     val system1: String,
     val system2: String,
 )
+
+data class Ansiblex(
+    val id: Long,
+    var name: String,
+    var regionName: String? = null,
+)

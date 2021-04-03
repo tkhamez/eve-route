@@ -25,6 +25,8 @@ import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.util.*
 
+const val ROLE_IMPORT = "import"
+
 @KtorExperimentalLocationsAPI
 fun Route.authentication(config: Config) {
 
@@ -208,7 +210,7 @@ private suspend fun getCharacter(tokenVerify: EsiTokenVerify, config: Config, ht
             allianceId = allianceId,
             allianceName = alliance?.name ?: "",
             allianceTicker = alliance?.ticker ?: "",
-            roles = if (config.roleImport.contains(characterId)) listOf("import") else listOf(),
+            roles = if (config.roleImport.contains(characterId)) listOf(ROLE_IMPORT) else listOf(),
         )
     }
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { ResponseMessage } from "../response";
@@ -22,6 +22,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Props = {
+  disabled: boolean,
   connectionChanged: Function,
 }
 
@@ -36,13 +37,6 @@ const AdminImport = (props: Props) => {
   const [mode, setMode] = useState(IMPORT_MODE_ADD_GATES);
   const [result, setResult] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(false);
-  const [importDisabled, setImportDisabled] = useState(true);
-
-  useEffect(() => {
-    if (globalData.user.roles.indexOf('import') !== -1) {
-      setImportDisabled(false);
-    }
-  }, [globalData]);
 
   const handleModeChange = (event: any) => {
     setMode(event.target.value);
@@ -77,17 +71,14 @@ const AdminImport = (props: Props) => {
   return (
     <Grid item md={6} xs={12}>
       <h3>{t('adminImport.headline')}</h3>
-      {importDisabled &&
-      <Typography variant="body2" color={"textSecondary"}>{t('adminImport.missingRole')}<br/><br/></Typography>
-      }
       <FormControl component="fieldset">
-        <FormLabel component="legend">{t('adminImport.importMode')}</FormLabel>
+        <FormLabel component="legend">{t('adminImport.importMode')}:</FormLabel>
         <RadioGroup aria-label={t('adminImport.importMode')} name="mode" value={mode} onChange={handleModeChange}>
           <FormControlLabel value={IMPORT_MODE_ADD_GATES} label={t('adminImport.addGates')}
-                            control={<Radio color="primary" disabled={importDisabled} />} />
+                            control={<Radio color="primary" disabled={props.disabled} />} />
           <Typography className={classes.caption} variant={"caption"}>{t('adminImport.addDescription')}</Typography>
           <FormControlLabel value={IMPORT_MODE_REPLACE_REGION} label={t('adminImport.replaceRegion')}
-                            control={<Radio color="primary" disabled={importDisabled} />} />
+                            control={<Radio color="primary" disabled={props.disabled} />} />
           <Typography className={classes.caption} variant={"caption"}>{t('adminImport.replaceDescription')}</Typography>
         </RadioGroup>
       </FormControl>
@@ -107,10 +98,10 @@ const AdminImport = (props: Props) => {
         fullWidth
         variant="filled"
         label={t('adminImport.textFieldLabel')}
-        disabled={importDisabled}
+        disabled={props.disabled}
       /><br/>
       <br/>
-      <Button variant="contained" color="primary" onClick={submit} disabled={submitDisabled || importDisabled}>
+      <Button variant="contained" color="primary" onClick={submit} disabled={submitDisabled || props.disabled}>
         {t('adminImport.submit')}
       </Button>
       <br/>

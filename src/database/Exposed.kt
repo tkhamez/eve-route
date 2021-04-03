@@ -181,6 +181,19 @@ class Exposed(uri: String): DbInterface {
         }
     }
 
+    override fun gateDelete(ansiblexId: Long, allianceId: Int): Boolean {
+        transaction {
+            val ansiblex = Ansiblex.select { Ansiblex.id eq ansiblexId }.firstOrNull()
+            if (ansiblex != null) {
+                AnsiblexAlliance.deleteWhere {
+                    AnsiblexAlliance.ansiblexId eq ansiblexId and (AnsiblexAlliance.allianceId eq allianceId)
+                }
+                deleteAnsiblexWithoutRelation()
+            }
+        }
+        return true
+    }
+
     override fun gatesRemoveSourceESI(allianceId: Int) {
         transaction {
             // Find all with source "ESI"
