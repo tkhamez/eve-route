@@ -7,6 +7,7 @@ yyyy-mm-dd
 - Ansiblex gates can now be deleted individually.
 - The list of Ansiblexes has been moved to the ADMIN page.
 - The ADMIN page is now visible to all, the editing functions are disabled without the required role.
+- The map is now always updated when searching for a route, so that changed connections are visible.
 
 ## 0.7.0
 

@@ -23,6 +23,7 @@ const styles = (theme: Theme) => createStyles({
 interface Props extends WithTranslation {
   t: TFunction,
   classes: any,
+  connectionChanged: Function,
 }
 
 type HomeState = {
@@ -171,6 +172,8 @@ class Home extends React.Component<Props, HomeState> {
   };
 
   routeFind(from?: String, to?: String) {
+    this.props.connectionChanged(); // Update map - in case connections have changed
+
     const app = this;
     app.setState({buttonRouteFindDisabled: true});
     app.setState({buttonRouteSetDisabled: true});
