@@ -1,7 +1,7 @@
 
-## next
+## 0.8.0
 
-yyyy-mm-dd
+2021-04-03
 
 - It is now possible to manually import gates without replacing all from one region.
 - Ansiblex gates can now be deleted individually.
