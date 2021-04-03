@@ -5,10 +5,7 @@ import {
   Dialog, DialogActions, DialogContent, DialogContentText,
   DialogTitle,
   Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
+  IconButton, Table, TableBody, TableCell, TableHead, TableRow,
   Typography
 } from "@material-ui/core";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -18,23 +15,8 @@ import { GlobalDataContext } from "../GlobalDataContext";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
-  listItem: {
-    display: 'block',
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-  listItemRow: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'start',
-  },
-  listIcon: {
-    minWidth: 0,
-    marginRight: '4px',
-  },
-  listText: {
-    marginTop: '5px',
-    marginBottom: 0,
+  tableCell: {
+    padding: '1px 24px 1px 16px;',
   },
 }));
 
@@ -46,12 +28,10 @@ const AdminList = (props: Props) => {
   const { t } = useTranslation();
   const globalData = useContext(GlobalDataContext);
   const classes = useStyles();
-  const [gatesResult, setGatesResult] = useState<Array<Ansiblex>>([]);
+  const [gatesPerRegion, setGatesPerRegion] = useState<Array<Ansiblex[]>>([]);
   const [message, setMessage] = useState('');
   const [askDeleteGateOpen, setAskDeleteGateOpen] = React.useState(false);
   const [ansiblexDelete, setAnsiblexDelete] = React.useState<Ansiblex|null>(null);
-
-  let lastRegion = '';
 
   const fetchGates = useCallback(() => {
     setMessage('');
@@ -59,7 +39,23 @@ const AdminList = (props: Props) => {
       if (response.data.code) {
         setMessage(t(`responseCode.${response.data.code}`));
       } else {
-        setGatesResult(response.data.ansiblexes);
+        let lastRegionName = '';
+        let gates: Array<Ansiblex> = [];
+        let gatesGrouped: Array<Ansiblex[]> = [];
+        response.data.ansiblexes.forEach((gate) => {
+          if (lastRegionName !== gate.regionName) {
+            lastRegionName = gate.regionName;
+            if (gates.length > 0) {
+              gatesGrouped.push(gates);
+            }
+            gates = [];
+          }
+          gates.push(gate);
+        });
+        if (gates.length > 0) {
+          gatesGrouped.push(gates);
+        }
+        setGatesPerRegion(gatesGrouped);
       }
     }).catch(() => {
       setMessage(t('app.error'));
@@ -94,7 +90,7 @@ const AdminList = (props: Props) => {
           setMessage(t(`responseCode.${response.data.code}`));
         } else {
           if (response.data.success) {
-            setGatesResult([]);
+            setGatesPerRegion([]);
             fetchGates();
             setMessage(t('adminGates.deleteSuccess'));
           } else {
@@ -111,24 +107,36 @@ const AdminList = (props: Props) => {
     <Grid item md={6} xs={12}>
       <h3>{t('adminGates.headline')}</h3>
       <Typography color="primary">{message}</Typography>
-      <List dense={true}>
-        {gatesResult.map((ansiblex, index) => {
-          return (
-            <ListItem key={index} className={classes.listItem}>
-              {lastRegion !== ansiblex.regionName &&
-                <Typography>{lastRegion = ansiblex.regionName}</Typography>
-              }
-              <div className={classes.listItemRow}>
-                <IconButton className={classes.listIcon} size="small" title={t('adminGates.delete-ansiblex')}
-                            disabled={props.disabled} onClick={() => askDeleteGate(ansiblex)}>
-                  <DeleteForeverIcon color={props.disabled ? 'disabled' : 'error'} />
-                </IconButton>
-                <ListItemText className={classes.listText} primary={ansiblex.name}/>
-              </div>
-            </ListItem>
-          )
-        })}
-      </List>
+
+      {gatesPerRegion.map((gates) => {
+        return (
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell colSpan={2}>{gates[0].regionName}</TableCell>
+                <TableCell>{t('adminGates.source')}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {gates.map((ansiblex) => {
+                return (
+                  <TableRow>
+                    <TableCell className={classes.tableCell}>
+                      <IconButton size="small" title={t('adminGates.delete-ansiblex')}
+                                  disabled={props.disabled} onClick={() => askDeleteGate(ansiblex)}>
+                        <DeleteForeverIcon color={props.disabled ? 'disabled' : 'error'} />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>{ansiblex.name}</TableCell>
+                    <TableCell className={classes.tableCell}>{t(`adminGates.source-${ansiblex.source}`)}</TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        )
+      })}
+
       <Dialog
         open={askDeleteGateOpen}
         onClose={askDeleteGateClose}

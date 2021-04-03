@@ -56,6 +56,7 @@ data class ConnectedSystems(
 
 data class Ansiblex(
     val id: Long,
-    var name: String,
-    var regionName: String? = null,
+    val name: String,
+    val source: MongoAnsiblex.Source?,
+    val regionName: String?,
 )

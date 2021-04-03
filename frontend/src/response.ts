@@ -68,6 +68,7 @@ export type ResponseRouteLocation = {
 export type Ansiblex = {
   id: number,
   name: string,
+  source: AnsiblexSource|null,
   regionName: string,
 }
 
@@ -81,12 +82,6 @@ export type Waypoint = {
   ansiblexId: number|null,
   ansiblexName: string|null,
   regionName: string,
-}
-
-export enum RouteType {
-  Stargate = 'Stargate',
-  Ansiblex = 'Ansiblex',
-  Temporary = 'Temporary',
 }
 
 export type TemporaryConnection = {
@@ -106,4 +101,15 @@ export type System = {
 export type ConnectedSystems = {
   system1: string,
   system2: string,
+}
+
+export enum RouteType {
+  Stargate = 'Stargate',
+  Ansiblex = 'Ansiblex',
+  Temporary = 'Temporary',
+}
+
+export enum AnsiblexSource {
+  Import = 'Import',
+  ESI = 'ESI',
 }

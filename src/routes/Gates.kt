@@ -34,6 +34,7 @@ fun Route.gates(config: Config) {
             response.ansiblexes.add(Ansiblex(
                 id = it.id,
                 name = it.name,
+                source = it.source,
                 regionName = graphHelper.getGraph().regions[it.regionId] ?: "",
             ))
         }

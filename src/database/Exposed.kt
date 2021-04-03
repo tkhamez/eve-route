@@ -137,11 +137,19 @@ class Exposed(uri: String): DbInterface {
                 .forEach { ids.add(it[AnsiblexAlliance.ansiblexId].value) }
 
             Ansiblex.select { Ansiblex.id inList ids }.forEach {
+                var source: MongoAnsiblex.Source? = null
+                if (it[Ansiblex.source1] == MongoAnsiblex.Source.Import.toString()) {
+                    source = MongoAnsiblex.Source.Import
+                } else if (it[Ansiblex.source1] == MongoAnsiblex.Source.ESI.toString()) {
+                    source = MongoAnsiblex.Source.ESI
+                }
                 ansiblexes.add(
                     MongoAnsiblex(
                         id = it[Ansiblex.id].value,
                         name = it[Ansiblex.name],
+                        source = source,
                         solarSystemId = it[Ansiblex.solarSystemId],
+                        regionId = it[Ansiblex.regionId],
                     )
                 )
             }
