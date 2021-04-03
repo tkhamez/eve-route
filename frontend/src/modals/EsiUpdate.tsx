@@ -59,9 +59,9 @@ export default function EsiUpdate() {
               %<Link href="https://github.com/esi/esi-issues/issues/1185"
                      target="_blank" rel="noopener noreferrer">%</Link>%
             </Trans>
-          </Typography>
-          <br/>
-          <Typography variant="body2">
+            <br/><br/>
+            {t('esiUpdate.delete-info')}
+            <br/><br/>
             {t('esiUpdate.update-hint')}<br/>
             {t('esiUpdate.last-update')} {gatesUpdated}
           </Typography>

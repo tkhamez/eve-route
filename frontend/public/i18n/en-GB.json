@@ -125,6 +125,10 @@
       "Unfortunately CCP does not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
       "But a manually initiated search <3>seems to be ok</3>."
     ],
+    "delete-info": [
+      "This deletes gates that were previously found via ESI after the new gates are added. ",
+      "Gates that were imported manually will not be deleted."
+    ],
     "update-hint": "The gates can only be updated once per hour for each alliance.",
     "last-update": "Last update:",
     "esi-search-label": "ESI search",
@@ -141,7 +145,8 @@
     "replaceRegion": "Replace all gates in one region",
     "replaceDescription": [
       "This imports Ansiblex jump gates from one region and deletes all existing gates from that region beforehand. ",
-      "If the gates from the input are from different regions, only the region of the first gate is processed."
+      "If the gates from the input are from different regions, only the region of the first gate is processed. ",
+      "This also deletes gates that were found via ESI."
     ],
     "addGates": "Add gates",
     "addDescription": "Only add gates, do not remove other existing gates.",
