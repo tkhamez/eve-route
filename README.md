@@ -163,8 +163,7 @@ Run the containers:
 export UID && docker-compose up
 ```
 
-This provides a MongoDB Server at port 27017, Mongo Express at http://localhost:8081, a container with
-Gradle 6 and JDK 11 and one with Node.js 12 and Yarn.
+This provides a MongoDB Server at port 27017, a container with Gradle 6 and JDK 11 and one with Node.js 12 and Yarn.
 
 Create shells to run commands for the frontend and backend:
 ```shell script
