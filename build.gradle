@@ -18,7 +18,7 @@ apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 
 group 'net.tkhamez.everoute'
-version '0.8.0'
+version '0.8.1'
 mainClassName = "io.ktor.server.netty.EngineMain"
 webAppDirName = 'webapp'
 
