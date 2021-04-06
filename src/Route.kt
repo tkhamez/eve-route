@@ -88,9 +88,11 @@ class Route(
             val startSystemNode = allNodes[gate.solarSystemId]
             val endSystemNode = allNodes[endSystemId]
             if (startSystemNode != null && endSystemNode != null) { // system can be null if it is avoided
+                val endAnsiblex = allAnsiblexes[endSystemNode.getValue().id]
                 if (
                     !isRemoved(startSystemNode.getValue().name, endSystemNode.getValue().name) &&
-                    allAnsiblexes[endSystemNode.getValue().id] !== null // true for the second gate of a connection
+                    endAnsiblex != null && // true for the second gate of a connection
+                    graphHelper.getEndSystem(endAnsiblex.name)?.name == startSystemNode.getValue().name
                 ) {
                     startSystemNode.connect(endSystemNode, Waypoint.Type.Ansiblex)
                 }

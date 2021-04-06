@@ -64,7 +64,7 @@ fun Route.route(config: Config) {
 
         val graphHelper = GraphHelper()
 
-        val ansiblexStartSystems: MutableSet<Int> = mutableSetOf()
+        val allAnsiblexes: MutableMap<Int, MongoAnsiblex> = mutableMapOf()
         for (connectionType in listOf(gates, tempConnections)) {
             connectionType.forEach { connection ->
                 var startSystem: GraphSystem? = null
@@ -78,8 +78,12 @@ fun Route.route(config: Config) {
                 }
                 if (startSystem != null && endSystem != null) {
                     if (connection is MongoAnsiblex) {
-                        ansiblexStartSystems.add(startSystem.id)
-                        if (ansiblexStartSystems.contains(endSystem.id)) { // true for the second gate of a connection
+                        allAnsiblexes[connection.solarSystemId] = connection
+                        val endAnsiblex = allAnsiblexes[endSystem.id]
+                        if (
+                            endAnsiblex != null && // true for the second gate of a connection
+                            graphHelper.getEndSystem(endAnsiblex.name)?.name == startSystem.name
+                        ) {
                             response.ansiblexes.add(ConnectedSystems(startSystem.name, endSystem.name))
                         }
                     } else { // MongoTemporaryConnection
