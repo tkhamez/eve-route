@@ -26,8 +26,8 @@ fun Route.import(config: Config) {
             return@post
         }
 
-        val ansiblexes = parse(call.receiveText(), call.application.environment.log)
         val mode = call.parameters["mode"].toString()
+        val ansiblexes = parse(call.receiveText(), mode, call.application.environment.log)
         val numImported = import(ansiblexes, config.db, eveCharacter.allianceId, mode)
 
         response.success = true
@@ -37,7 +37,7 @@ fun Route.import(config: Config) {
     }
 }
 
-private fun parse(input: String, log: Logger): List<MongoAnsiblex> {
+private fun parse(input: String, mode: String, log: Logger): List<MongoAnsiblex> {
     // parse input
     val parsedInput = mutableMapOf<Long, String>()
     // Tag is e.g. <a href="showinfo:35841//1034848981067">C9N-CC » 6EK-BV - one more</a>
@@ -67,7 +67,7 @@ private fun parse(input: String, log: Logger): List<MongoAnsiblex> {
         if (regionId == null) {
             regionId = startSystem.regionId
         }
-        if (startSystem.regionId != regionId) {
+        if (mode == IMPORT_MODE_REPLACE_REGION && startSystem.regionId != regionId) {
             log.error("Error: System \"${startSystem.name}\" in another region.")
             continue
         }
