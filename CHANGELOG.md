@@ -1,6 +1,6 @@
-## next
+## 0.8.2
 
-yyy-mm-dd
+2021-04-06
 
 - Fix: It was not possible to import gates from different regions at once.
 - Fix: A connection between two unconnected Ansiblex gates was incorrectly assumed when an Ansiblex 
