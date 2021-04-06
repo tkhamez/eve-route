@@ -174,7 +174,7 @@ export UID && docker-compose run --service-ports gradle /bin/bash
 docker exec -it eve-route_gradle_run_5b2f82b4f035 /bin/bash
 ```
 
-Note: You can use `gradle` instead of `./gradlew` to save ~100MB download.
+Note: You can use `gradle` instead of `./gradlew` to save ~100 MB download.
 
 ### Frontend
 
