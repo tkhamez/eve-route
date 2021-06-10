@@ -1,3 +1,9 @@
+## 1.0.0
+
+2021-06-10
+
+- New gates added (Stargate Trailblazers).
+
 ## 0.8.2
 
 2021-04-06

@@ -110,7 +110,7 @@ docker run \
   --env EVE_ROUTE_CLIENT_SECRET=12ab \
   --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
   --mount type=bind,source="$(pwd)",target=/data \
-  -p 8080:8080 --rm tkhamez/eve-route:0.8.2
+  -p 8080:8080 --rm tkhamez/eve-route:1.0.0
 ```
 
 You can also build the image yourself. For this make sure there is exactly one fat JAR file at 
@@ -127,7 +127,7 @@ docker run \
   --env EVE_ROUTE_CLIENT_SECRET=12ab \
   --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
   --network host \
-  -p 8080:8080 --rm eve-route
+  --rm eve-route
 ```
 
 ### Deploy on Heroku
@@ -156,7 +156,7 @@ git submodule update --init
 
 ### Docker
 
-This was only tested so far on Linux with Docker 19.03 and [Docker Compose](https://docs.docker.com/compose/) 1.
+This has only been tested on Linux with Docker 19.03 and [Docker Compose](https://docs.docker.com/compose/) 1.
 
 Run the containers:
 ```shell script
