@@ -103,7 +103,7 @@
     "esi-results": [
       "Unfortunately the API does not always return all Ansiblex gates the character can use. ",
       "Instead it seems to return only gates for which the character has \"docking access\". ",
-      "See also <1>this ticket</1>."
+      "See also <1>this ticket</1>. Sometimes it also returns destroyed or unanchored Ansiblexes."
     ],
     "wormholes": [
       "If a route contains wormholes (temporary connection), they cannot be displayed on the map and are ",
