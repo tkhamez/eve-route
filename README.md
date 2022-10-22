@@ -2,7 +2,7 @@
 
 A route planner for [EVE Online](https://www.eveonline.com/) that supports Ansiblex jump gates and wormhole connections.
 
-Demo: https://eve-route.herokuapp.com  
+Demo: https://eve-route.tian-space.net  
 Docker: https://hub.docker.com/r/tkhamez/eve-route
 
 ![Screenshot](EVE-Route.png)
