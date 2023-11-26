@@ -111,7 +111,7 @@ docker run \
   --env EVE_ROUTE_CLIENT_SECRET=12ab \
   --env EVE_ROUTE_CALLBACK=http://localhost:8080/api/auth/login \
   --mount type=bind,source="$(pwd)",target=/data \
-  -p 8080:8080 --rm tkhamez/eve-route:1.0.0
+  -p 8080:8080 --rm tkhamez/eve-route:1.1.0
 ```
 
 You can also build the image yourself. For this make sure there is exactly one fat JAR file at 

@@ -1,3 +1,9 @@
+## 1.1.0
+
+2023-11-26
+
+- Updated map data (faction warfare update and Zarzakh).
+
 ## 1.0.0
 
 2021-06-10
