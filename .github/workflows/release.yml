@@ -8,18 +8,19 @@ name: Create Release
 jobs:
   build:
     name: Upload Release Assets
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 11
       - name: Set up Node.js 12
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 12
       - name: Build frontend
@@ -35,18 +36,18 @@ jobs:
           EVE_ROUTE_CALLBACK:
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            build/libs/eve-route-${{ steps.get_version.outputs.VERSION }}.jar
-            build/libs/eve-route-${{ steps.get_version.outputs.VERSION }}.war
+            build/libs/eve-route-${{ env.RELEASE_VERSION }}.jar
+            build/libs/eve-route-${{ env.RELEASE_VERSION }}.war
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image
-        run: docker build --no-cache -t tkhamez/eve-route:${{ steps.get_version.outputs.VERSION }} .
+        run: docker build --no-cache -t tkhamez/eve-route:${{ env.RELEASE_VERSION }} .
       - name: Publish Docker image
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u tkhamez --password-stdin
-          docker push tkhamez/eve-route:${{ steps.get_version.outputs.VERSION }}
+          docker push tkhamez/eve-route:${{ env.RELEASE_VERSION }}
