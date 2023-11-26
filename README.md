@@ -16,7 +16,6 @@ Docker: https://hub.docker.com/r/tkhamez/eve-route
 - [Run the application](#run-the-application)
   * [JAR file](#jar-file)
   * [Docker Image](#docker-image)
-  * [Deploy on Heroku](#deploy-on-heroku)
 - [Development Environment](#development-environment)
   * [Git](#git)
   * [Docker](#docker)
@@ -131,20 +130,6 @@ docker run \
   --network host \
   --rm eve-route
 ```
-
-### Deploy on Heroku
-
-You need the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
-
-Create an app and add the Heroku Postgres addon or setup another database.
-
-Heroku needs to build the frontend first, so add build packs in this order:
-```shell script
-heroku buildpacks:add heroku/nodejs
-heroku buildpacks:add heroku/gradle
-```
-
-Set the EVE_ROUTE_CORS_DOMAIN to your domain (e.g. eve-route.herokuapp.com), or some POST requests may not work.
 
 ## Development Environment
 

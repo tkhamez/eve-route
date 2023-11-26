@@ -131,12 +131,6 @@ shadowJar {
     }
 }
 
-// Task for Heroku
-task stage {
-    dependsOn buildGraph
-    dependsOn installDist
-}
-
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }
