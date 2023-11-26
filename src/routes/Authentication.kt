@@ -179,7 +179,7 @@ private fun verify(token: String?, config: Config, log: Logger): EsiTokenVerify?
         return null
     }
 
-    val json = String(Base64.getDecoder().decode(decoded.payload))
+    val json = String(Base64.getUrlDecoder().decode(decoded.payload))
     return gson.fromJson(json, EsiTokenVerify::class.java)
 }
 
