@@ -37,9 +37,8 @@
   "footer": {
     "created-by": "Created by <1>Tian Khamez</1>",
     "donate": "Donate <1>Ƶ</1> if you like it",
-    "ccp": [
-      "\"EVE\", \"EVE Online\", \"CCP\" and all related logos and images are ",
-      "trademarks or registered trademarks of <1>CCP hf</1>."
+    "fenris": [
+      "EVE Online® and all related logos and other elements are trademarks of <1>Fenris Creations</1>."
     ]
   },
   "login": {
@@ -122,7 +121,7 @@
   "esiUpdate": {
     "intro": [
       "Ansiblex jump gates can be found by normal characters only with the ESI search. ",
-      "Unfortunately CCP does not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
+      "Unfortunately it is not allow to use this API endpoint as a <1>discovery mechanism</1>. ",
       "But a manually initiated search <3>seems to be ok</3>."
     ],
     "delete-info": [

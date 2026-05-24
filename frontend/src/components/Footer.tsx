@@ -28,8 +28,8 @@ export default function Footer() {
         </Typography>
         <Typography variant="body2" color="textSecondary" align="center">
           <small>
-            <Trans i18nKey="footer.ccp">
-              %<Link color="textPrimary" href="https://www.ccpgames.com"
+            <Trans i18nKey="footer.fenris">
+              %<Link color="textPrimary" href="https://fenriscreations.com/"
                      target="_blank" rel="noopener noreferrer">%</Link>%
             </Trans>
           </small>

@@ -250,5 +250,4 @@ If you like this application, you can thank me by sending ISK to the character
 
 EVE Route is licensed under the [MIT license](LICENSE).
 
-"EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
-[CCP hf](http://www.ccpgames.com/).
+EVE Online® and all related logos and other elements are trademarks of [Fenris Creations](https://fenriscreations.com/).
